@@ -6,6 +6,7 @@ import {
   BrowserWindow,
   globalShortcut,
   Menu,
+  ipcMain,
 } from 'electron'
 import {
   createProtocol,
@@ -40,6 +41,7 @@ function createWindow() {
     fullscreen: false,
     show: false,
     frame: false,
+    backgroundColor: '#000000',
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -124,3 +126,9 @@ if (isDevelopment) {
     })
   }
 }
+
+
+// 关闭窗体
+ipcMain.on('close-app', () => {
+  app.quit();
+})

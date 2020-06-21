@@ -12,9 +12,9 @@
 
           <v-divider></v-divider>
 
-          <v-list dense nav>
+          <!-- <v-list dense nav> -->
 
-            <v-list-item v-for="item in items" :key="item.title">
+            <!-- <v-list-item v-for="item in items" :key="item.title">
               <v-list-item-action>
                 <v-icon>{{ item.icon }}</v-icon>
               </v-list-item-action>
@@ -23,7 +23,7 @@
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-          </v-list>
+          </v-list> -->
         </v-navigation-drawer>
 
         <!-- <v-list class="grow">
