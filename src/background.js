@@ -36,6 +36,7 @@ function createWindow() {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: true, //process.env.ELECTRON_NODE_INTEGRATION
+      enableRemoteModule: true,
     },
     simpleFullscreen: false,
     fullscreen: false,
