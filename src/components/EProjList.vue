@@ -166,6 +166,10 @@
             delete np.$s;
             ipc.update_proj(np).then(() => {
               self.proj.name = np.name;
+              let selp = self.$store.state.proj;
+              if(selp && selp.id == self.proj.id) {
+                selp.name = np.name;
+              }
             });
           }
         });
@@ -184,6 +188,11 @@
         ipc.remove_proj(doc).then(() => {
           let idx = self.projs.findIndex(it => it === this.proj);
           self.projs.splice(idx, 1);
+          let selp = this.$store.state.proj;
+          if(selp && selp.id == this.proj.id) {
+            this.$store.commit('setProj', null);
+          }
+          this.proj = null;
         });
       },
     }

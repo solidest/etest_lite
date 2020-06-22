@@ -117,6 +117,7 @@
         methods: {
             openProj: function () {
                 if (this.$route.name === 'ListProj') {
+                    this.$router.push({name: 'Empty'})
                     return;
                 }
                 this.width = hide_;
