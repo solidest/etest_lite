@@ -28,9 +28,6 @@ function setup() {
     ipcMain.handle('remove', (_, opt) => {
         return db.remove(opt.kind, opt.doc);
     });
-    ipcMain.handle('remove', (_, opt) => {
-        return db.remove(opt.kind, opt.doc);
-    });
 }
 
 export default { setup }

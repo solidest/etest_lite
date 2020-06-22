@@ -22,6 +22,7 @@ function setup(is_dev) {
     if(!bexists) {
         _db.addCollection("project");
         _db.addCollection("program");
+        _db.addCollection("page");
         _db.addCollection("protocol");
         _db.addCollection("device");
         _db.addCollection("topology");
@@ -39,7 +40,7 @@ function save() {
 // {id: 'xx', proj_id: 'xx', name: 'xx', ....}
 function list(kind, proj_id) {
     let coll = _db.getCollection(kind);
-    return coll.chain().find({'proj_id': { '$eq' : proj_id }}).simplesort(name).data();
+    return coll.chain().find({'proj_id': { '$eq' : proj_id }}).simplesort('name').data();
 }
 
 function insert(kind, doc) {
@@ -63,7 +64,7 @@ function remove(kind, doc) {
 //{name: 'xx', last_open: xxxx, created: xxxx}
 function list_proj() {
     let coll = _db.getCollection('project');
-    return coll.chain().simplesort(last_open, true).data();
+    return coll.chain().simplesort('updated', true).data();
 }
 
 function insert_proj(proj) {
@@ -77,6 +78,7 @@ function update_proj(proj) {
     for(let k in proj) {
         doc[k] = proj[k];
     }
+    doc.udpated = Date.now();
 }
 
 function remove_proj(proj) {

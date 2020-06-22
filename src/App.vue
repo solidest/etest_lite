@@ -1,7 +1,13 @@
 <template>
   <v-app>
     <e-sys-bar />
-    <v-navigation-drawer permanent :width="width">
+    <v-snackbar bottom :timeout="touts" :color="tip_color" v-model="tip">
+      {{ tip_msg }}
+      <v-btn icon small @click="tip=false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-snackbar>
+    <v-navigation-drawer permanent :width="width" app clipped>
       <v-row class="fill-height" no-gutters>
         <v-navigation-drawer mini-variant mini-variant-width="80" permanent>
           <v-list dense nav>
@@ -23,7 +29,7 @@
             <v-list-item-action>
               <v-tooltip right open-delay="1500">
                 <template v-slot:activator="{ on }">
-                  <v-icon large v-on="on" color="grey">mdi-folder-plus-outline</v-icon>
+                  <v-icon large v-on="on" color="grey">mdi-plus-thick</v-icon>
                 </template>
                 <span>新建项目</span>
               </v-tooltip>
@@ -36,7 +42,7 @@
             <v-list-item-action>
               <v-tooltip right open-delay="1500">
                 <template v-slot:activator="{ on }">
-                  <v-icon large v-on="on" color="grey">mdi-folder-open-outline</v-icon>
+                  <v-icon large v-on="on" color="grey">mdi-view-sequential</v-icon>
                 </template>
                 <span>打开项目</span>
               </v-tooltip>
@@ -50,6 +56,7 @@
       </v-row>
     </v-navigation-drawer>
     <v-main>
+      <router-view></router-view>
     </v-main>
   </v-app>
 </template>
@@ -116,14 +123,48 @@
       width: show_,
     }),
 
+    computed: {
+      tip: {
+        get: function () {
+          return this.$store.state.last_tip.tip;
+        },
+        set: function (newValue) {
+          if (!newValue) this.$store.commit('clearMsg');
+        }
+      },
+      tip_msg: function () {
+        return this.$store.state.last_tip.tip_msg;
+      },
+      tip_color: function () {
+        let c = this.$store.state.last_tip.tip_type;
+        if (c === 'info') {
+          return 'grey darken-1';
+        } else {
+          return c;
+        }
+      },
+       touts: function () {
+        let t = this.tip_color;
+        if (t === 'error') {
+          return 100000;
+        } else {
+          return 10000;
+        }
+      },
+    },
+
     methods: {
       openProj: function () {
-
       },
       newProj: function () {
-
+        if(this.$route.name === 'NewProj') {
+          return;
+        }
+        this.width = hide_;
+        this.$router.push({name: 'NewProj'});
       },
       onClick: function (page) {
+        
         if (this.page === page) {
           this.width = this.width === show_ ? hide_ : show_;
         } else {
@@ -132,6 +173,10 @@
             this.width = show_;
           }
         }
+        if(this.$route.name === 'Empty') {
+          return;
+        }
+        this.$router.push({name: 'Empty'});
       }
     }
   };

@@ -1,1 +1,18 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.5 100"><defs><style>.cls-1{fill:#1697f6;}.cls-2{fill:#7bc6ff;}.cls-3{fill:#1867c0;}.cls-4{fill:#aeddff;}</style></defs><title>Artboard 46</title><polyline class="cls-1" points="43.75 0 23.31 0 43.75 48.32"/><polygon class="cls-2" points="43.75 62.5 43.75 100 0 14.58 22.92 14.58 43.75 62.5"/><polyline class="cls-3" points="43.75 0 64.19 0 43.75 48.32"/><polygon class="cls-4" points="64.58 14.58 87.5 14.58 43.75 100 43.75 62.5 64.58 14.58"/></svg>
+<svg width="135" height="48" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="svg_7" x1="0" y1="0" x2="0" y2="1">
+   <stop stop-color="#0033ff" offset="0"/>
+   <stop stop-color="#3745ad" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="50" width="137" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect stroke="#ffffff" fill="url(#svg_7)" stroke-width="0" stroke-opacity="null" x="75" y="13.953126" width="52.333335" height="25.737705" id="svg_3" rx="3"/>
+  <text fill="#888888" stroke-width="0" x="100" y="150" id="svg_1" font-size="24" font-family="Sans-serif" text-anchor="middle" xml:space="preserve" font-weight="bold" transform="matrix(0.9555493616540499,0,0,0.9555493616540499,-53.95734298037265,-107.53095191702312) " stroke="#FFFFFF">ETest</text>
+  <text fill="#EEEEEE" stroke-width="0" x="105" y="157" id="svg_2" font-size="24" font-family="Sans-serif" text-anchor="middle" xml:space="preserve" font-weight="bold" transform="matrix(0.8784110813923559,0,0,0.8784110813923559,9.542591684001492,-103.43447014925768) " stroke="#000000">Dev</text>
+ </g>
+</svg>

@@ -1,10 +1,10 @@
 <template>
   <div v-resize="onResize">
-    <v-system-bar window dark id="app_bar">
+    <v-system-bar window dark id="app_bar" app>
       <v-icon>mdi-ember</v-icon>
-      <span class="nodrag">ETest Lite</span>
+      <span class="nodrag">ETest Dev Editor</span>
       <v-spacer></v-spacer>
-      <span class="nodrag">www.kiyun.com</span>
+      <span class="nodrag">{{title}}</span>
       <v-spacer></v-spacer>
       <v-icon class="nodrag" @click="onMin">mdi-minus</v-icon>
       <v-icon class="nodrag" @click="onMax">{{is_max ? 'mdi-checkbox-multiple-blank-outline':'mdi-checkbox-blank-outline'}}</v-icon>
@@ -30,6 +30,13 @@ export default {
         return {
             is_max: false,
         }
+    },
+
+    computed: {
+      title: function() {
+        let proj = this.$store.state.proj;
+        return proj ? proj.name : 'www.kiyun.com';
+      }
     },
 
     methods: {
