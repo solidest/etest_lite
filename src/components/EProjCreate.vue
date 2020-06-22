@@ -11,7 +11,7 @@
                         取消
                     </v-btn>
                     <v-btn text @click="ok" :disabled="!input_text">
-                        创建
+                        确定
                     </v-btn>
                 </v-card-actions>
             </v-card>

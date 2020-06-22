@@ -2,7 +2,7 @@
   <div v-resize="onResize">
     <v-system-bar window dark id="app_bar" app>
       <v-icon>mdi-ember</v-icon>
-      <span class="nodrag">ETest Dev Editor</span>
+      <span class="nodrag">ETest IDE</span>
       <v-spacer></v-spacer>
       <span class="nodrag">{{title}}</span>
       <v-spacer></v-spacer>

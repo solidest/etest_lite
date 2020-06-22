@@ -1,112 +1,108 @@
 <template>
-
-      <v-card raised width="800">
-        <v-data-table hide-default-footer single-select no-data-text="<暂无数据>" :items-per-page="itemsPerPage"
-          :headers="headers" :items="projlist" :page="page">
-
-          <template v-slot:top>
-            <v-toolbar flat color="cyan darken-2" dark>
-              <v-toolbar-title>项目列表</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn class="mx-2" small dark fab color="white" @click="impproj">
-                <v-icon color="black">mdi-import</v-icon>
+  <v-container fluid>
+    <v-data-iterator :items="projs" :search="search" :sort-by="sortBy" :sort-desc="sortDesc" hide-default-footer
+      no-data-text="暂时还没有项目" disable-pagination>
+      <template v-slot:header>
+        <v-toolbar class="mb-1">
+          <v-text-field v-model="search" clearable flat solo-inverted hide-details
+            prepend-inner-icon="mdi-folder-search-outline" label="搜索"></v-text-field>
+          <template v-if="$vuetify.breakpoint.mdAndUp">
+            <v-spacer></v-spacer>
+            <v-select v-model="sortBy" flat solo-inverted hide-details :items="sortKeys" prepend-inner-icon="mdi-sort"
+              label="排序"></v-select>
+            <v-spacer></v-spacer>
+            <v-btn-toggle v-model="sortDesc" mandatory>
+              <v-btn large depressed :value="false">
+                <v-icon>mdi-arrow-up</v-icon>
               </v-btn>
-              <v-btn class="mx-2" small dark fab color="white" @click="create">
-                <v-icon color="black">mdi-plus</v-icon>
+              <v-btn large depressed :value="true">
+                <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
-            </v-toolbar>
+            </v-btn-toggle>
           </template>
+        </v-toolbar>
+      </template>
 
-          <template v-slot:item.name="{ item }">
-            <div :style="{cursor:item.deleted?'default':'pointer', display:'inline-block'}"
-              @click="dev(item.id, item.name)">
-              <v-icon color="primary">mdi-folder-outline</v-icon>
-              <span class="pl-1 primary--text">
-                {{item.name}}
-              </span>
-            </div>
-          </template>
+      <template v-slot:default="props">
+        <v-row>
+          <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
+            <v-card>
+              <v-card-title class="subheading font-weight-bold blue--text">
+                <span style="cursor: pointer" @click="open(item)">
+                  {{item.name}}
+                </span>
+                <v-spacer />
+                <v-btn small icon class="mx-2" @click="rename(item)">
+                  <v-icon small color="grey">mdi-pencil-outline</v-icon>
+                </v-btn>
+                <v-btn small icon class="mx-2" @click="remove(item)">
+                  <v-icon small color="grey">mdi-delete-outline</v-icon>
+                </v-btn>
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-list dense>
+                <v-list-item v-for="(h, index) in headers" :key="index" dense>
+                  <v-list-item-content class="grey--text">
+                    {{ h.text }}:
+                  </v-list-item-content>
+                  <v-list-item-content class="align-end grey--text">
+                    {{ item.$s[h.value] }}</v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
+      </template>
+    </v-data-iterator>
 
-          <template v-slot:item.action="{ item }">
-            <div style="display:inline-block">
-              <v-tooltip top open-delay=500>
-                <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-3" v-on="on" @click.stop="rename(item)">
-                    mdi-textbox
-                  </v-icon>
-                </template>
-                <span>修改名称</span>
-              </v-tooltip>
-              <v-tooltip top open-delay=500>
-                <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-3" v-on="on" @click.stop="remove(item)">
-                    mdi-trash-can-outline
-                  </v-icon>
-                </template>
-                <span>删除</span>
-              </v-tooltip>
-              <v-tooltip top open-delay=500>
-                <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-3" v-on="on" @click.stop="expproj(item)">
-                    mdi-export
-                  </v-icon>
-                </template>
-                <span>导出</span>
-              </v-tooltip>
-              <v-tooltip top open-delay=500>
-                <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-3" v-on="on" @click.stop="report(item.id, item.name)">
-                    mdi-file-table-box-multiple-outline
-                  </v-icon>
-                </template>
-                <span>查看报告</span>
-              </v-tooltip>
-              <v-tooltip top open-delay=500>
-                <template v-slot:activator="{ on }">
-                  <v-icon small class="mr-3" v-on="on" @click.stop="run(item.id, item.name)">
-                    mdi-play
-                  </v-icon>
-                </template>
-                <span>执行</span>
-              </v-tooltip>
-            </div>
-          </template>
-
-          <template v-slot:footer v-if="projlist">
-            <v-row class="mt-2" align="center" justify="center">
-              <v-spacer />
-              <span class="mr-1 grey--text">
-                第{{ page }}页（共{{ numberOfPages }}页）项目总数：{{projlist.length}}
-              </span>
-              <v-btn icon class="mr-3" @click="formerPage" :disabled="page===1">
-                <v-icon>mdi-chevron-left</v-icon>
-              </v-btn>
-              <v-btn icon class="mr-6" @click="nextPage" :disabled="page===numberOfPages">
-                <v-icon>mdi-chevron-right</v-icon>
-              </v-btn>
-            </v-row>
-          </template>
-
-        </v-data-table>
-      </v-card>
+    <input-one v-if="dlg==='rename' && proj" :dialog="proj" title="输入新的项目名称" label="新项目名称" :default="proj.name"
+        @closed="rename_result" />
+    <confirm-dlg v-if="dlg==='remove'" :dialog="proj" title="删除确认" :text="'确定要删除项目【'+proj.name+'】吗？'"
+        @closed="remove_result" />
+  </v-container>
 </template>
 
 <script>
+  import ipc from '../feature/r_ipc';
+  import helper from '../feature/r_helper';
 
   export default {
-
-    mounted: function () {
-      
+    components: {
+      'input-one': () => import( /* webpackChunkName: "inputonedlg" */ '../dialog/InputOne'),
+      'confirm-dlg': () => import( /* webpackChunkName: "confirmdlg" */ '../dialog/ConfirmDlg'),
     },
 
     data() {
       return {
-        projlist: [],
-        itemsPerPage: 8,
-        page: 1,
+        sortBy: 'updated',
+        search: '',
+        sortDesc: true,
+        projs: [],
+        proj: null,
+        dlg: null,
         headers: [{
-            text: '项目',
-            align: 'left',
+            text: '创建时间',
+            value: 'screated'
+          },
+          {
+            text: '修改时间',
+            value: 'supdated'
+          },
+          {
+            text: '用例总数',
+            value: 'scount'
+          },
+          {
+            text: '执行结果',
+            value: 'sresult'
+          },
+        ],
+        sortKeys: [{
+            text: '修改时间',
+            value: 'updated'
+          },
+          {
+            text: '名称',
             value: 'name'
           },
           {
@@ -114,202 +110,83 @@
             value: 'created'
           },
           {
-            text: '最后修改',
-            value: 'updated'
+            text: '用例总数',
+            value: 'count'
           },
           {
-            text: '操作',
-            sortable: false,
-            value: 'action'
-          }
+            text: '执行结果',
+            value: 'result'
+          },
         ]
-
       }
     },
 
-    computed: {
-      numberOfPages() {
-        return Math.ceil(this.projlist.length / this.itemsPerPage)
-      },
+    mounted: function () {
+      let self = this;
+      ipc.list_proj().then((res) => {
+        self.update(res);
+      });
     },
 
     methods: {
-
-      //下一页
-      nextPage() {
-        if (this.page + 1 <= this.numberOfPages) this.page += 1
+      update: function (data) {
+        this.projs = data;
+        if (!data) {
+          return;
+        }
+        for (let d of data) {
+          let $s = {}
+          $s.screated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.created));
+          $s.supdated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated));
+          $s.scount = d.count || 0;
+          $s.sresult = d.result ? (Math.floor(d.result * 100) + '%') : '';
+          d.$s =$s;
+        }
       },
-
-      //上一页
-      formerPage() {
-        if (this.page - 1 >= 1) this.page -= 1
+      open: function(proj) {
+        this.$store.commit('setProj', proj);
+        this.$router.push({ name: 'Empty'});
       },
-
-      // //刷新数据
-      // refresh: function () {
-      //   let self = this;
-      //   self.$store.dispatch('list_proj')
-      //     .then(res => {
-      //       let projs = res.projs || [];
-      //       let n = Date.now();
-      //       for (let p of projs) {
-      //         if (p.make_info && p.make_info.maked > 0) {
-      //           p.maked = format_diff(n, p.make_info.maked);
-      //         } else {
-      //           p.maked = '';
-      //         }
-      //         p.updated = format_diff(n, p.updated);
-      //         p.created = format_diff(n, p.created);
-      //       }
-      //       self.projlist = projs;
-      //     })
-      // },
-
-      // //打开项目
-      // dev: function (id, name) {
-      //   this.$router.push({
-      //     name: 'dev',
-      //     query: {
-      //       id: id,
-      //       name: name
-      //     }
-      //   });
-      // },
-
-      // //导入导出项目
-      // impproj: function () {
-      //   let exp = new ExpImpProject(config.proj_type, config.doc_version, this);
-      //   exp.impProj(this.emitImpProj);
-      // },
-      // emitImpProj: function (res) {
-      //   if (res.result !== 'ok') {
-      //     this.$store.commit('setMsgError', res.result);
-      //   } else {
-      //     this.$store.commit('setMsgSuccess', '导入成功');
-      //   }
-      //   this.refresh();
-      // },
-      // emitNewProj: async function(name) {
-      //     let d = await this.$store.dispatch('create_proj', {name:name});
-      //     return d.id
-      // },
-      // emitNewDevTree: async function(id, tree) {
-      //     await this.$store.dispatch('import_devtree', {id:id, tree: tree});
-      // },
-      // emitNewFileDoc: async function(id, ftype, doc) {
-      //     await this.$store.dispatch('save_filedoc', {$ftype: ftype, id: id, doc:doc, ignoreUpdate: true});
-      // },
-
-
-      // expproj: function (item) {
-      //   let exp = new ExpImpProject(config.proj_type, config.doc_version, this);
-      //   exp.downloadProject(item);
-      // },
-
-      // emitDevTree: async function (proj_id) {
-      //   let res = await this.$store.dispatch('load_devtree', proj_id);
-      //   return res.tree;
-      // },
-      // emitFileDoc: async function (file_item) {
-      //   let res = await this.$store.dispatch('load_filedoc', {
-      //     type: file_item.type,
-      //     id: file_item.id
-      //   });
-      //   return res.doc;
-      // },
-
-
-      // //执行项目
-      // run: function (id, name) {
-      //   this.$router.push({
-      //     name: 'run',
-      //     query: {
-      //       id: id,
-      //       name: name
-      //     }
-      //   });
-      // },
-
-      // //查看报告
-      // report: function (id, name) {
-      //   this.$router.push({
-      //     name: 'report',
-      //     query: {
-      //       id: id,
-      //       name: name
-      //     }
-      //   });
-      // },
-
-      // //创建项目
-      // create: function () {
-      //   this.dlg.type = 'create';
-      //   this.dlg.title = '新建项目';
-      //   this.dlg.label = '请输入项目名称';
-      // },
-
-      // create_result: function (r) {
-      //   if (r.result === 'ok') {
-      //     let self = this;
-      //     let data = {
-      //       name: r.value
-      //     };
-      //     self.$store.dispatch('create_proj', data)
-      //       .then(d => {
-      //         if (d) {
-      //           self.dev(d.id, r.value);
-      //         }
-      //       });
-      //   }
-      //   this.dlg.type = null;
-      // },
-
-      // //重命名
-      // rename: function (item) {
-      //   this.dlg.type = 'rename';
-      //   this.dlg.title = '重命名';
-      //   this.dlg.value = item.name;
-      //   this.dlg.label = '请输入新的项目名称';
-      //   this.dlg.tag = item;
-      // },
-
-      // rename_result: function (r) {
-      //   if (r.result === 'ok') {
-      //     let self = this;
-      //     let item = self.dlg.tag;
-      //     let data = {
-      //       action: 'rename',
-      //       id: item.id,
-      //       name: r.value
-      //     }
-      //     self.$store.dispatch('edit_proj', data)
-      //       .then(d => {
-      //         if (d) {
-      //           item.name = r.value;
-      //         }
-      //       });
-      //   }
-      //   this.dlg.type = null;
-      // },
-
-      // //删除
-      // remove: function (item) {
-      //   this.dlg.type = 'remove';
-      //   this.dlg.tag = item;
-      // },
-      // remove_result: function (r) {
-      //   if (r.result === 'ok') {
-      //     let self = this;
-      //     self.$store.dispatch('remove_proj', self.dlg.tag.id)
-      //       .then(res => {
-      //         if (res) {
-      //           self.refresh();
-      //         }
-      //       });
-      //   }
-      //   this.dlg.type = null;
-      // },
-
+      rename: function(proj) {
+        this.proj = proj;
+        this.dlg = 'rename';
+      },
+      rename_result: function(res) {
+        this.dlg = null;
+        if(res.result !='ok' || res.value.trim() === this.proj.name) {
+          return;
+        }
+        let self = this;
+        helper.check_proj_newname(res.value).then((r) =>{
+          if(r !== 'ok') {
+              self.$store.commit('setMsgError', r);
+          } else {
+            let np = JSON.parse(JSON.stringify(self.proj));
+            np.name = res.value.trim();
+            delete np.$s;
+            ipc.update_proj(np).then(() => {
+              self.proj.name = np.name;
+            });
+          }
+        });
+      },
+      remove: function(proj) {
+        this.proj = proj;
+        this.dlg = 'remove';
+      },
+      remove_result: function(res) {
+        this.dlg = null;
+        if(res.result !='ok') {
+          return;
+        }
+        let self = this;
+        let doc = {id: this.proj.id};
+        ipc.remove_proj(doc).then(() => {
+          let idx = self.projs.findIndex(it => it === this.proj);
+          self.projs.splice(idx, 1);
+        });
+      },
     }
+
   }
 </script>

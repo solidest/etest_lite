@@ -9,7 +9,8 @@ import fs from 'fs';
 let _db
 
 function setup(is_dev) {
-    let exe_path = is_dev ? 'C:/Users/solidest/Desktop/etest_lite/db' : path.dirname(app.getPath('exe'));
+    let df = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_lite/db' : 'C:/Users/solidest/Desktop/etest_lite/db';
+    let exe_path = is_dev ? df : path.dirname(app.getPath('exe'));
     let f = path.resolve(exe_path, 'db.json');
 
     let bexists = fs.existsSync(f);
@@ -50,7 +51,7 @@ function insert(kind, doc) {
 
 function update(kind, doc) {
     let coll = _db.getCollection(kind);
-    let olddoc = coll.find({'id': { '$eq' : doc.id }});
+    let olddoc = coll.find({'id': { '$eq' : doc.id }})[0];
     for(let k in doc) {
         olddoc[k] = doc[k];
     }
@@ -58,7 +59,8 @@ function update(kind, doc) {
 
 function remove(kind, doc) {
     let coll = _db.getCollection(kind);
-    coll.remove(doc);
+    let item = coll.find({'id': { '$eq' : doc.id }})[0];
+    coll.remove(item);
 }
 
 //{name: 'xx', last_open: xxxx, created: xxxx}
@@ -74,16 +76,15 @@ function insert_proj(proj) {
 
 function update_proj(proj) {
     let coll = _db.getCollection('project');
-    let doc = coll.find({'id': { '$eq' : proj.id }});
+    let doc = coll.find({'id': { '$eq' : proj.id }})[0];
     for(let k in proj) {
         doc[k] = proj[k];
     }
-    doc.udpated = Date.now();
 }
 
 function remove_proj(proj) {
     let coll = _db.getCollection('project');
-    let doc = coll.find({'id': { '$eq' : proj.id }});
+    let doc = coll.find({'id': { '$eq' : proj.id }})[0];
     coll.remove(doc);
 }
 

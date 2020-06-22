@@ -1,7 +1,8 @@
 <template>
     <v-card :width="width" height="100%" tile>
         <e-file-bar :title="page.title" :selected="selected" :allow_newdir="page && page.kind=='tree'" :readonly="!page || page.kind==='items'" />
-        <v-list shaped dense>
+        <div style="height: calc(100vh - 90px);  overflow-y:auto">
+        <v-list shaped dense max-height="300px">
             <v-list-item-group color="primary">
                 <v-list-item v-for="(item, i) in items" :key="i">
                     <v-list-item-icon>
@@ -13,6 +14,7 @@
                 </v-list-item>
             </v-list-item-group>
         </v-list>
+        </div>
     </v-card>
 </template>
 
