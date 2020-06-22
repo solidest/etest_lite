@@ -7,12 +7,17 @@ import {
   globalShortcut,
   Menu,
   ipcMain,
-} from 'electron'
+} from 'electron';
 import {
   createProtocol,
   /* installVueDevtools */
-} from 'vue-cli-plugin-electron-builder/lib'
-const isDevelopment = process.env.NODE_ENV !== 'production'
+} from 'vue-cli-plugin-electron-builder/lib';
+import ipc from './feature/m_ipc';
+import db from './feature/m_db'
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
+ipc.setup();
+db.setup(isDevelopment);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -30,8 +35,8 @@ protocol.registerSchemesAsPrivileged([{
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -77,11 +82,15 @@ function createWindow() {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
+  db.save();
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  setTimeout(() => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }   
+  }, 300)
+
 })
 
 app.on('activate', () => {
@@ -131,5 +140,9 @@ if (isDevelopment) {
 
 // 关闭窗体
 ipcMain.on('close-app', () => {
-  app.quit();
+  db.save();
+
+  setTimeout(() => {
+      app.quit();
+  }, 300);
 })

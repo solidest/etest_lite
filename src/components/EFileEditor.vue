@@ -1,43 +1,8 @@
 <template>
-    <v-card width="278" height="100%" tile>
-        <v-toolbar dense>
-            <span class="text--secondary">{{title}}</span>
-            <v-spacer></v-spacer>
-            <v-tooltip right open-delay="1500">
-                <template v-slot:activator="{ on }">
-                    <v-btn icon small v-on="on">
-                        <v-icon small color="grey lighten-1">mdi-file-plus-outline</v-icon>
-                    </v-btn>
-                </template>
-                <span>新增</span>
-            </v-tooltip>
-            <v-tooltip right open-delay="1500">
-                <template v-slot:activator="{ on }">
-                    <v-btn icon small v-on="on">
-                        <v-icon small color="grey lighten-1">mdi-folder-plus-outline</v-icon>
-                    </v-btn>
-                </template>
-                <span>新增目录</span>
-            </v-tooltip>
-            <v-tooltip right open-delay="1500">
-                <template v-slot:activator="{ on }">
-                    <v-btn icon small v-on="on">
-                        <v-icon small color="grey lighten-1">mdi-pencil</v-icon>
-                    </v-btn>
-                </template>
-                <span>重命名</span>
-            </v-tooltip>
-            <v-tooltip right open-delay="1500">
-                <template v-slot:activator="{ on }">
-                    <v-btn icon small v-on="on">
-                        <v-icon small color="grey lighten-1">mdi-delete-outline</v-icon>
-                    </v-btn>
-                </template>
-                <span>删除</span>
-            </v-tooltip>
-        </v-toolbar>
+    <v-card :width="width" height="100%" tile>
+        <e-file-bar :title="page.title" :selected="selected" :allow_newdir="page && page.kind=='tree'" :readonly="!page || page.kind==='items'" />
         <v-list shaped dense>
-            <v-list-item-group v-model="item" color="primary">
+            <v-list-item-group color="primary">
                 <v-list-item v-for="(item, i) in items" :key="i">
                     <v-list-item-icon>
                         <v-icon v-text="item.icon"></v-icon>
@@ -52,10 +17,17 @@
 </template>
 
 <script>
+    import EFileBar from './widgets/EFileBar';
+
     export default {
-        props: ['title', 'kind', 'editor'],
+        props: ['page', 'width'],
+        components: {
+            'e-file-bar': EFileBar,
+        },
+
         data: () => {
             return {
+                selected: null,
                 items: [{
                     text: "ttttt",
                     key: "aaaa1"
