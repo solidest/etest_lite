@@ -6,25 +6,29 @@ const cfg = {
         catalog: 'program',
         type: 'tree',
     }, {
-        icon: 'mdi-chart-bell-curve',
+        icon: 'mdi-chart-bell-curve-cumulative',
         title: '监控面板',
         catalog: 'panel',
         type: 'list',
+        file_icon: 'mdi-chart-line-variant',
     }, {
         icon: 'mdi-comment-processing-outline',
         title: '通信协议',
         catalog: 'protocol',
         type: 'list',
+        file_icon: 'mdi-message-outline',
     }, {
         icon: 'mdi-developer-board',
         title: '设备接口',
         catalog: 'device',
         type: 'list',
+        file_icon: 'mdi-dev-to'
     }, {
         icon: 'mdi-link-variant',
         title: '连接拓扑',
         catalog: 'topology',
         type: 'list',
+        file_icon: 'mdi-link'
     }, {
         icon: 'mdi-tools',
         title: '工具箱',
@@ -36,36 +40,21 @@ const cfg = {
         catalog: 'project',
         type: 'items'
     }],
+
     list_bars: [{
         text: '新建文件',
         value: 'new_file',
         icon: 'mdi-file-plus-outline'
     }, {
         text: '修改名称',
-        value: 'rename',
+        value: 're_name',
         icon: 'mdi-pencil'
     }, {
         text: '删除选中项',
-        value: 'remvoe',
+        value: 'del_item',
         icon: 'mdi-delete-outline'
     }],
 
-    // <v-tooltip v-if="!readonly && allow_newdir" right open-delay="1500">
-    //         <template v-slot:activator="{ on }">
-    //             <v-btn icon small v-on="on" @click="emit('new_dir')" class="mx-1">
-    //                 <v-icon color="grey lighten-1">mdi-folder-plus-outline</v-icon>
-    //             </v-btn>
-    //         </template>
-    //         <span>新增目录</span>
-    //     </v-tooltip>
-    //     <v-tooltip v-if="!readonly && allow_newdir" right open-delay="1500">
-    //         <template v-slot:activator="{ on }">
-    //             <v-btn icon small v-on="on" @click="emit('new_file')" class="mx-1">
-    //                 <v-icon color="grey lighten-1">mdi-vector-polyline-plus</v-icon>
-    //             </v-btn>
-    //         </template>
-    //         <span>新增模型</span>
-    //     </v-tooltip>
     tree_bars: [{
         text: '新建目录',
         value: 'new_dir',
@@ -83,17 +72,17 @@ const cfg = {
         icon: 'mdi-playlist-plus'
     }, {
         text: '新建脚本',
-        value: 'new_file',
+        value: 'new_script',
         disabled: false,
         icon: 'mdi-file-plus-outline'
     }, {
         text: '修改名称',
-        value: 'rename',
+        value: 're_name',
         disabled: false,
         icon: 'mdi-pencil'
     }, {
         text: '删除选中项',
-        value: 'remvoe',
+        value: 'del_item',
         disabled: false,
         icon: 'mdi-delete-outline'
     }],

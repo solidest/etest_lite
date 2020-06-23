@@ -23,6 +23,28 @@ function new_id() {
     return shortid.generate();
 }
 
+function valid_name(items, n) {
+    let res = '名称不能为空';
+    if(!n) {
+        return res;
+    }
+    n = n.trim();
+    if(!n) {
+        return res;
+    }
+    res = 'ok';
+    if(!items) {
+        return res;
+    }
+    for(let it of items) {
+        if(it.name === n) {
+            res = '名称重复';
+            break;
+        }
+    }
+    return res;
+}
+
 function date_fmt(fmt, date) {
     let ret;
     const opt = {
@@ -44,4 +66,4 @@ function date_fmt(fmt, date) {
     return fmt;
 }
 
-export default { check_proj_newname, new_id, date_fmt }
+export default { check_proj_newname, new_id, date_fmt, valid_name }

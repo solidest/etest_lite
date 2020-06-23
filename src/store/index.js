@@ -10,6 +10,10 @@ export default new Vuex.Store({
       tip_msg: '',
       tip_type: 'info'
     },
+    edit_doc: {
+      type: null,
+      doc: null,
+    },
     proj: null
   },
   mutations: {
@@ -38,6 +42,10 @@ export default new Vuex.Store({
     },
     setProj: function(state, proj) {
       state.proj = proj;
+    },
+    setEditDoc: function(state, info) {
+      state.edit_doc.type = info.type;
+      state.edit_doc.doc = info.doc;
     }
   },
   actions: {},

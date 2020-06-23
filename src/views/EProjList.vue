@@ -28,18 +28,24 @@
           <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
             <v-card>
               <v-card-title class="subheading font-weight-bold blue--text">
-                <span style="cursor: pointer" @click="open(item)">
-                  {{item.name}}
-                </span>
+                <v-edit-dialog @save="save_name">
+                  <span style="cursor: pointer" @click.stop="open(item)">
+                    {{item.name}}
+                  </span>
+                  <v-btn small icon class="mx-1" @click="editing_proj=item; editing_name=item.name;">
+                    <v-icon small color="grey">mdi-pencil-outline</v-icon>
+                  </v-btn>
+                  <template v-slot:input>
+                    <v-text-field v-model="editing_name" label="修改项目名称" single-line>
+                    </v-text-field>
+                  </template>
+                </v-edit-dialog>
                 <v-spacer />
-                <v-btn small icon class="mx-1" @click="rename(item)">
-                  <v-icon small color="grey">mdi-pencil-outline</v-icon>
+                <v-btn small icon class="mx-2" @click="proj_export(item)">
+                  <v-icon color="grey">mdi-export</v-icon>
                 </v-btn>
-                <v-btn small icon class="mx-1" @click="proj_export(item)">
-                  <v-icon small color="grey">mdi-export</v-icon>
-                </v-btn>
-                <v-btn small icon class="mx-1" @click="remove(item)">
-                  <v-icon small color="grey">mdi-delete-outline</v-icon>
+                <v-btn small icon class="mx-2" @click="remove(item)">
+                  <v-icon color="grey">mdi-delete-outline</v-icon>
                 </v-btn>
               </v-card-title>
               <v-divider></v-divider>
@@ -57,11 +63,8 @@
         </v-row>
       </template>
     </v-data-iterator>
-
-    <input-one v-if="dlg==='rename' && proj" :dialog="proj" title="输入新的项目名称" label="新项目名称" :default="proj.name"
-        @closed="rename_result" />
     <confirm-dlg v-if="dlg==='remove'" :dialog="proj" title="删除确认" :text="'确定要删除项目【'+proj.name+'】吗？'"
-        @closed="remove_result" />
+      @closed="remove_result" />
   </v-container>
 </template>
 
@@ -71,7 +74,6 @@
 
   export default {
     components: {
-      'input-one': () => import( /* webpackChunkName: "inputonedlg" */ '../dialog/InputOne'),
       'confirm-dlg': () => import( /* webpackChunkName: "confirmdlg" */ '../dialog/ConfirmDlg'),
     },
 
@@ -81,6 +83,8 @@
         search: '',
         sortDesc: true,
         projs: [],
+        editing_proj: null,
+        editing_name: null,
         proj: null,
         dlg: null,
         headers: [{
@@ -143,63 +147,68 @@
           $s.supdated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated));
           $s.scount = d.count || 0;
           $s.sresult = d.result ? (Math.floor(d.result * 100) + '%') : '';
-          d.$s =$s;
+          d.$s = $s;
         }
       },
-      open: function(proj) {
+      open: function (proj) {
         this.$store.commit('setProj', proj);
-        this.$router.push({ name: 'Empty'});
-      },
-      rename: function(proj) {
-        this.proj = proj;
-        this.dlg = 'rename';
-      },
-      rename_result: function(res) {
-        this.dlg = null;
-        if(res.result !='ok' || res.value.trim() === this.proj.name) {
-          return;
-        }
-        let self = this;
-        helper.check_proj_newname(res.value).then((r) =>{
-          if(r !== 'ok') {
-              self.$store.commit('setMsgError', r);
-          } else {
-            let np = JSON.parse(JSON.stringify(self.proj));
-            np.name = res.value.trim();
-            delete np.$s;
-            ipc.update_proj(np).then(() => {
-              self.proj.name = np.name;
-              let selp = self.$store.state.proj;
-              if(selp && selp.id == self.proj.id) {
-                selp.name = np.name;
-              }
-            });
-          }
+        this.$router.push({
+          name: 'Empty'
         });
       },
-      remove: function(proj) {
+      remove: function (proj) {
         this.proj = proj;
         this.dlg = 'remove';
       },
-      remove_result: function(res) {
+      remove_result: function (res) {
         this.dlg = null;
-        if(res.result !='ok') {
+        if (res.result != 'ok') {
           return;
         }
         let self = this;
-        let doc = {id: this.proj.id};
+        let doc = {
+          id: this.proj.id
+        };
         ipc.remove_proj(doc).then(() => {
           let idx = self.projs.findIndex(it => it === this.proj);
           self.projs.splice(idx, 1);
           let selp = this.$store.state.proj;
-          if(selp && selp.id == this.proj.id) {
+          if (selp && selp.id == this.proj.id) {
             this.$store.commit('setProj', null);
           }
           this.proj = null;
         });
       },
-      proj_export: function(proj) {
+      proj_export: function (proj) {
         console.log('TODO proj_export', proj)
+      },
+      save_name: function () {
+        let n = this.editing_name;
+        if (!n) {
+          return;
+        }
+        n = n.trim();
+        if (!n || n === this.editing_proj.name) {
+          return;
+        }
+        let self = this;
+        let proj = this.editing_proj;
+        helper.check_proj_newname(n).then((r) => {
+          if (r !== 'ok') {
+            self.$store.commit('setMsgError', r);
+          } else {
+            let np = JSON.parse(JSON.stringify(proj));
+            np.name = n;
+            delete np.$s;
+            ipc.update_proj(np).then(() => {
+              proj.name = n;
+              let selp = self.$store.state.proj;
+              if (selp && selp.id == proj.id) {
+                selp.name = np.name;
+              }
+            });
+          }
+        });
       },
     }
 

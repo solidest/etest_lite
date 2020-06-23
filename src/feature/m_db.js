@@ -41,16 +41,28 @@ function save() {
 // {id: 'xx', proj_id: 'xx', name: 'xx', ....}
 function list(kind, proj_id) {
     let coll = _db.getCollection(kind);
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     return coll.chain().find({'proj_id': { '$eq' : proj_id }}).simplesort('name').data();
 }
 
 function insert(kind, doc) {
     let coll = _db.getCollection(kind);
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     coll.insert(doc);
 }
 
 function update(kind, doc) {
     let coll = _db.getCollection(kind);
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     let olddoc = coll.find({'id': { '$eq' : doc.id }})[0];
     for(let k in doc) {
         olddoc[k] = doc[k];
@@ -59,6 +71,10 @@ function update(kind, doc) {
 
 function remove(kind, doc) {
     let coll = _db.getCollection(kind);
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     let item = coll.find({'id': { '$eq' : doc.id }})[0];
     coll.remove(item);
 }
@@ -66,16 +82,28 @@ function remove(kind, doc) {
 //{name: 'xx', last_open: xxxx, created: xxxx}
 function list_proj() {
     let coll = _db.getCollection('project');
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     return coll.chain().simplesort('updated', true).data();
 }
 
 function insert_proj(proj) {
     let coll = _db.getCollection('project');
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     coll.insert(proj);
 }
 
 function update_proj(proj) {
     let coll = _db.getCollection('project');
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
     for(let k in proj) {
         doc[k] = proj[k];
@@ -84,6 +112,10 @@ function update_proj(proj) {
 
 function remove_proj(proj) {
     let coll = _db.getCollection('project');
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
     coll.remove(doc);
 }

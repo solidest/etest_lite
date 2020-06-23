@@ -47,10 +47,10 @@
             </v-navigation-drawer>
             <div v-if="page && width-80>10">
                 <v-card :width="width-80" height="100%" tile>
-                    <e-mini-bar :items="bar_items" :title="page.title" @click_item="onMiniBar" />
+                    <e-mini-bar :items="bar_items" :title="page.title" @edit_item="onMiniBar" />
                     <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                        <e-list v-if="page.type==='tree'" ref="tree_editor" :items="items"> </e-list>
-                        <e-list v-else-if="page.type==='list'" ref="list_editor" :items="items"> </e-list>
+                        <e-list v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog"> </e-list>
+                        <e-list v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :icon="page.file_icon"> </e-list>
                     </div>
                 </v-card>
             </div>
@@ -74,24 +74,13 @@
             'e-list': EList,
         },
 
-        mounted: function() {
-            this.updateBarState(null);
-        },
-
         data: () => ({
             pages: cfg.pages,
             page: cfg.pages[0],
             width: hide_,
             items: [],
             bar_items: [],
-            selected: null,
         }),
-
-        watch: {
-            selected: function(s) {
-                this.updateBarState(s);
-            }
-        },
 
         computed: {
             isNewProjPage: function () {
@@ -135,7 +124,6 @@
                 } else {
                     this.page = page;
                     this.loadItems();
-                    this.updateBarState(null);
                     if (this.width === hide_) {
                         this.width = show_;
                     }
@@ -160,23 +148,13 @@
                     });
                 }
             },
-            onMiniBar: function(action) {
+            onMiniBar: function(action, value) {
                 if(this.page.type === 'tree') {
-                    this.$refs.tree_editor.action(action);
+                    this.$refs.tree_editor.action(action, value);
                 } else if(this.page.type === 'list') {
-                    this.$refs.list_editor.action(action);
+                    this.$refs.list_editor.action(action, value);
                 }
             },
-            updateBarState: function(s) {
-                if(this.bar_items) {
-                    for(let b of this.bar_items) {
-                        if(b.value === 'remvoe' || b.value === 'rename') {
-                            b.disabled = !s;
-                        }
-                    }
-                }
-            },
-
         }
     }
 </script>
