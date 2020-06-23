@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="dialog" max-width="360" persistent overlay-color="grey darken-2">
+    <v-dialog :value="dialog" max-width="360" persistent overlay-color="grey darken-2" internal-activator>
         <v-card>
             <v-card-title class="headline">{{title}}</v-card-title>
             <v-text-field @keydown.enter="ok" ref="input_component" class="px-6" v-model="input_text" :placeholder="label"></v-text-field>

@@ -2,7 +2,7 @@
   <div v-resize="onResize">
     <v-system-bar window dark id="app_bar" app>
       <v-icon>mdi-ember</v-icon>
-      <span class="nodrag">ETest IDE</span>
+      <span class="nodrag">ETestDev</span>
       <v-spacer></v-spacer>
       <span class="nodrag">{{title}}</span>
       <v-spacer></v-spacer>
@@ -23,7 +23,6 @@
 <script>
 
 const { ipcRenderer, remote  } = window.require('electron')
-// import { ipcRenderer, remote } from 'electron'
 
 export default {
     data: () => {

@@ -32,10 +32,13 @@
                   {{item.name}}
                 </span>
                 <v-spacer />
-                <v-btn small icon class="mx-2" @click="rename(item)">
+                <v-btn small icon class="mx-1" @click="rename(item)">
                   <v-icon small color="grey">mdi-pencil-outline</v-icon>
                 </v-btn>
-                <v-btn small icon class="mx-2" @click="remove(item)">
+                <v-btn small icon class="mx-1" @click="proj_export(item)">
+                  <v-icon small color="grey">mdi-export</v-icon>
+                </v-btn>
+                <v-btn small icon class="mx-1" @click="remove(item)">
                   <v-icon small color="grey">mdi-delete-outline</v-icon>
                 </v-btn>
               </v-card-title>
@@ -194,6 +197,9 @@
           }
           this.proj = null;
         });
+      },
+      proj_export: function(proj) {
+        console.log('TODO proj_export', proj)
       },
     }
 

@@ -128,6 +128,9 @@
                 }, {
                     text: '从历史项目选择复制',
                     value: 'copy'
+                }, {
+                    text: '从文件导入',
+                    value: 'import'
                 }],
                 copy_steps: [
                     '设备接口',
