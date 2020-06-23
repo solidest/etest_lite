@@ -23,7 +23,7 @@ function setup(is_dev) {
     if(!bexists) {
         _db.addCollection("project");
         _db.addCollection("program");
-        _db.addCollection("page");
+        _db.addCollection("panel");
         _db.addCollection("protocol");
         _db.addCollection("device");
         _db.addCollection("topology");

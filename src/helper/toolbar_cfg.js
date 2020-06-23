@@ -7,8 +7,8 @@ const cfg = {
         type: 'tree',
     }, {
         icon: 'mdi-chart-bell-curve',
-        title: '监控页面',
-        catalog: 'page',
+        title: '监控面板',
+        catalog: 'panel',
         type: 'list',
     }, {
         icon: 'mdi-comment-processing-outline',
