@@ -13,12 +13,12 @@ Vue.use(VueRouter)
   {
     path: '/newproj',
     name: 'NewProj',
-    component: () => import( /* webpackChunkName: "e_newproj" */ '../components/EProjCreate'),
+    component: () => import( /* webpackChunkName: "e_newproj" */ '../views/EProjCreate'),
   },
   {
     path: '/listproj',
     name: 'ListProj',
-    component: () => import( /* webpackChunkName: "e_listproj" */ '../components/EProjList'),
+    component: () => import( /* webpackChunkName: "e_listproj" */ '../views/EProjList'),
   },
 ]
 
