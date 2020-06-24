@@ -32,6 +32,10 @@
       'e-toolbar': EToolBar,
     },
 
+    created: function() {
+      this.$store.commit('setWinId', this.$route.query.winid);
+    },
+
     computed: {
       tip: {
         get: function () {

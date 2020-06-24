@@ -7,8 +7,18 @@ Vue.use(VueRouter)
   const routes = [
   {
     path: '/',
-    name: 'Empty',
+    name: 'Home',
     component: EEmpty
+  },
+  {
+    path: '/testcase',
+    name: 'TestCase',
+    component: EEmpty,
+  },
+  {
+    path: '/project',
+    name: 'Project',
+    component: EEmpty,
   },
   {
     path: '/newproj',
@@ -23,7 +33,7 @@ Vue.use(VueRouter)
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

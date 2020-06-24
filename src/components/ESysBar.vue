@@ -6,9 +6,9 @@
       <v-spacer></v-spacer>
       <span class="nodrag">{{title}}</span>
       <v-spacer></v-spacer>
-      <v-icon class="nodrag" @click="onMin">mdi-minus</v-icon>
-      <v-icon class="nodrag" @click="onMax">{{is_max ? 'mdi-checkbox-multiple-blank-outline':'mdi-checkbox-blank-outline'}}</v-icon>
-      <v-icon class="nodrag" @click="onClose">mdi-close</v-icon>
+      <v-icon class="nodrag" @click.stop="onMin">mdi-minus</v-icon>
+      <v-icon class="nodrag" @click.stop="onMax">{{is_max ? 'mdi-checkbox-multiple-blank-outline':'mdi-checkbox-blank-outline'}}</v-icon>
+      <v-icon class="nodrag" @click.stop="onClose">mdi-close</v-icon>
     </v-system-bar>
   </div>
 </template>
@@ -59,7 +59,7 @@ export default {
             window.minimize();
         },
         onClose: function() {
-            ipcRenderer.send('close-app');
+          ipcRenderer.send('close-win', this.$store.state.winid||1);
         }
     }
 

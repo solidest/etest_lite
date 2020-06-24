@@ -26,7 +26,7 @@
       <template v-slot:default="props">
         <v-row>
           <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
-            <v-card>
+            <v-card :loading="item===doing_item">
               <v-card-title class="subheading font-weight-bold blue--text">
                 <v-edit-dialog @save="save_name">
                   <span style="cursor: pointer" @click.stop="open(item)">
@@ -41,12 +41,30 @@
                   </template>
                 </v-edit-dialog>
                 <v-spacer />
-                <v-btn small icon class="mx-2" @click="proj_export(item)">
-                  <v-icon color="grey">mdi-export</v-icon>
-                </v-btn>
-                <v-btn small icon class="mx-2" @click="remove(item)">
-                  <v-icon color="grey">mdi-delete-outline</v-icon>
-                </v-btn>
+                <v-tooltip right open-delay="1500">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
+                        <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>在新窗口打开</span>
+                </v-tooltip>
+                <v-tooltip right open-delay="1500">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
+                        <v-icon color="grey">mdi-export</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>导出项目</span>
+                </v-tooltip>
+                <v-tooltip right open-delay="1500">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
+                        <v-icon color="grey">mdi-delete-outline</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>删除项目</span>
+                </v-tooltip>
               </v-card-title>
               <v-divider></v-divider>
               <v-list dense>
@@ -55,7 +73,7 @@
                     {{ h.text }}:
                   </v-list-item-content>
                   <v-list-item-content class="align-end grey--text">
-                    {{ item.$s[h.value] }}</v-list-item-content>
+                    {{ item[h.value] }}</v-list-item-content>
                 </v-list-item>
               </v-list>
             </v-card>
@@ -63,7 +81,7 @@
         </v-row>
       </template>
     </v-data-iterator>
-    <confirm-dlg v-if="dlg==='remove'" :dialog="proj" title="删除确认" :text="'确定要删除项目【'+proj.name+'】吗？'"
+    <confirm-dlg v-if="dlg==='remove'" :dialog="remove_proj" title="删除确认" :text="'确定要删除项目【'+ remove_proj.name+'】吗？'"
       @closed="remove_result" />
   </v-container>
 </template>
@@ -85,8 +103,9 @@
         projs: [],
         editing_proj: null,
         editing_name: null,
-        proj: null,
+        remove_proj: null,
         dlg: null,
+        doing_item: null,
         headers: [{
             text: '创建时间',
             value: 'screated'
@@ -137,46 +156,82 @@
 
     methods: {
       update: function (data) {
-        this.projs = data;
+        this.projs = [];
         if (!data) {
           return;
         }
+        let projs = [];
         for (let d of data) {
-          let $s = {}
-          $s.screated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.created));
-          $s.supdated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated));
-          $s.scount = d.count || 0;
-          $s.sresult = d.result ? (Math.floor(d.result * 100) + '%') : '';
-          d.$s = $s;
+          let p = {}
+          p.name = d.name;
+          p.created = d.created;
+          p.created = d.updated;
+          p.created = d.count;
+          p.created = d.result;
+          p.screated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.created));
+          p.supdated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated));
+          p.scount = d.count || 0;
+          p.sresult = d.result ? (Math.floor(d.result * 100) + '%') : '';
+          p.data = d;
+          delete data.count;
+          delete data.result;
+          projs.push(p);
+        }
+        this.projs = projs;
+      },
+      open: async function (proj) {
+        let gp = this.$store.state.proj;
+        if(gp && gp.id === proj.data.id) {
+          this.$router.push({
+            name: 'TestCase'
+          });
+          return;
+        }
+        let res = await ipc.active_proj(proj.data.id);
+        if(!res) {
+          this.$store.commit('setProj', proj.data);
+          this.$router.push({
+            name: 'TestCase'
+          });
         }
       },
-      open: function (proj) {
-        this.$store.commit('setProj', proj);
-        this.$router.push({
-          name: 'Empty'
-        });
+      open_win: async function (proj) {
+        let gp = this.$store.state.proj;
+        if(!gp || proj.data.id === gp.id) {
+            return this.open(proj);
+        }
+        let res = await ipc.active_proj(proj.data.id);
+        if(!res) {
+          ipc.open_proj(proj.data.id);
+          this.doing_item = proj;
+          let self = this;
+          setTimeout(()=>{
+            self.doing_item = null;
+          }, 2000);
+        }
       },
       remove: function (proj) {
-        this.proj = proj;
+        this.remove_proj = proj;
         this.dlg = 'remove';
       },
       remove_result: function (res) {
         this.dlg = null;
+        let self = this;
+        let id = this.remove_proj.data.id;
         if (res.result != 'ok') {
           return;
         }
-        let self = this;
         let doc = {
-          id: this.proj.id
+          id: id
         };
         ipc.remove_proj(doc).then(() => {
-          let idx = self.projs.findIndex(it => it === this.proj);
+          let idx = self.projs.findIndex(it => it.data.id === id);
           self.projs.splice(idx, 1);
           let selp = this.$store.state.proj;
-          if (selp && selp.id == this.proj.id) {
+          if (selp && selp.id == id) {
             this.$store.commit('setProj', null);
           }
-          this.proj = null;
+          this.remove_proj_id = null;
         });
       },
       proj_export: function (proj) {
@@ -192,16 +247,16 @@
           return;
         }
         let self = this;
-        let proj = this.editing_proj;
+        let proj = this.editing_proj.data;
         helper.check_proj_newname(n).then((r) => {
           if (r !== 'ok') {
             self.$store.commit('setMsgError', r);
           } else {
             let np = JSON.parse(JSON.stringify(proj));
             np.name = n;
-            delete np.$s;
             ipc.update_proj(np).then(() => {
               proj.name = n;
+              self.editing_proj.name = n;
               let selp = self.$store.state.proj;
               if (selp && selp.id == proj.id) {
                 selp.name = np.name;

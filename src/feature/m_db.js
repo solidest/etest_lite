@@ -83,7 +83,7 @@ function remove(kind, doc) {
 function list_proj() {
     let coll = _db.getCollection('project');
     if(!coll) {
-        console.log('error kind =', kind);
+        console.log('error list_proj');
         return;
     }
     return coll.chain().simplesort('updated', true).data();
@@ -92,7 +92,7 @@ function list_proj() {
 function insert_proj(proj) {
     let coll = _db.getCollection('project');
     if(!coll) {
-        console.log('error kind =', kind);
+        console.log('error proj =', proj);
         return;
     }
     coll.insert(proj);
@@ -101,7 +101,7 @@ function insert_proj(proj) {
 function update_proj(proj) {
     let coll = _db.getCollection('project');
     if(!coll) {
-        console.log('error kind =', kind);
+        console.log('error proj =', proj);
         return;
     }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
@@ -113,12 +113,20 @@ function update_proj(proj) {
 function remove_proj(proj) {
     let coll = _db.getCollection('project');
     if(!coll) {
-        console.log('error kind =', kind);
+        console.log('error proj =', proj);
         return;
     }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
     coll.remove(doc);
 }
 
+function recent_proj() {
+    let projs = list_proj();
+    if(projs && projs.length>0){
+        return projs[0].id;
+    }
+    return null;
+}
 
-export default { setup, save, list, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj }
+
+export default { setup, save, list, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj, recent_proj, }

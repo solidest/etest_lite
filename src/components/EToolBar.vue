@@ -74,6 +74,12 @@
             'e-list': EList,
         },
 
+        mounted: function() {
+            if(this.$route.query.autoopen || this.$route.query.proj_id) {
+                this.width = show_;
+            }
+        },
+
         data: () => ({
             pages: cfg.pages,
             page: cfg.pages[0],
@@ -92,13 +98,30 @@
             proj: function () {
                 return this.$store.state.proj;
             },
+            page_route: function() {
+                return this.$route.name;
+            }
+        },
+
+        watch: {
+            page_route: function(v) {
+                if(v === 'TestCase') {
+                    this.width = show_;
+                    if(this.page !== cfg.pages[0]) {
+                        this.onClick(cfg.pages[0]);
+                    }
+                } else if (v==='Project' && this.page !== cfg.pages[cfg.pages.length-1]) {
+                    this.width = show_;
+                    this.onClick(cfg.pages[cfg.pages.length-1]);
+                }
+            }
         },
 
         methods: {
             openProj: function () {
                 if (this.$route.name === 'ListProj') {
                     this.$router.push({
-                        name: 'Empty'
+                        name: 'Home'
                     })
                     return;
                 }
@@ -128,11 +151,11 @@
                         this.width = show_;
                     }
                 }
-                if (this.$route.name === 'Empty') {
+                if (this.$route.name === 'Home') {
                     return;
                 }
                 this.$router.push({
-                    name: 'Empty'
+                    name: 'Home'
                 });
             },
             loadItems: async function () {

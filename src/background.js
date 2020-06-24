@@ -10,20 +10,21 @@ import {
 } from 'electron';
 import {
   createProtocol,
-  /* installVueDevtools */
 } from 'vue-cli-plugin-electron-builder/lib';
 import ipc from './feature/m_ipc';
-import db from './feature/m_db'
+import db from './feature/m_db';
+import wins from './feature/m_wins';
+
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  console.log('should quit');
+  app.quit();
+}
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 ipc.setup();
 db.setup(isDevelopment);
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
-
-// Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
   privileges: {
@@ -32,15 +33,21 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-function createWindow() {
-  // Create the browser window.
-  win = new BrowserWindow({
+function quit() {
+  db.save();
+  setTimeout(() => {
+    // if (process.platform !== 'darwin') {
+    app.quit()
+    // }
+  }, 300)
+}
+
+function createWindow(proj_id) {
+  let win = new BrowserWindow({
     width: 1024,
     height: 768,
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: true, //process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: true,
       enableRemoteModule: true,
     },
     simpleFullscreen: false,
@@ -48,81 +55,56 @@ function createWindow() {
     show: false,
     frame: false,
     backgroundColor: '#000000',
-  })
+  });
+  wins.add(win, proj_id);
 
+  if(!proj_id) {
+    globalShortcut.register('CommandOrControl+Q', () => {
+      quit();
+    });
+    globalShortcut.register('CommandOrControl+Alt+I', (e) => {
+      win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
+    });
+    globalShortcut.register('CommandOrControl+R', (e) => {
+      win.reload();
+    });    
+  }
+
+  let open_proj = proj_id ? '#/?proj_id=' + proj_id : '#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false');
+  open_proj += ('&winid=' + win.id);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
-    // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    win.loadURL('app://./index.html' + open_proj)
   }
-
-  globalShortcut.register('CommandOrControl+Q', () => {
-    app.quit();
-  });
-  globalShortcut.register('CommandOrControl+Alt+I', () => {
-    win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
-  });
-  globalShortcut.register('CommandOrControl+R', () => {
-    win.webContents.reload();
-  });
   Menu.setApplicationMenu(null);
 
   win.once('ready-to-show', () => {
+    win.maximize();
     win.show();
   });
 
   win.on('closed', () => {
-    win = null
+    wins.del(win);
   })
 }
 
-// Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  db.save();
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  setTimeout(() => {
-    if (process.platform !== 'darwin') {
-      app.quit()
-    }   
-  }, 300)
-
+  quit();
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
+  if (wins.length() === 0) {
+    createWindow(null);
   }
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
-    // Devtools extensions are broken in Electron 6.0.0 and greater
-    // See https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378 for more info
-    // Electron will not launch with Devtools extensions installed on Windows 10 with dark mode
-    // If you are not using Windows 10 dark mode, you may uncomment these lines
-    // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
-    // try {
-    //   await installVueDevtools()
-    // } catch (e) {
-    //   console.error('Vue Devtools failed to install:', e.toString())
-    // }
-
-  }
-  createWindow()
+  createWindow(null);
 })
 
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', data => {
@@ -137,12 +119,44 @@ if (isDevelopment) {
   }
 }
 
-
-// 关闭窗体
-ipcMain.on('close-app', () => {
-  db.save();
-
-  setTimeout(() => {
-      app.quit();
-  }, 300);
+ipcMain.on('bind-proj', (_, wid, proj_id) => {
+  let win = BrowserWindow.fromId(Number.parseInt(wid));
+  if (!win) {
+    console.log('error win from id')
+  }
+  wins.update(win, proj_id);
 })
+
+ipcMain.handle('open-proj', (_, id) => {
+  let win = wins.find(id);
+  if (win) {
+    if (win.isMinimized()) {
+      win.restore();
+    }
+    win.show();
+    win.focus();
+  }
+  createWindow(id);
+});
+
+ipcMain.on('close-win', (_, wid) => {
+  console.log('close wid', wid)
+  let win = BrowserWindow.fromId(Number.parseInt(wid));
+  if (!win) {
+    console.log('error win from id')
+  }
+  win.close();
+});
+
+ipcMain.handle('active-proj', (_, proj_id) => {
+  let win = wins.find(proj_id);
+  if (win) {
+    if (win.isMinimized()) {
+      win.restore();
+    }
+    win.show();
+    win.focus();
+    return true;
+  }
+  return false;
+});

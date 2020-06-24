@@ -176,15 +176,15 @@
                     };
                     await ipc.insert_proj(doc);
                     this.$store.commit('setProj', doc);
-                    this.$router.push({
-                        name: 'Empty'
-                    });
+                    this.$router.push({ name: 'Project'});
                 }
             },
             cancel: async function () {
-                this.$router.push({
-                    name: 'Empty'
-                });
+                if(this.$store.state.proj) {
+                    this.$router.push({ name: 'TestCase'});
+                } else {
+                    this.$router.push({ name: 'Home'});
+                }
             }
         },
     }
