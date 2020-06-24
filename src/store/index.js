@@ -11,10 +11,8 @@ export default new Vuex.Store({
       tip_msg: '',
       tip_type: 'info'
     },
-    edit_doc: {
-      type: null,
-      doc: null,
-    },
+    edit_doc: null,
+    sele_doc: null,
     proj: null,
     winid: 1,
   },
@@ -48,13 +46,23 @@ export default new Vuex.Store({
       }
       state.proj = proj;
       ipc.bind_proj(state.winid, proj ? proj.id : null);
+      state.edit_doc = null;
     },
     setWinId: function(state, id) {
       state.winid = id;
     },
     setEditDoc: function(state, info) {
-      state.edit_doc.type = info.type;
-      state.edit_doc.doc = info.doc;
+      console.log('open doc', info.doc.id);
+      state.edit_doc = info;
+    },
+    setSeleDoc: function(state, info) {
+      state.sele_doc = info;
+    },
+    deletedDoc: function(state, id) {
+      if(state.edit_doc && state.edit_doc.doc.id === id) {
+        state.edit_doc = null;
+        console.log('close doc', id)
+      }
     }
   },
   actions: {},

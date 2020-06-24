@@ -40,7 +40,8 @@
         },
         computed: {
             selected: function() {
-                return this.$store.state.edit_doc.doc;
+                let selected = this.$store.state.sele_doc;
+                return selected ? selected.doc : null;
             }
         },
         methods: {

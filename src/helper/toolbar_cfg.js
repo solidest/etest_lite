@@ -1,10 +1,20 @@
 
 const cfg = {
     pages: [{
-        icon: 'mdi-file-multiple-outline',
+        icon: 'mdi-animation-play-outline',
         title: '测试用例',
         catalog: 'program',
         type: 'tree',
+        icons: {
+            model: 'mdi-vector-polyline',
+            actions: 'mdi-playlist-play',
+        }
+    }, {
+        icon: 'mdi-script-text-outline',
+        title: '资源库',
+        catalog: 'public',
+        type: 'list',
+        file_icon: 'mdi-script-outline'
     }, {
         icon: 'mdi-chart-bell-curve-cumulative',
         title: '监控面板',
@@ -33,12 +43,47 @@ const cfg = {
         icon: 'mdi-tools',
         title: '工具箱',
         catalog: 'tools',
-        type: 'items'
+        type: 'items',
+        file_icon: 'mdi-help-rhombus-outline',
+        items: [
+            {
+                name: '调试助手',
+                value: 'assistant'
+            },{
+                name: '历史记录',
+                value: 'history'
+            },{
+                name: '执行报告',
+                value: 'report'
+            },
+        ]
     }, {
         icon: 'mdi-cog-outline',
         title: '项目设置',
         catalog: 'project',
-        type: 'items'
+        type: 'items',
+        file_icon: 'mdi-cogs',
+        items: [
+            {
+                name: '执行器设置',
+                value: 'etestx'
+            },{
+                name: '自定义校验函数',
+                value: 'check'
+            },{
+                name: '自定义打包函数',
+                value: 'pack'
+            },{
+                name: '自定义解包函数',
+                value: 'unpack'
+            },{
+                name: '接收过滤器',
+                value: 'recvfilter'
+            },{
+                name: '导入外部资源',
+                value: 'import'
+            },
+        ]
     }],
 
     list_bars: [{
@@ -70,11 +115,6 @@ const cfg = {
         value: 'new_actions',
         disabled: false,
         icon: 'mdi-playlist-plus'
-    }, {
-        text: '新建脚本',
-        value: 'new_script',
-        disabled: false,
-        icon: 'mdi-file-plus-outline'
     }, {
         text: '修改名称',
         value: 're_name',

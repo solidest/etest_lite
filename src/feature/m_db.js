@@ -27,6 +27,7 @@ function setup(is_dev) {
         _db.addCollection("protocol");
         _db.addCollection("device");
         _db.addCollection("topology");
+        _db.addCollection("public");
     }
 }
 
@@ -48,6 +49,19 @@ function list(kind, proj_id) {
     return coll.chain().find({'proj_id': { '$eq' : proj_id }}).simplesort('name').data();
 }
 
+function load(kind, id) {
+    let coll = _db.getCollection(kind);
+    if(!coll) {
+        console.log('error kind =', kind);
+        return;
+    }
+    let res = coll.find({'id': { '$eq' : id }});
+    if(res && res.length===1) {
+        return res[0];
+    }
+    return null;
+}
+
 function insert(kind, doc) {
     let coll = _db.getCollection(kind);
     if(!coll) {
@@ -55,6 +69,7 @@ function insert(kind, doc) {
         return;
     }
     coll.insert(doc);
+    update_proj({id: doc.proj_id});
 }
 
 function update(kind, doc) {
@@ -63,10 +78,15 @@ function update(kind, doc) {
         console.log('error kind =', kind);
         return;
     }
-    let olddoc = coll.find({'id': { '$eq' : doc.id }})[0];
+    let olddocs = coll.find({'id': { '$eq' : doc.id }});
+    if(!olddocs || olddocs.length === 0) {
+        return insert(kind, doc);
+    }
+    let olddoc = olddocs[0];
     for(let k in doc) {
         olddoc[k] = doc[k];
     }
+    update_proj({id: doc.proj_id});
 }
 
 function remove(kind, doc) {
@@ -77,6 +97,7 @@ function remove(kind, doc) {
     }
     let item = coll.find({'id': { '$eq' : doc.id }})[0];
     coll.remove(item);
+    update_proj({id: doc.proj_id});
 }
 
 //{name: 'xx', last_open: xxxx, created: xxxx}
@@ -105,6 +126,7 @@ function update_proj(proj) {
         return;
     }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
+    proj.updated = Date.now();
     for(let k in proj) {
         doc[k] = proj[k];
     }
@@ -129,4 +151,4 @@ function recent_proj() {
 }
 
 
-export default { setup, save, list, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj, recent_proj, }
+export default { setup, save, list, load, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj, recent_proj, }

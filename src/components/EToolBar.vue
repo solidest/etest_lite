@@ -3,7 +3,7 @@
         <v-row class="fill-height" no-gutters>
             <v-navigation-drawer mini-variant mini-variant-width="80" permanent>
                 <v-list dense nav>
-                    <v-list-item v-for="item in pages" :key="item.catalog" @click="onClick(item)" :disabled="!proj">
+                    <v-list-item v-for="item in pages" :key="item.catalog" @click="changePage(item)" :disabled="!proj">
                         <v-list-item-action>
                             <v-tooltip right open-delay="1500">
                                 <template v-slot:activator="{ on }">
@@ -49,8 +49,9 @@
                 <v-card :width="width-80" height="100%" tile>
                     <e-mini-bar :items="bar_items" :title="page.title" @edit_item="onMiniBar" />
                     <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                        <e-list v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog"> </e-list>
-                        <e-list v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :icon="page.file_icon"> </e-list>
+                        <e-tree-editor v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog" :icons = "page.icons"> </e-tree-editor>
+                        <e-list-editor v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :icon="page.file_icon"> </e-list-editor>
+                        <e-list-editor v-else-if="page.type==='items'" :catalog="page.catalog" :icon="page.file_icon" :lists="page.items"> </e-list-editor>
                     </div>
                 </v-card>
             </div>
@@ -60,7 +61,8 @@
 
 <script>
     import EMiniBar from './widgets/EMiniBar';
-    import EList from './widgets/EList';
+    import EListEditor from './widgets/EListEditor';
+    import ETreeEditor from './widgets/ETreeEditor';
     import r_ipc from '../feature/r_ipc';
     import cfg from '../helper/toolbar_cfg';
 
@@ -71,7 +73,8 @@
 
         components: {
             'e-mini-bar': EMiniBar,
-            'e-list': EList,
+            'e-list-editor': EListEditor,
+            'e-tree-editor': ETreeEditor,
         },
 
         mounted: function() {
@@ -85,7 +88,7 @@
             page: cfg.pages[0],
             width: hide_,
             items: [],
-            bar_items: [],
+            bar_items: cfg[cfg.pages[0].type + '_bars'],
         }),
 
         computed: {
@@ -108,11 +111,11 @@
                 if(v === 'TestCase') {
                     this.width = show_;
                     if(this.page !== cfg.pages[0]) {
-                        this.onClick(cfg.pages[0]);
+                        this.changePage(cfg.pages[0]);
                     }
                 } else if (v==='Project' && this.page !== cfg.pages[cfg.pages.length-1]) {
                     this.width = show_;
-                    this.onClick(cfg.pages[cfg.pages.length-1]);
+                    this.changePage(cfg.pages[cfg.pages.length-1]);
                 }
             }
         },
@@ -141,24 +144,22 @@
                 });
                 this.page = null;
             },
-            onClick: function (page) {
+            changePage: function (page) {
                 if (this.page === page) {
                     this.width = this.width === show_ ? hide_ : show_;
                 } else {
+                    this.$store.commit('setSeleDoc', null);
                     this.page = page;
-                    this.loadItems();
-                    if (this.width === hide_) {
-                        this.width = show_;
+                    this.updateBarItems();
+                    this.width = show_;
+                    if(this.$route.name === 'ListProj' || this.$route.name === 'NewProj') {
+                        this.$router.push({
+                            name: 'Home'
+                        });
                     }
                 }
-                if (this.$route.name === 'Home') {
-                    return;
-                }
-                this.$router.push({
-                    name: 'Home'
-                });
             },
-            loadItems: async function () {
+            updateBarItems: async function () {
                 this.bar_items = cfg[this.page.type + '_bars'];
                 if (this.page.catalog === 'tools') {
                     this.items = [];
@@ -176,6 +177,12 @@
                     this.$refs.tree_editor.action(action, value);
                 } else if(this.page.type === 'list') {
                     this.$refs.list_editor.action(action, value);
+                }
+            },
+            onOutClick: function() {
+                if(this.page.type === 'tree') {
+                    // this.$refs.tree_editor.action(action, value);
+                    console.log('out click')
                 }
             },
         }

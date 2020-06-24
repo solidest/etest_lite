@@ -6,7 +6,7 @@
                     <v-icon color="grey lighten-2" v-text="icon"></v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                    <v-list-item-title v-text="item.name" class="grey--text text--lighten-2"></v-list-item-title>
+                    <v-list-item-title v-text="item.name" class="body-1 grey--text text--lighten-2"></v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
         </v-list-item-group>
@@ -16,12 +16,16 @@
 <script>
     import ipc from '../../feature/r_ipc';
     import helper from '../../feature/r_helper';
-    import shortid from 'shortid'
+    import shortid from 'shortid';
 
     export default {
-        props: ['catalog', 'icon'],
+        props: ['catalog', 'icon', 'lists'],
         mounted: function() {
-            this.load(this.catalog);
+            if(this.lists) {
+                this.items = this.lists;
+            } else {
+                this.load(this.catalog);
+            }
         },
         data: () => {
             return {
@@ -37,17 +41,26 @@
         watch: {
             catalog: function(v) {
                 this.selected = -1;
-                this.load(v);
+                if(this.lists) {
+                    this.items = this.lists;
+                } else {
+                    this.load(v);
+                }
             },
             selected: function(v) {
                 let doc = null;
                 if(v>=0 && v<this.items.length) {
                     doc = this.items[v];
                 }
+                if(!doc) {
+                    this.$store.commit('setSeleDoc', null);
+                    return;
+                }
                 let info = {
-                    type: this.catalog,
+                    catalog: this.catalog,
                     doc: doc,
                 }
+                this.$store.commit('setSeleDoc', info);
                 this.$store.commit('setEditDoc', info);
             }
         },
@@ -82,7 +95,11 @@
                 }
                 await ipc.insert({kind: this.catalog, doc: doc});
                 await this.load(this.catalog);
-                this.selected = this.items.findIndex(it => it.id === doc.id);
+                this.selected = -1;
+                let self = this;
+                this.$nextTick(()=>{
+                    self.selected = self.items.findIndex(it => it.id === doc.id);
+                });
             },
 
             re_name: async function(n) {
@@ -111,6 +128,7 @@
                 let doc = this.items[this.selected];
                 await ipc.remove({kind: this.catalog, doc: doc});
                 await this.load(this.catalog);
+                this.$store.commit('deletedDoc', doc.id);
             },
             load: async function(catalog) {
                 if(!catalog || !this.proj) {

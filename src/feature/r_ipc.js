@@ -21,6 +21,10 @@ async function list(opt) {
     return await ipcRenderer.invoke('list', opt);
 }
 
+async function load(opt) {
+    return await ipcRenderer.invoke('load', opt);
+}
+
 async function insert(opt) {
     return await ipcRenderer.invoke('insert', opt);
 }
@@ -45,4 +49,4 @@ function bind_proj(wid, proj_id) {
     return ipcRenderer.send('bind-proj', wid||1, proj_id)
 }
 
-export default { list, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj, active_proj, open_proj, bind_proj }
+export default { list, insert, load, update, remove, list_proj, insert_proj, update_proj, remove_proj, active_proj, open_proj, bind_proj }
