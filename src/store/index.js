@@ -13,6 +13,9 @@ export default new Vuex.Store({
     },
     edit_doc: null,
     sele_doc: null,
+    sele_count: 0,
+    redo_count: 0,
+    undo_count: 0,
     proj: null,
     winid: 1,
   },
@@ -57,6 +60,9 @@ export default new Vuex.Store({
     },
     setSeleDoc: function(state, info) {
       state.sele_doc = info;
+    },
+    setSeleCount: function(state, count) {
+      state.sele_count = count;
     },
     deletedDoc: function(state, id) {
       if(state.edit_doc && state.edit_doc.doc.id === id) {

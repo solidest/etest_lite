@@ -16,11 +16,6 @@ Vue.use(VueRouter)
     component: EEmpty,
   },
   {
-    path: '/device',
-    name: 'Device',
-    component: EEmpty,
-  },
-  {
     path: '/project',
     name: 'Project',
     component: EEmpty,
@@ -39,6 +34,11 @@ Vue.use(VueRouter)
     path: '/listpublic',
     name: 'ListPublic',
     component: EEmpty,
+  },
+  {
+    path: '/device',
+    name: 'Device',
+    component: () => import( /* webpackChunkName: "e_editor_device" */ '../views/EGridEditor'),
   },
 ]
 

@@ -1,0 +1,920 @@
+[{
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8090
+            },
+            "link": "link",
+            "name": "udp_name",
+            "target": {
+                "connector": "srv_1",
+                "device": "dev11"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 5000
+            },
+            "link": "total",
+            "name": "s1",
+            "target": {
+                "connector": "s2",
+                "device": "dev12"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 7000
+            },
+            "link": "total",
+            "name": "s2",
+            "target": {
+                "connector": "s1",
+                "device": "dev12"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8004
+            },
+            "link": "link_",
+            "name": "s3",
+            "target": {
+                "connector": "c2",
+                "device": "dev11"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8005
+            },
+            "name": "s4",
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "dev12"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8081,
+                "ttl": 20
+            },
+            "link": "link",
+            "name": "srv_1",
+            "target": {
+                "connector": "udp_name",
+                "device": "dev12"
+            },
+            "type": "udp"
+        }, {
+            "config": {
+                "ip": "127.0.0.1"
+            },
+            "name": "clt_2",
+            "type": "tcp_client"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 3000
+            },
+            "name": "srv_2",
+            "type": "tcp_server"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8001
+            },
+            "name": "c1",
+            "type": "udp"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8889
+            },
+            "link": "link_",
+            "name": "c2",
+            "target": {
+                "connector": "s3",
+                "device": "dev12"
+            },
+            "type": "udp"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 8888
+            },
+            "name": "udp_name",
+            "type": "udp"
+        }, {
+            "config": {
+                "baudrate": 9600
+            },
+            "name": "s1",
+            "type": "serial_ttl"
+        }, {
+            "config": {
+                "baudrate": 9600
+            },
+            "name": "s2",
+            "type": "serial_232"
+        }, {
+            "config": {
+                "baudrate": 9600
+            },
+            "name": "s3",
+            "type": "serial_422"
+        }, {
+            "config": {
+                "baudrate": 9600
+            },
+            "name": "s4",
+            "type": "serial_485"
+        }, {
+            "config": {
+                "maxv": 5,
+                "minv": 3
+            },
+            "name": "di1",
+            "type": "di"
+        }, {
+            "config": {
+                "maxv": 5,
+                "minv": 3
+            },
+            "name": "do1",
+            "type": "do"
+        }, {
+            "config": {
+                "maxv": 24,
+                "minv": 0,
+                "ratio": 8
+            },
+            "name": "da1",
+            "type": "da"
+        }, {
+            "config": {
+                "maxv": 12,
+                "minv": 0,
+                "ratio": 16
+            },
+            "name": "ad1",
+            "type": "ad"
+        }],
+        "map": "uut",
+        "name": "dev11"
+    }],
+    "name": "topo11"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8888
+            },
+            "link": "link1",
+            "name": "conn",
+            "targets": [{
+                "connector": "conn",
+                "device": "dev_a"
+            }, {
+                "connector": "conn",
+                "device": "dev_b"
+            }, {
+                "connector": "conn",
+                "device": "dev_c"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "main_ctr"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8001
+            },
+            "link": "link1",
+            "name": "conn",
+            "targets": [{
+                "connector": "conn",
+                "device": "main_ctr"
+            }, {
+                "connector": "conn",
+                "device": "dev_b"
+            }, {
+                "connector": "conn",
+                "device": "dev_c"
+            }],
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "dev_a"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8002
+            },
+            "link": "link1",
+            "name": "conn",
+            "targets": [{
+                "connector": "conn",
+                "device": "main_ctr"
+            }, {
+                "connector": "conn",
+                "device": "dev_a"
+            }, {
+                "connector": "conn",
+                "device": "dev_c"
+            }],
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "dev_b"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8003
+            },
+            "link": "link1",
+            "name": "conn",
+            "targets": [{
+                "connector": "conn",
+                "device": "main_ctr"
+            }, {
+                "connector": "conn",
+                "device": "dev_a"
+            }, {
+                "connector": "conn",
+                "device": "dev_b"
+            }],
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "dev_c"
+    }],
+    "name": "topo_main"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8888
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "dev_a"
+            },
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "main_ctr"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8001
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "main_ctr"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "dev_a"
+    }],
+    "name": "topo_a"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8888
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "dev_b"
+            },
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "main_ctr"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8002
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "main_ctr"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "dev_b"
+    }],
+    "name": "topo_b"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8888
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "dev_c"
+            },
+            "type": "udp"
+        }],
+        "map": "uut",
+        "name": "main_ctr"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8003
+            },
+            "link": "link1",
+            "name": "conn",
+            "target": {
+                "connector": "conn",
+                "device": "main_ctr"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "dev_c"
+    }],
+    "name": "topo_c"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 3000,
+                "reuseaddr": true,
+                "ttl": 20
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "udp2_"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 4000
+            },
+            "link": "link2",
+            "name": "conn2",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp2_"
+            }, {
+                "connector": "conn3",
+                "device": "udp2_"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {},
+            "link": "link3",
+            "name": "conn3",
+            "target": {
+                "connector": "conn4",
+                "device": "udp2_"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "udp1_"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 5000,
+                "ttl": 20
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "udp1_"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 6000
+            },
+            "link": "link2",
+            "name": "conn2",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp1_"
+            }, {
+                "connector": "conn3",
+                "device": "udp2_"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 7000
+            },
+            "link": "link2",
+            "name": "conn3",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp1_"
+            }, {
+                "connector": "conn2",
+                "device": "udp2_"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 8000
+            },
+            "link": "link3",
+            "name": "conn4",
+            "target": {
+                "connector": "conn3",
+                "device": "udp1_"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "udp2_"
+    }, {
+        "connectors": [{
+            "config": {
+                "baudrate": 115200,
+                "bytesize": 8,
+                "flowcontrol": "none",
+                "parity": "none",
+                "stopbits": 1
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "dev2_"
+            },
+            "type": "serial_232",
+            "uri": "COM1"
+        }],
+        "map": "etest",
+        "name": "dev1_"
+    }, {
+        "connectors": [{
+            "config": {
+                "baudrate": 115200
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "dev1_"
+            },
+            "type": "serial_232",
+            "uri": "COM2"
+        }],
+        "map": "etest",
+        "name": "dev2_"
+    }],
+    "name": "topo_rt"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "baudrate": 115200,
+                "bytesize": 8,
+                "flowcontrol": "none",
+                "parity": "none",
+                "stopbits": 1
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "dev2"
+            },
+            "type": "serial_232",
+            "uri": "COM1"
+        }],
+        "map": "etest",
+        "name": "dev1"
+    }, {
+        "connectors": [{
+            "config": {
+                "baudrate": 115200
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "dev1"
+            },
+            "type": "serial_232",
+            "uri": "COM2"
+        }],
+        "map": "etest",
+        "name": "dev2"
+    }],
+    "name": "topo_serial"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "acceptany": false,
+                "ip": "127.0.0.1",
+                "keepalive": true,
+                "nodelay": true,
+                "port": 8080
+            },
+            "link": "link1",
+            "name": "srva",
+            "target": {
+                "connector": "tcp1",
+                "device": "client"
+            },
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "keepalive": false,
+                "nodelay": true,
+                "port": 8088
+            },
+            "link": "link2",
+            "name": "srvb",
+            "targets": [{
+                "connector": "tcp2",
+                "device": "client"
+            }, {
+                "connector": "tcp3",
+                "device": "client"
+            }, {
+                "connector": "srvc",
+                "device": "server"
+            }],
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "acceptany": true,
+                "ip": "127.0.0.1",
+                "port": 8089
+            },
+            "link": "link2",
+            "name": "srvc",
+            "targets": [{
+                "connector": "tcp2",
+                "device": "client"
+            }, {
+                "connector": "tcp3",
+                "device": "client"
+            }, {
+                "connector": "srvb",
+                "device": "server"
+            }],
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "keepalive": true,
+                "nodelay": false,
+                "port": 8090
+            },
+            "link": "link3",
+            "name": "srvd",
+            "target": {
+                "connector": "tcp4",
+                "device": "client"
+            },
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "keepalive": false,
+                "nodelay": false,
+                "port": 8091
+            },
+            "link": "link4",
+            "name": "srve",
+            "target": {
+                "connector": "tcp5",
+                "device": "client"
+            },
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8092
+            },
+            "link": "link5",
+            "name": "srvf",
+            "targets": [{
+                "connector": "tcp6",
+                "device": "client"
+            }, {
+                "connector": "tcp7",
+                "device": "client"
+            }, {
+                "connector": "srvg",
+                "device": "server"
+            }],
+            "type": "tcp_server",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8093
+            },
+            "link": "link5",
+            "name": "srvg",
+            "targets": [{
+                "connector": "tcp6",
+                "device": "client"
+            }, {
+                "connector": "tcp7",
+                "device": "client"
+            }, {
+                "connector": "srvf",
+                "device": "server"
+            }],
+            "type": "tcp_server",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "server"
+    }, {
+        "connectors": [{
+            "config": {
+                "autoconnect": true,
+                "ip": "127.0.0.1",
+                "keepalive": true,
+                "nodelay": false,
+                "port": 3333
+            },
+            "link": "link1",
+            "name": "tcp1",
+            "target": {
+                "connector": "srva",
+                "device": "server"
+            },
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1",
+                "port": 8888
+            },
+            "link": "link2",
+            "name": "tcp2",
+            "targets": [{
+                "connector": "tcp3",
+                "device": "client"
+            }, {
+                "connector": "srvb",
+                "device": "server"
+            }, {
+                "connector": "srvc",
+                "device": "server"
+            }],
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "127.0.0.1"
+            },
+            "link": "link2",
+            "name": "tcp3",
+            "targets": [{
+                "connector": "tcp2",
+                "device": "client"
+            }, {
+                "connector": "srvb",
+                "device": "server"
+            }, {
+                "connector": "srvc",
+                "device": "server"
+            }],
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {
+                "autoconnect": false,
+                "ip": "127.0.0.1",
+                "port": 5666
+            },
+            "link": "link3",
+            "name": "tcp4",
+            "target": {
+                "connector": "srvd",
+                "device": "server"
+            },
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {},
+            "link": "link4",
+            "name": "tcp5",
+            "target": {
+                "connector": "srve",
+                "device": "server"
+            },
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {},
+            "link": "link5",
+            "name": "tcp6",
+            "targets": [{
+                "connector": "tcp7",
+                "device": "client"
+            }, {
+                "connector": "srvf",
+                "device": "server"
+            }, {
+                "connector": "srvg",
+                "device": "server"
+            }],
+            "type": "tcp_client",
+            "uri": "auto"
+        }, {
+            "config": {},
+            "link": "link5",
+            "name": "tcp7",
+            "targets": [{
+                "connector": "tcp6",
+                "device": "client"
+            }, {
+                "connector": "srvf",
+                "device": "server"
+            }, {
+                "connector": "srvg",
+                "device": "server"
+            }],
+            "type": "tcp_client",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "client"
+    }],
+    "name": "topo_tcp"
+}, {
+    "devices": [{
+        "connectors": [{
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 3000,
+                "reuseaddr": true,
+                "ttl": 20
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "udp2"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 4000
+            },
+            "link": "link2",
+            "name": "conn2",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp2"
+            }, {
+                "connector": "conn3",
+                "device": "udp2"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {},
+            "link": "link3",
+            "name": "conn3",
+            "target": {
+                "connector": "conn4",
+                "device": "udp2"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "udp1"
+    }, {
+        "connectors": [{
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 5000,
+                "ttl": 20
+            },
+            "link": "link1",
+            "name": "conn1",
+            "target": {
+                "connector": "conn1",
+                "device": "udp1"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 6000
+            },
+            "link": "link2",
+            "name": "conn2",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp1"
+            }, {
+                "connector": "conn3",
+                "device": "udp2"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 7000
+            },
+            "link": "link2",
+            "name": "conn3",
+            "targets": [{
+                "connector": "conn2",
+                "device": "udp1"
+            }, {
+                "connector": "conn2",
+                "device": "udp2"
+            }],
+            "type": "udp",
+            "uri": "auto"
+        }, {
+            "config": {
+                "ip": "0.0.0.0",
+                "port": 8000
+            },
+            "link": "link3",
+            "name": "conn4",
+            "target": {
+                "connector": "conn3",
+                "device": "udp1"
+            },
+            "type": "udp",
+            "uri": "auto"
+        }],
+        "map": "etest",
+        "name": "udp2"
+    }],
+    "name": "topo_udp"
+}]

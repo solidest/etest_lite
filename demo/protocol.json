@@ -1,0 +1,3260 @@
+[{
+    "kind": "protocol",
+    "name": "prot_11",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 1,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 2,
+        "kind": "integer",
+        "name": "seg_2",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 3,
+        "kind": "integer",
+        "name": "seg_3",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 4,
+        "kind": "integer",
+        "name": "seg_4",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 5,
+        "kind": "integer",
+        "name": "seg_5",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 6,
+        "kind": "integer",
+        "name": "seg_6",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 7,
+        "kind": "integer",
+        "name": "seg_7",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg_8",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 9,
+        "kind": "integer",
+        "name": "seg_9",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 10,
+        "kind": "integer",
+        "name": "seg_10",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 11,
+        "kind": "integer",
+        "name": "seg_11",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 12,
+        "kind": "integer",
+        "name": "seg_12",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 13,
+        "kind": "integer",
+        "name": "seg_13",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 14,
+        "kind": "integer",
+        "name": "seg_14",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 15,
+        "kind": "integer",
+        "name": "seg_15",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_16",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 17,
+        "kind": "integer",
+        "name": "seg_17",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 18,
+        "kind": "integer",
+        "name": "seg_18",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 19,
+        "kind": "integer",
+        "name": "seg_19",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 20,
+        "kind": "integer",
+        "name": "seg_20",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 21,
+        "kind": "integer",
+        "name": "seg_21",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 22,
+        "kind": "integer",
+        "name": "seg_22",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 23,
+        "kind": "integer",
+        "name": "seg_23",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 24,
+        "kind": "integer",
+        "name": "seg_24",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 25,
+        "kind": "integer",
+        "name": "seg_25",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 26,
+        "kind": "integer",
+        "name": "seg_26",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 27,
+        "kind": "integer",
+        "name": "seg_27",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 28,
+        "kind": "integer",
+        "name": "seg_28",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 29,
+        "kind": "integer",
+        "name": "seg_29",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 30,
+        "kind": "integer",
+        "name": "seg_30",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 31,
+        "kind": "integer",
+        "name": "seg_31",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_32",
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest1_int.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot_15",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "float",
+        "name": "seg_1",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "double",
+        "name": "seg_2",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_3",
+        "order": "bigorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_4",
+        "order": "bigorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "float",
+        "name": "seg_5",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "double",
+        "name": "seg_6",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_7",
+        "order": "bigorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_8",
+        "order": "bigorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "float",
+        "name": "seg_9",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "double",
+        "name": "seg_10",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_11",
+        "order": "smallorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_12",
+        "order": "smallorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "float",
+        "name": "seg_13",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "double",
+        "name": "seg_14",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_15",
+        "order": "smallorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_16",
+        "order": "smallorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 16,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_17",
+        "order": "smallorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 16,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_18",
+        "order": "smallorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_19",
+        "order": "bigorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_20",
+        "order": "bigorder",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest___.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot19",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 8
+        },
+        "signed": false
+    }, {
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_2",
+        "repeated": {
+            "kind": "number",
+            "value": 3
+        },
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_3"
+    }, {
+        "kind": "float",
+        "name": "seg_4"
+    }],
+    "src": "protocol/etlTestFile/etlTest_array.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot20",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 1
+        },
+        "signed": true
+    }, {
+        "kind": "float",
+        "name": "seg_2",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        }
+    }, {
+        "kind": "double",
+        "name": "seg_4",
+        "order": "smallorder"
+    }],
+    "src": "protocol/etlTestFile/etlTest_array.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot21",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 1
+        },
+        "signed": false
+    }, {
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_2",
+        "repeated": {
+            "kind": "number",
+            "value": 3
+        },
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_3"
+    }, {
+        "encode": "complement",
+        "kind": "float",
+        "name": "seg_4",
+        "repeated": {
+            "kind": "number",
+            "value": 3
+        }
+    }],
+    "src": "protocol/etlTestFile/etlTest_array.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot22",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 1
+        },
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 24,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_2",
+        "order": "bigorder",
+        "repeated": {
+            "kind": "number",
+            "value": 3
+        },
+        "signed": true
+    }, {
+        "bitcount": 8,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_5",
+        "order": "smallorder",
+        "repeated": {
+            "kind": "number",
+            "value": 1
+        },
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_3"
+    }, {
+        "encode": "inversion",
+        "kind": "float",
+        "name": "seg_4",
+        "order": "smallorder",
+        "repeated": {
+            "kind": "number",
+            "value": 3
+        }
+    }],
+    "src": "protocol/etlTestFile/etlTest_array.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot27",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 1
+        },
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "string",
+        "name": "seg_2",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        }
+    }, {
+        "kind": "double",
+        "name": "seg_3",
+        "order": "smallorder"
+    }],
+    "src": "protocol/etlTestFile/etlTest_array_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot28",
+    "seglist": [{
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "type1",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "subtract",
+            "left": {
+                "kind": "divide",
+                "left": {
+                    "kind": "multiply",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    },
+                    "right": {
+                        "kind": "number",
+                        "value": 4
+                    }
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type2",
+        "signed": false
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 3
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2
+            },
+            "bitcount": 16,
+            "kind": "integer",
+            "name": "x",
+            "signed": true
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 3
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }, {
+                    "autovalue": {
+                        "kind": "string",
+                        "value": "1223\u0000"
+                    },
+                    "kind": "string",
+                    "name": "p2"
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 8,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }, {
+                    "autovalue": {
+                        "kind": "string",
+                        "value": "1223\u0000"
+                    },
+                    "kind": "string",
+                    "name": "p2"
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 1
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1
+                },
+                "bitcount": 1,
+                "kind": "integer",
+                "name": "p",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 0
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "y"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "double",
+            "name": "z"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "double",
+            "name": "x"
+        }]
+    }, {
+        "kind": "nil",
+        "name": "aa"
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 15
+            },
+            "bitcount": 32,
+            "kind": "integer",
+            "name": "x1",
+            "signed": false
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x1"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 15
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 2
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "x11",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2.1
+            },
+            "kind": "float",
+            "name": "x2"
+        }]
+    }, {
+        "autovalue": {
+            "kind": "add",
+            "left": {
+                "kind": "multiply",
+                "left": {
+                    "kind": "number",
+                    "value": 3
+                },
+                "right": {
+                    "kind": "add",
+                    "left": {
+                        "kind": "number",
+                        "value": 1
+                    },
+                    "right": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    }
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "float",
+        "name": "test"
+    }],
+    "src": "protocol/etlTestFile/etlTest_array_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot29",
+    "seglist": [{
+        "kind": "double",
+        "name": "seg_3",
+        "order": "smallorder"
+    }],
+    "src": "protocol/etlTestFile/etlTest_array_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot30",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 21930
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": true
+    }, {
+        "kind": "string",
+        "name": "seg_2"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 1
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_3",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "ByteSize",
+            "params": [{
+                "kind": "pid",
+                "list": ["this", "seg_3"]
+            }]
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_4",
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_bytesize.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot31",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 21930
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": true
+    }, {
+        "bitcount": 64,
+        "kind": "integer",
+        "name": "seg_2",
+        "signed": true
+    }, {
+        "kind": "float",
+        "name": "seg_3"
+    }, {
+        "autovalue": {
+            "kind": "ByteSize",
+            "params": [{
+                "kind": "pid",
+                "list": ["this", "seg_3"]
+            }]
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_4",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "ByteSize",
+            "params": [{
+                "kind": "pid",
+                "list": ["this", "seg_4"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_5",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "ByteSize",
+            "params": [{
+                "kind": "pid",
+                "list": ["this", "seg_2"]
+            }]
+        },
+        "bitcount": 64,
+        "kind": "integer",
+        "name": "seg_6",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest_bytesize.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot32",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["SUM_8"]
+            }]
+        },
+        "kind": "string",
+        "length": {
+            "kind": "number",
+            "value": 3
+        },
+        "name": "seg_1"
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot33",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["XOR_8"]
+            }]
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot34",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["XOR_32"]
+            }]
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_1",
+        "order": "bigorder",
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot35",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["XOR_32_FALSE"]
+            }]
+        },
+        "kind": "string",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        }
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot36",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["XOR_32_FALSE"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot37",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_4_ITU"]
+            }]
+        },
+        "kind": "string",
+        "length": {
+            "kind": "number",
+            "value": 3
+        },
+        "name": "seg_1"
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot38",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_64"]
+            }]
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot39",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_40_GSM"]
+            }]
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_1",
+        "order": "bigorder",
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot40",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_32_Q"]
+            }]
+        },
+        "kind": "string",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        }
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot41",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_5_EPC"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot42",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_15_MPT1327"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot43",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_16_DECTX"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot44",
+    "seglist": [{
+        "autovalue": {
+            "kind": "CheckCode",
+            "params": [{
+                "kind": "pid",
+                "list": ["CRC_16_XMODEM"]
+            }]
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_1",
+        "repeated": {
+            "kind": "number",
+            "value": 2
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_checkcode.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot_14",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "float",
+        "name": "seg_1"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "inversion",
+        "kind": "double",
+        "name": "seg_2"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_3",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "inversion",
+        "kind": "integer",
+        "name": "seg_4",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "float",
+        "name": "seg_5"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "encode": "complement",
+        "kind": "double",
+        "name": "seg_6"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_7",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "encode": "complement",
+        "kind": "integer",
+        "name": "seg_8",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_9",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "double",
+        "name": "seg_10",
+        "order": "bigorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_11",
+        "order": "bigorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_12",
+        "order": "bigorder",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_13",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "double",
+        "name": "seg_14",
+        "order": "smallorder"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_15",
+        "order": "smallorder",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_16",
+        "order": "smallorder",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest_code.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot_13",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "float",
+        "name": "seg_1"
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "kind": "double",
+        "name": "seg_2"
+    }],
+    "src": "protocol/etlTestFile/etlTest_double_float.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot23",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type1",
+        "signed": true
+    }, {
+        "autovalue": {
+            "kind": "multiply",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type2",
+        "signed": true
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0.11
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.11
+            },
+            "kind": "float",
+            "name": "y"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 3
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "float",
+            "name": "y"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "double",
+            "name": "z"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 0
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0.001
+            },
+            "kind": "double",
+            "name": "x"
+        }]
+    }, {
+        "kind": "nil",
+        "name": "aa"
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2.5
+            },
+            "kind": "float",
+            "name": "x1"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "float",
+            "name": "x2"
+        }]
+    }, {
+        "autovalue": {
+            "kind": "subtract",
+            "left": {
+                "kind": "multiply",
+                "left": {
+                    "kind": "number",
+                    "value": 2
+                },
+                "right": {
+                    "kind": "add",
+                    "left": {
+                        "kind": "number",
+                        "value": 1
+                    },
+                    "right": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    }
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "float",
+        "name": "test"
+    }],
+    "src": "protocol/etlTestFile/etlTest_oneof.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot24",
+    "seglist": [{
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "type1",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "subtract",
+            "left": {
+                "kind": "divide",
+                "left": {
+                    "kind": "multiply",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    },
+                    "right": {
+                        "kind": "number",
+                        "value": 4
+                    }
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type2",
+        "signed": false
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 3
+            },
+            "bitcount": 16,
+            "kind": "integer",
+            "name": "x",
+            "signed": true
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 3
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1.6
+                },
+                "kind": "float",
+                "name": "p"
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1.06
+                },
+                "kind": "double",
+                "name": "p"
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 1
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1
+                },
+                "bitcount": 1,
+                "kind": "integer",
+                "name": "p",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 3
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "y"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "double",
+            "name": "z"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 0
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "double",
+            "name": "x"
+        }]
+    }, {
+        "kind": "nil",
+        "name": "aa"
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2.23
+            },
+            "kind": "float",
+            "name": "x1"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "kind": "float",
+            "name": "x2"
+        }]
+    }, {
+        "autovalue": {
+            "kind": "add",
+            "left": {
+                "kind": "multiply",
+                "left": {
+                    "kind": "number",
+                    "value": 3
+                },
+                "right": {
+                    "kind": "add",
+                    "left": {
+                        "kind": "number",
+                        "value": 1
+                    },
+                    "right": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    }
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "float",
+        "name": "test"
+    }],
+    "src": "protocol/etlTestFile/etlTest_oneof.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot25",
+    "seglist": [{
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "type1",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "subtract",
+            "left": {
+                "kind": "divide",
+                "left": {
+                    "kind": "multiply",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    },
+                    "right": {
+                        "kind": "number",
+                        "value": 4
+                    }
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type2",
+        "signed": false
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 3
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2
+            },
+            "bitcount": 16,
+            "kind": "integer",
+            "name": "x",
+            "signed": true
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 3
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 8,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 1
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1
+                },
+                "bitcount": 1,
+                "kind": "integer",
+                "name": "p",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 0
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "y"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "double",
+            "name": "z"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "double",
+            "name": "x"
+        }]
+    }, {
+        "kind": "nil",
+        "name": "aa"
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 15
+            },
+            "bitcount": 32,
+            "kind": "integer",
+            "name": "x1",
+            "signed": false
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x1"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 15
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 2
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "x11",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "kind": "float",
+            "name": "x2"
+        }]
+    }, {
+        "autovalue": {
+            "kind": "add",
+            "left": {
+                "kind": "multiply",
+                "left": {
+                    "kind": "number",
+                    "value": 3
+                },
+                "right": {
+                    "kind": "add",
+                    "left": {
+                        "kind": "number",
+                        "value": 1
+                    },
+                    "right": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    }
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "float",
+        "name": "test"
+    }],
+    "src": "protocol/etlTestFile/etlTest_oneof.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot26",
+    "seglist": [{
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "type1",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "subtract",
+            "left": {
+                "kind": "divide",
+                "left": {
+                    "kind": "multiply",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    },
+                    "right": {
+                        "kind": "number",
+                        "value": 4
+                    }
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "type2",
+        "signed": false
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 3
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 2
+            },
+            "bitcount": 16,
+            "kind": "integer",
+            "name": "x",
+            "signed": true
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 3
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 2
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "exp": {
+                        "kind": "number",
+                        "value": 6
+                    },
+                    "kind": "uminus"
+                },
+                "bitcount": 8,
+                "kind": "integer",
+                "name": "p",
+                "signed": true
+            }, {
+                "exp": {
+                    "kind": "eq_eq",
+                    "left": {
+                        "kind": "pid",
+                        "list": ["this", "p"]
+                    },
+                    "right": {
+                        "exp": {
+                            "kind": "number",
+                            "value": 6
+                        },
+                        "kind": "uminus"
+                    }
+                },
+                "kind": "oneof",
+                "seglist": [{
+                    "autovalue": {
+                        "kind": "add",
+                        "left": {
+                            "kind": "subtract",
+                            "left": {
+                                "kind": "multiply",
+                                "left": {
+                                    "kind": "pid",
+                                    "list": ["this", "p"]
+                                },
+                                "right": {
+                                    "kind": "number",
+                                    "value": 2
+                                }
+                            },
+                            "right": {
+                                "kind": "number",
+                                "value": 4
+                            }
+                        },
+                        "right": {
+                            "kind": "number",
+                            "value": 1
+                        }
+                    },
+                    "bitcount": 32,
+                    "kind": "integer",
+                    "name": "p1",
+                    "signed": true
+                }]
+            }]
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 1
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 1
+                },
+                "bitcount": 1,
+                "kind": "integer",
+                "name": "p",
+                "signed": false
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 0
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "x"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "float",
+            "name": "y"
+        }, {
+            "autovalue": {
+                "kind": "number",
+                "value": 1.2
+            },
+            "kind": "double",
+            "name": "z"
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type1"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 0
+            },
+            "kind": "double",
+            "name": "x"
+        }]
+    }, {
+        "kind": "nil",
+        "name": "aa"
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "autovalue": {
+                "kind": "number",
+                "value": 15
+            },
+            "bitcount": 32,
+            "kind": "integer",
+            "name": "x1",
+            "signed": false
+        }, {
+            "exp": {
+                "kind": "eq_eq",
+                "left": {
+                    "kind": "pid",
+                    "list": ["this", "x1"]
+                },
+                "right": {
+                    "kind": "number",
+                    "value": 15
+                }
+            },
+            "kind": "oneof",
+            "seglist": [{
+                "autovalue": {
+                    "kind": "number",
+                    "value": 65535
+                },
+                "bitcount": 32,
+                "kind": "integer",
+                "name": "x11",
+                "signed": false
+            }, {
+                "autovalue": {
+                    "kind": "string",
+                    "value": "qwe\u0000"
+                },
+                "kind": "string",
+                "name": "p2"
+            }]
+        }]
+    }, {
+        "exp": {
+            "kind": "eq_eq",
+            "left": {
+                "kind": "pid",
+                "list": ["this", "type2"]
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "kind": "oneof",
+        "seglist": [{
+            "kind": "float",
+            "name": "x2"
+        }]
+    }, {
+        "autovalue": {
+            "kind": "add",
+            "left": {
+                "kind": "multiply",
+                "left": {
+                    "kind": "number",
+                    "value": 3
+                },
+                "right": {
+                    "kind": "add",
+                    "left": {
+                        "kind": "number",
+                        "value": 1
+                    },
+                    "right": {
+                        "kind": "pid",
+                        "list": ["this", "type1"]
+                    }
+                }
+            },
+            "right": {
+                "kind": "number",
+                "value": 1
+            }
+        },
+        "kind": "float",
+        "name": "test"
+    }],
+    "src": "protocol/etlTestFile/etlTest_oneof.etl"
+}, {
+    "kind": "protocol",
+    "name": "send_1",
+    "seglist": [{
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg1",
+        "signed": true
+    }, {
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg2",
+        "repeated": {
+            "kind": "pid",
+            "list": ["this", "seg1"]
+        },
+        "signed": true
+    }],
+    "src": "protocol/etlTestFile/etlTest_send.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot16",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": false
+    }, {
+        "kind": "string",
+        "length": {
+            "kind": "number",
+            "value": 4
+        },
+        "name": "seg_2"
+    }, {
+        "endwith": {
+            "kind": "string",
+            "value": "$"
+        },
+        "kind": "string",
+        "name": "seg_3"
+    }, {
+        "kind": "string",
+        "name": "seg_4"
+    }, {
+        "kind": "string",
+        "length": {
+            "kind": "number",
+            "value": 3
+        },
+        "name": "seg_5"
+    }],
+    "src": "protocol/etlTestFile/etlTest_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot17",
+    "seglist": [{
+        "kind": "string",
+        "length": {
+            "kind": "add",
+            "left": {
+                "kind": "number",
+                "value": 2
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "name": "seg_1"
+    }, {
+        "kind": "string",
+        "length": {
+            "kind": "subtract",
+            "left": {
+                "kind": "number",
+                "value": 6
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "name": "seg_2"
+    }, {
+        "kind": "string",
+        "length": {
+            "kind": "multiply",
+            "left": {
+                "kind": "number",
+                "value": 2
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "name": "seg_3"
+    }, {
+        "kind": "string",
+        "length": {
+            "kind": "divide",
+            "left": {
+                "kind": "number",
+                "value": 8
+            },
+            "right": {
+                "kind": "number",
+                "value": 2
+            }
+        },
+        "name": "seg_4"
+    }],
+    "src": "protocol/etlTestFile/etlTest_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot18",
+    "seglist": [{
+        "kind": "string",
+        "name": "seg_1"
+    }],
+    "src": "protocol/etlTestFile/etlTest_string.etl"
+}, {
+    "kind": "protocol",
+    "name": "prot_12",
+    "seglist": [{
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 1,
+        "kind": "integer",
+        "name": "seg_1",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 2,
+        "kind": "integer",
+        "name": "seg_2",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 3,
+        "kind": "integer",
+        "name": "seg_3",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 4,
+        "kind": "integer",
+        "name": "seg_4",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 5,
+        "kind": "integer",
+        "name": "seg_5",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 6,
+        "kind": "integer",
+        "name": "seg_6",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 7,
+        "kind": "integer",
+        "name": "seg_7",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 8,
+        "kind": "integer",
+        "name": "seg_8",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 9,
+        "kind": "integer",
+        "name": "seg_9",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 10,
+        "kind": "integer",
+        "name": "seg_10",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 11,
+        "kind": "integer",
+        "name": "seg_11",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 12,
+        "kind": "integer",
+        "name": "seg_12",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 13,
+        "kind": "integer",
+        "name": "seg_13",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 14,
+        "kind": "integer",
+        "name": "seg_14",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 15,
+        "kind": "integer",
+        "name": "seg_15",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 16,
+        "kind": "integer",
+        "name": "seg_16",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 17,
+        "kind": "integer",
+        "name": "seg_17",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 18,
+        "kind": "integer",
+        "name": "seg_18",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 19,
+        "kind": "integer",
+        "name": "seg_19",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 20,
+        "kind": "integer",
+        "name": "seg_20",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 21,
+        "kind": "integer",
+        "name": "seg_21",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 22,
+        "kind": "integer",
+        "name": "seg_22",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 23,
+        "kind": "integer",
+        "name": "seg_23",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 24,
+        "kind": "integer",
+        "name": "seg_24",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 25,
+        "kind": "integer",
+        "name": "seg_25",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 26,
+        "kind": "integer",
+        "name": "seg_26",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 27,
+        "kind": "integer",
+        "name": "seg_27",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 28,
+        "kind": "integer",
+        "name": "seg_28",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 29,
+        "kind": "integer",
+        "name": "seg_29",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 30,
+        "kind": "integer",
+        "name": "seg_30",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 31,
+        "kind": "integer",
+        "name": "seg_31",
+        "signed": false
+    }, {
+        "autovalue": {
+            "kind": "number",
+            "value": 0
+        },
+        "bitcount": 32,
+        "kind": "integer",
+        "name": "seg_32",
+        "signed": false
+    }],
+    "src": "protocol/etlTestFile/etlTest_uint.etl"
+}]

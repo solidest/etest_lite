@@ -1,6 +1,7 @@
 <template>
     <v-treeview dense :items="items" :active.sync="active" activatable item-key="id" hoverable
-        @update:active="selected" :open.sync="open" return-object selection-type="independent">
+        @update:active="selected" :open.sync="open" return-object selection-type="independent"
+        v-click-outside="onClickOutside">
         <template v-slot:prepend="{ item, open }">
             <v-icon v-if="item.kind==='dir'" color="grey lighten-2">
                 {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
@@ -179,8 +180,8 @@
                 if (item && item.length > 0) {
                     let it = item[0];
                     let ited = {
+                        kind: it.kind,
                         doc: it,
-                        kind: this.catalog,
                     }
                     this.$store.commit('setSeleDoc', ited);
                     if (it.kind !== 'dir') {
@@ -205,6 +206,9 @@
                         return res;
                     }
                 }
+            },
+            onClickOutside: function() {
+                this.active = [];
             }
 
         },

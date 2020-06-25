@@ -22,7 +22,7 @@
 </style>
 <script>
   import ESysBar from './components/ESysBar';
-  import EToolBar from './components/EToolBar';
+  import EToolBar from './components/ETopBar';
 
   export default {
     name: 'App',
@@ -64,6 +64,43 @@
           return 10000;
         }
       },
+      editor_route: function() {
+        let ed = this.$store.state.edit_doc;
+        if(!ed){
+          return null;
+        }
+        let res = { id: ed.doc.id, kind: ed.kind }
+        switch (ed.kind) {
+          case 'device':
+            res.route_name = 'Device';
+            break;
+        
+          default:
+            console.log('editor route', ed);
+            return null;
+        }
+        return res;
+      }
+    },
+
+    watch: {
+      editor_route: function(vn, vo) {
+        if(!vn || !this.$store.state.proj) {
+          this.$router.push({name: 'Home'});
+          return;
+        }
+        if(this.$route.name === vn.route_name) {
+          if(vn.id === vo.id) {
+            return;
+          }
+          this.$router.push({name: 'Home'});
+        }
+        let self = this;
+        this.$store.commit('setSeleCount', 0);
+        this.$nextTick(()=>{
+          self.$router.push({name: vn.route_name, params: {doc_id: vn.id, kind: vn.kind}});
+        })
+      }
     },
 
   };

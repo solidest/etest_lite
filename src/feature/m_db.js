@@ -28,7 +28,7 @@ function setup(is_dev) {
         _db.addCollection("device");
         _db.addCollection("topology");
         _db.addCollection("simu");
-        // _db.addCollection("public");
+        _db.addCollection("doc");
     }
 }
 
@@ -89,6 +89,7 @@ function update(kind, doc) {
     }
     update_proj({id: doc.proj_id});
 }
+
 
 function remove(kind, doc) {
     let coll = _db.getCollection(kind);
@@ -152,4 +153,8 @@ function recent_proj() {
 }
 
 
-export default { setup, save, list, load, insert, update, remove, list_proj, insert_proj, update_proj, remove_proj, recent_proj, }
+
+export default { 
+    setup, save, list, load, insert, update, remove,
+    list_proj, insert_proj, update_proj, remove_proj, recent_proj, 
+}

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-    import EMiniBar from './widgets/EMiniBar';
+    import EMiniBar from './widgets/EMiniToolBar';
     import EListEditor from './widgets/EListEditor';
     import ETreeEditor from './widgets/ETreeEditor';
     import r_ipc from '../feature/r_ipc';
@@ -121,14 +121,6 @@
                         this.changePage(cfg.pages[0]);
                     }
                 } 
-                // else if (v==='Device') {
-                //     let p = cfg.pages.find(p => p.catalog === 'device');
-                //     if(p === this.page) {
-                //         return;
-                //     }
-                //     this.width = show_;
-                //     this.changePage(p);
-                // }
             }
         },
 

@@ -57,7 +57,7 @@
                     return;
                 }
                 let info = {
-                    catalog: this.catalog,
+                    kind: this.catalog,
                     doc: doc,
                 }
                 this.$store.commit('setSeleDoc', info);

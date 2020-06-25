@@ -3,7 +3,7 @@
         <span v-if="title" class="text--secondary">{{title}}</span>
         <v-spacer></v-spacer>
         <v-edit-dialog @save="on_edit_finish">
-            <v-tooltip bottom v-for="(item, idx) in items" :key="idx" right open-delay="1500">
+            <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
                 <template v-slot:activator="{ on }">
                     <v-btn v-if="is_newaction(item.value)" icon small v-on="on" class="mx-1"
                         @click="edit_action=item; edit_text='';">
