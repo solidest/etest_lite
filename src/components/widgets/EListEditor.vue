@@ -15,7 +15,7 @@
 
 <script>
     import ipc from '../../feature/r_ipc';
-    import helper from '../../feature/r_helper';
+    import helper from '../../helper/helper';
     import shortid from 'shortid';
 
     export default {

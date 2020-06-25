@@ -156,7 +156,7 @@ ipcMain.handle('active-proj', (_, proj_id) => {
     }
     win.show();
     win.focus();
-    return true;
+    return win.id;
   }
-  return false;
+  return 0;
 });

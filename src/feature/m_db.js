@@ -27,7 +27,8 @@ function setup(is_dev) {
         _db.addCollection("protocol");
         _db.addCollection("device");
         _db.addCollection("topology");
-        _db.addCollection("public");
+        _db.addCollection("simu");
+        // _db.addCollection("public");
     }
 }
 

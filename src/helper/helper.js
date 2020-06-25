@@ -1,38 +1,24 @@
 
-import ipc from './r_ipc';
-import shortid from 'shortid'
 
-async function check_proj_newname(name) {
-    name = (name ? name : '').trim();
-    if(!name) {
-        return '名称不能为空';
-    }
-    let projs = await ipc.list_proj();
-    if(!projs) {
-        return 'ok';
-    }
-    for(let p of projs) {
-        if(p.name === name) {
-            return '名称重复';
-        }
-    }
-    return 'ok';
-}
 
-function new_id() {
-    return shortid.generate();
-}
-
-function valid_name(items, n) {
-    let res = '名称不能为空';
+function check_name(n) {
     if(!n) {
-        return res;
+        return false;
     }
     n = n.trim();
     if(!n) {
-        return res;
+        return false;
     }
-    res = 'ok';
+    let reg = /^[\u4e00-\u9fa5a-zA-Z_][\u4e00-\u9fa5a-zA-Z\d_]*$/;    
+    return reg.test(n);
+}
+
+function valid_name(items, n) {
+    if(!check_name(n)) {
+        return `名称"${n}"无效`;
+    }
+    n = n.trim();
+    let res = 'ok';
     if(!items) {
         return res;
     }
@@ -66,4 +52,4 @@ function date_fmt(fmt, date) {
     return fmt;
 }
 
-export default { check_proj_newname, new_id, date_fmt, valid_name }
+export default {date_fmt, valid_name, check_name }

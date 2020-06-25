@@ -16,6 +16,11 @@ Vue.use(VueRouter)
     component: EEmpty,
   },
   {
+    path: '/device',
+    name: 'Device',
+    component: EEmpty,
+  },
+  {
     path: '/project',
     name: 'Project',
     component: EEmpty,
@@ -29,6 +34,11 @@ Vue.use(VueRouter)
     path: '/listproj',
     name: 'ListProj',
     component: () => import( /* webpackChunkName: "e_listproj" */ '../views/EProjList'),
+  },
+  {
+    path: '/listpublic',
+    name: 'ListPublic',
+    component: EEmpty,
   },
 ]
 

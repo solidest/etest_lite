@@ -18,30 +18,30 @@
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
-                <v-list-item style="position: absolute; left: 6px; bottom: 80px;" @click="newProj()">
+                <v-list-item style="position: absolute; left: 6px; bottom: 80px;" @click="listPublic()">
                     <v-list-item-action>
                         <v-tooltip right open-delay="1500">
                             <template v-slot:activator="{ on }">
-                                <v-icon large v-on="on" :color="isNewProjPage ? 'white':'grey'">mdi-plus-thick</v-icon>
+                                <v-icon large v-on="on" :color="isListPublic ? 'white':'grey'">mdi-view-dashboard-outline</v-icon>
                             </template>
-                            <span>新建项目</span>
+                            <span>资源库</span>
                         </v-tooltip>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>新建项目</v-list-item-title>
+                        <v-list-item-title>资源库</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item style="position: absolute; left: 6px; bottom: 10px;" @click="openProj()">
+                <v-list-item style="position: absolute; left: 6px; bottom: 10px;" @click="listProj()">
                     <v-list-item-action>
                         <v-tooltip right open-delay="1500">
                             <template v-slot:activator="{ on }">
-                                <v-icon large v-on="on" :color="isListProj ? 'white':'grey'">mdi-view-list</v-icon>
+                                <v-icon large v-on="on" :color="isListProj ? 'white':'grey'">mdi-view-sequential</v-icon>
                             </template>
-                            <span>全部项目</span>
+                            <span>项目库</span>
                         </v-tooltip>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>全部项目</v-list-item-title>
+                        <v-list-item-title>项目库</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
             </v-navigation-drawer>
@@ -79,7 +79,14 @@
 
         mounted: function() {
             if(this.$route.query.autoopen || this.$route.query.proj_id) {
-                this.width = show_;
+                let self = this;
+                setTimeout(() => {
+                    if(self.proj) {
+                        self.width = show_;
+                    } else {
+                        self.page = null;
+                    }
+                }, 600);
             }
         },
 
@@ -92,8 +99,8 @@
         }),
 
         computed: {
-            isNewProjPage: function () {
-                return this.$route.name === 'NewProj';
+            isListPublic: function () {
+                return this.$route.name === 'ListPublic';
             },
             isListProj: function () {
                 return this.$route.name === 'ListProj';
@@ -113,15 +120,20 @@
                     if(this.page !== cfg.pages[0]) {
                         this.changePage(cfg.pages[0]);
                     }
-                } else if (v==='Project' && this.page !== cfg.pages[cfg.pages.length-1]) {
-                    this.width = show_;
-                    this.changePage(cfg.pages[cfg.pages.length-1]);
-                }
+                } 
+                // else if (v==='Device') {
+                //     let p = cfg.pages.find(p => p.catalog === 'device');
+                //     if(p === this.page) {
+                //         return;
+                //     }
+                //     this.width = show_;
+                //     this.changePage(p);
+                // }
             }
         },
 
         methods: {
-            openProj: function () {
+            listProj: function () {
                 if (this.$route.name === 'ListProj') {
                     this.$router.push({
                         name: 'Home'
@@ -134,13 +146,16 @@
                 });
                 this.page = null;
             },
-            newProj: function () {
-                if (this.$route.name === 'NewProj') {
+            listPublic: function () {
+                if (this.$route.name === 'ListPublic') {
+                    this.$router.push({
+                        name: 'Home'
+                    })
                     return;
                 }
                 this.width = hide_;
                 this.$router.push({
-                    name: 'NewProj'
+                    name: 'ListPublic'
                 });
                 this.page = null;
             },
@@ -152,7 +167,7 @@
                     this.page = page;
                     this.updateBarItems();
                     this.width = show_;
-                    if(this.$route.name === 'ListProj' || this.$route.name === 'NewProj') {
+                    if(this.$route.name === 'ListProj' || this.$route.name === 'ListPublic') {
                         this.$router.push({
                             name: 'Home'
                         });

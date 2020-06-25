@@ -2,7 +2,7 @@
     <v-container class="pa-0 fill-height" fluid>
         <v-row align="center" justify="center">
             <div>
-                <v-card class="mb-4" width="800">
+                <v-card class="mb-4" width="600">
                     <v-card-title class="headline">新建项目</v-card-title>
                     <v-card-text>
                         <v-row>
@@ -96,7 +96,7 @@
                         <v-btn text @click="ok" :disabled="!input_text">
                             {{type==='copy'?'完成':'确定'}}
                         </v-btn>
-                        <v-btn text @click="cancel">
+                        <v-btn text :to="{name: 'ListProj'}">
                             取消
                         </v-btn>
                     </v-card-actions>
@@ -108,8 +108,8 @@
 </template>
 
 <script>
-    import helper from '../feature/r_helper';
     import ipc from '../feature/r_ipc';
+    import shortid from 'shortid'
     export default {
         data() {
             return {
@@ -162,30 +162,39 @@
             nextStep() {
                 this.step++;
             },
+            check_proj_newname: async function (name) {
+                name = (name ? name : '').trim();
+                if(!name) {
+                    return '名称不能为空';
+                }
+                let projs = await ipc.list_proj();
+                if(!projs) {
+                    return 'ok';
+                }
+                for(let p of projs) {
+                    if(p.name === name) {
+                        return '名称重复';
+                    }
+                }
+                return 'ok';
+            },
             ok: async function () {
-                let res = await helper.check_proj_newname(this.input_text);
+                let res = await this.check_proj_newname(this.input_text);
                 if (res !== 'ok') {
                     this.$store.commit('setMsgError', res);
                 } else {
                     let t = Date.now();
                     let doc = {
-                        id: helper.new_id(),
+                        id: shortid.generate(),
                         name: this.input_text.trim(),
                         created: t,
                         updated: t
                     };
                     await ipc.insert_proj(doc);
                     this.$store.commit('setProj', doc);
-                    this.$router.push({ name: 'Project'});
+                    this.$router.push({ name: 'ListPublic'});
                 }
             },
-            cancel: async function () {
-                if(this.$store.state.proj) {
-                    this.$router.push({ name: 'TestCase'});
-                } else {
-                    this.$router.push({ name: 'Home'});
-                }
-            }
         },
     }
 </script>

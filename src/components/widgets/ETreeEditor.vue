@@ -17,6 +17,7 @@
 <script>
     import ipc from '../../feature/r_ipc';
     import tman from '../../helper/tree_man';
+    import helper from '../../helper/helper';
     import shortid from 'shortid';
 
     export default {
@@ -57,22 +58,7 @@
                 this.active = [it];
             },
             valid_name: function (items, n) {
-                let res = 'ok';
-                if (!n) {
-                    res = '名称无效';
-                } else {
-                    n = n.trim();
-                    if (!n) {
-                        res = '名称无效';
-                    } else {
-                        for (let it of items) {
-                            if (it.name === n) {
-                                res = '名称重复';
-                                break;
-                            }
-                        }
-                    }
-                }
+                let res = helper.valid_name(items, n);
                 if (res !== 'ok') {
                     this.$store.commit('setMsgError', res);
                     return false;

@@ -4,21 +4,23 @@
       no-data-text="暂时还没有项目" disable-pagination>
       <template v-slot:header>
         <v-toolbar class="mb-1">
-          <v-text-field v-model="search" clearable flat solo-inverted hide-details
+          <v-text-field class="mx-2" v-model="search" clearable flat solo-inverted hide-details
             prepend-inner-icon="mdi-folder-search-outline" label="搜索"></v-text-field>
           <template v-if="$vuetify.breakpoint.mdAndUp">
-            <v-spacer></v-spacer>
-            <v-select v-model="sortBy" flat solo-inverted hide-details :items="sortKeys" prepend-inner-icon="mdi-sort"
+            <v-select class="mx-2" v-model="sortBy" flat solo-inverted hide-details :items="sortKeys" prepend-inner-icon="mdi-sort"
               label="排序"></v-select>
-            <v-spacer></v-spacer>
-            <v-btn-toggle v-model="sortDesc" mandatory>
-              <v-btn large depressed :value="false">
+            <v-btn-toggle class="mx-2" v-model="sortDesc" mandatory>
+              <v-btn depressed :value="false">
                 <v-icon>mdi-arrow-up</v-icon>
               </v-btn>
-              <v-btn large depressed :value="true">
+              <v-btn depressed :value="true">
                 <v-icon>mdi-arrow-down</v-icon>
               </v-btn>
             </v-btn-toggle>
+            <v-spacer></v-spacer>
+            <v-btn large  tile color='grey darken-3' :to="{ name:'NewProj'}">
+              <v-icon left >mdi-plus-thick</v-icon>新建
+            </v-btn>
           </template>
         </v-toolbar>
       </template>
@@ -41,7 +43,7 @@
                   </template>
                 </v-edit-dialog>
                 <v-spacer />
-                <v-tooltip right open-delay="1500">
+                <v-tooltip bottom open-delay="1500">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
                         <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
@@ -49,7 +51,7 @@
                     </template>
                     <span>在新窗口打开</span>
                 </v-tooltip>
-                <v-tooltip right open-delay="1500">
+                <v-tooltip bottom open-delay="1500">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
                         <v-icon color="grey">mdi-export</v-icon>
@@ -57,7 +59,7 @@
                     </template>
                     <span>导出项目</span>
                 </v-tooltip>
-                <v-tooltip right open-delay="1500">
+                <v-tooltip bottom open-delay="1500">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
                         <v-icon color="grey">mdi-delete-outline</v-icon>
@@ -88,7 +90,7 @@
 
 <script>
   import ipc from '../feature/r_ipc';
-  import helper from '../feature/r_helper';
+  import helper from '../helper/helper';
 
   export default {
     components: {
@@ -188,7 +190,7 @@
           return;
         }
         let res = await ipc.active_proj(proj.data.id);
-        if(!res) {
+        if(!res || !this.$store.state.winid || res === this.$store.state.winid) {
           this.$store.commit('setProj', proj.data);
           this.$router.push({
             name: 'TestCase'

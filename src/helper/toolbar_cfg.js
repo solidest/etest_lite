@@ -10,17 +10,17 @@ const cfg = {
             actions: 'mdi-playlist-play',
         }
     }, {
-        icon: 'mdi-script-text-outline',
-        title: '资源库',
-        catalog: 'public',
-        type: 'list',
-        file_icon: 'mdi-script-outline'
-    }, {
         icon: 'mdi-chart-bell-curve-cumulative',
         title: '监控面板',
         catalog: 'panel',
         type: 'list',
         file_icon: 'mdi-chart-line-variant',
+    }, {
+        icon: 'mdi-script-text-outline',
+        title: '仿真模型',
+        catalog: 'simu',
+        type: 'list',
+        file_icon: 'mdi-script-outline'
     }, {
         icon: 'mdi-comment-processing-outline',
         title: '通信协议',
@@ -28,17 +28,17 @@ const cfg = {
         type: 'list',
         file_icon: 'mdi-message-outline',
     }, {
-        icon: 'mdi-developer-board',
-        title: '设备接口',
-        catalog: 'device',
-        type: 'list',
-        file_icon: 'mdi-dev-to'
-    }, {
         icon: 'mdi-link-variant',
         title: '连接拓扑',
         catalog: 'topology',
         type: 'list',
         file_icon: 'mdi-link'
+    }, {
+        icon: 'mdi-developer-board',
+        title: '设备接口',
+        catalog: 'device',
+        type: 'list',
+        file_icon: 'mdi-dev-to'
     }, {
         icon: 'mdi-tools',
         title: '工具箱',
@@ -47,14 +47,21 @@ const cfg = {
         file_icon: 'mdi-help-rhombus-outline',
         items: [
             {
+                name: '组合配对',
+                value: 'pairwise',
+                id: 'tool_pairwise'
+            },{
                 name: '调试助手',
-                value: 'assistant'
+                value: 'assistant',
+                id: 'tool_assistant'
             },{
                 name: '历史记录',
-                value: 'history'
+                value: 'history',
+                id: 'tool_history'
             },{
                 name: '执行报告',
-                value: 'report'
+                value: 'report',
+                id: 'tool_report'
             },
         ]
     }, {
@@ -66,23 +73,25 @@ const cfg = {
         items: [
             {
                 name: '执行器设置',
-                value: 'etestx'
+                value: 'etestx',
+                id: 'cfg_etestx'
             },{
                 name: '自定义校验函数',
-                value: 'check'
+                value: 'check',
+                id: 'cfg_check'
             },{
                 name: '自定义打包函数',
-                value: 'pack'
+                value: 'pack',
+                id: 'cfg_pack'
             },{
                 name: '自定义解包函数',
-                value: 'unpack'
+                value: 'unpack',
+                id: 'cfg_unpack'
             },{
                 name: '接收过滤器',
-                value: 'recvfilter'
-            },{
-                name: '导入外部资源',
-                value: 'import'
-            },
+                value: 'recvfilter',
+                id: 'cfg_recvfilter'
+            }
         ]
     }],
 

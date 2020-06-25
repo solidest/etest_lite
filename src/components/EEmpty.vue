@@ -26,6 +26,8 @@
                         if(res && res.length > 0) {
                             let p = pid ? (res.find(it=>it.id===pid)):res[0]
                             self.$store.commit('setProj' , p);
+                        } else {
+                            self.$router.push({name: 'ListProj'});
                         }
                     });
                 }
