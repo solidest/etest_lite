@@ -38,7 +38,7 @@ Vue.use(VueRouter)
   {
     path: '/device',
     name: 'Device',
-    component: () => import( /* webpackChunkName: "e_editor_device" */ '../views/EGridEditor'),
+    component: () => import( /* webpackChunkName: "e_editor_device" */ '../views/EDeviceEditor'),
   },
 ]
 

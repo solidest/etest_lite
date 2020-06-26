@@ -1,8 +1,11 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <e-edit-bar :items="bar_items" :title="title" :icon="cfg.icon" :new_items="cfg.new_items"
+            <e-edit-bar :items="bar_items" :title="title" :icon="cfg.icon" :new_items="cfg.new_items" :newdef_data="{count:1}"
                 @action="on_action">
+                <template v-slot:new_sheet="{new_data}">
+                    <e-newintf-sheet :data="new_data" :types="cfg.types" />
+                </template>
             </e-edit-bar>
             <div style="height: calc(100vh - 90px);  overflow-y:auto">
                 <v-data-table :headers="headers" :items="items" v-model="selected" no-data-text="空" disable-sort
@@ -52,22 +55,21 @@
 
 <script>
     import ipc from '../feature/r_ipc';
-    import cfg from '../helper/editbar_cfg';
-    import dcfg from '../helper/default_cfg';
+    import cfg from '../helper/device_cfg';
     import EEditBar from '../components/EEditBar';
+    import EInterfNewSheet from '../components/sheets/EInterfNewSheet';
     import shortid from 'shortid';
     export default {
         components: {
             'e-edit-bar': EEditBar,
+            'e-newintf-sheet': EInterfNewSheet,
         },
         mounted: function () {
             this.doc_id = this.$route.params.doc_id;
-            this.kind = this.$route.params.kind;
-            if (!this.kind || !this.doc_id) {
+            if (!this.doc_id) {
                 return;
             }
-            this.cfg = cfg[this.kind];
-            this.bar_items = cfg[this.cfg.bar_items]
+            this.bar_items = this.cfg.bar_items;
             this.headers = this.cfg.headers;
             this.load_doc();
         },
@@ -75,8 +77,7 @@
         data() {
             return {
                 doc_id: null,
-                kind: '',
-                cfg: {},
+                cfg: cfg,
                 bar_items: [],
                 headers: [],
                 items: [],
@@ -118,18 +119,18 @@
                     doc: doc
                 });
             },
-            on_action: function (ac, type, count) {
-
-                let config = dcfg[type];
-                let id = shortid.generate();
-                this.items.push({
-                    id: id,
-                    name: id,
-                    kind: type,
-                    config: config || {},
-                });
-                this.save_doc();
-                return count;
+            on_action: function (ac, data) {
+                console.log(ac, data)
+                // let config = this.cfg.intf_default[type];
+                return shortid.generate();
+                // this.items.push({
+                //     id: id,
+                //     name: id,
+                //     kind: type,
+                //     config: config || {},
+                // });
+                // this.save_doc();
+                // return count;
             }
         }
     }

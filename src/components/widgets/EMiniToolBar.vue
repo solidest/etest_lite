@@ -21,7 +21,7 @@
                 <span>{{item.text}}</span>
             </v-tooltip>
             <template v-slot:input>
-                <v-text-field label="请输入名称" v-model="edit_text" single-line :disabled="!edit_action">
+                <v-text-field label="名称" class="ma-2" outlined dense hide-details v-model="edit_text" :disabled="!edit_action">
                 </v-text-field>
             </template>
         </v-edit-dialog>
