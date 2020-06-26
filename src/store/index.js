@@ -18,6 +18,7 @@ export default new Vuex.Store({
     undo_count: 0,
     proj: null,
     winid: 1,
+    copys: { device: ''}
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -63,6 +64,21 @@ export default new Vuex.Store({
     },
     setSeleCount: function(state, count) {
       state.sele_count = count;
+    },
+    setCopyObject: function(state, info) {
+      if(!info.kind || !info.obj){
+        return;
+      }
+      state.copys[info.kind] = JSON.stringify(info.obj);
+    },
+    setRedoUndo: function(state, info) {
+      state.redo_count = info.redo_count;
+      state.undo_count = info.undo_count;
+    },
+    clearEditor: function(state) {
+      state.sele_count = 0;
+      state.undo_count = 0;
+      state.redo_count = 0;
     },
     deletedDoc: function(state, id) {
       if(state.edit_doc && state.edit_doc.doc.id === id) {

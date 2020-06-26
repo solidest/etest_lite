@@ -96,7 +96,6 @@
           this.$router.push({name: 'Home'});
         }
         let self = this;
-        this.$store.commit('setSeleCount', 0);
         this.$nextTick(()=>{
           self.$router.push({name: vn.route_name, params: {doc_id: vn.id, kind: vn.kind}});
         })

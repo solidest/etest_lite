@@ -17,6 +17,9 @@
                     @click="emit(item)" :disabled="!allow_do(item.value)">
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
+                <v-btn v-else-if="item.value==='paste'" icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!allow_paste">
+                    <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
+                </v-btn>
                 <v-btn v-else icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!has_selected">
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
@@ -28,7 +31,7 @@
 
 <script>
     export default {
-        props: ['title', 'items', 'icon', 'new_items', 'newdef_data'],
+        props: ['title', 'items', 'icon', 'new_items', 'newdef_data', 'kind'],
         data: () => {
             return {
                 new_action: null,
@@ -38,7 +41,10 @@
         computed: {
             has_selected: function () {
                 return this.$store.state.sele_count > 0;
-            }
+            },
+            allow_paste: function() {
+                return !!this.$store.state.copys[this.kind];
+            },
         },
         methods: {
             emit: function (item) {

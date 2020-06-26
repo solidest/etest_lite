@@ -160,6 +160,7 @@
                 this.active = [];
                 this.selected(this.active);
                 for(let l of leafs) {
+                    ipc.remove({kind: 'doc', doc: {id: l.id, proj_id: this.proj.id}})
                     this.$store.commit('deletedDoc', l.id);
                 }
             },
@@ -208,7 +209,7 @@
                 }
             },
             onClickOutside: function() {
-                this.active = [];
+                //this.active = [];
             }
 
         },

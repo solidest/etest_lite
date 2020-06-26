@@ -81,15 +81,37 @@ function update(kind, doc) {
     }
     let olddocs = coll.find({'id': { '$eq' : doc.id }});
     if(!olddocs || olddocs.length === 0) {
-        return insert(kind, doc);
-    }
-    let olddoc = olddocs[0];
-    for(let k in doc) {
-        olddoc[k] = doc[k];
+        insert(kind, doc);
+    } else {
+        let olddoc = olddocs[0];
+        for(let k in doc) {
+            olddoc[k] = doc[k];
+        }
     }
     update_proj({id: doc.proj_id});
 }
 
+function _remove_doc(id) {
+    let coll = _db.getCollection('doc');
+    let items = coll.find({'id': { '$eq' : id }});
+    if(!items || items.length===0) {
+        return;
+    }
+    coll.remove(items[0]);
+    console.log('remove doc', id);
+}
+
+function _remove_docs(proj_id) {
+    let coll = _db.getCollection('doc');
+    let items = coll.find({'proj_id': { '$eq' : proj_id }});
+    if(!items || items.length===0) {
+        return;
+    }
+    for(let it of items) {
+        coll.remove(it);
+    }
+    console.log('remove docs', items.length);
+}
 
 function remove(kind, doc) {
     let coll = _db.getCollection(kind);
@@ -97,9 +119,18 @@ function remove(kind, doc) {
         console.log('error kind =', kind);
         return;
     }
-    let item = coll.find({'id': { '$eq' : doc.id }})[0];
+    let id = doc.id;
+    let proj_id = doc.proj_id;
+    let item = coll.find({'id': { '$eq' : id }})[0];
+    if(kind!=='doc') {
+        _remove_doc(id);
+    } else {
+        if(!item) {
+            return;
+        }
+    }
     coll.remove(item);
-    update_proj({id: doc.proj_id});
+    update_proj({id: proj_id});
 }
 
 //{name: 'xx', last_open: xxxx, created: xxxx}
@@ -141,6 +172,7 @@ function remove_proj(proj) {
         return;
     }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
+    _remove_docs(proj.id);
     coll.remove(doc);
 }
 

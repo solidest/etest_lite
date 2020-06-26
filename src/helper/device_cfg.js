@@ -1,7 +1,8 @@
 const cfg = {
+    kind: 'device',
     bar_items: [{
             text: '向后添加接口',
-            value: 'new_item_end',
+            value: 'new_item_after',
             icon: 'mdi-table-row-plus-after'
         }, {
             text: '向前添加接口',
@@ -67,6 +68,8 @@ const cfg = {
         }
     ],
     intf_default: { 
+        di: { maxu: 5 },
+        do: { maxu: 5 },
         ad: {ratio: 16},
         da: {ratio: 16},
         udp: { ip: '0.0.0.0', reuseaddr: true },
