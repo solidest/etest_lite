@@ -52,4 +52,16 @@ function date_fmt(fmt, date) {
     return fmt;
 }
 
-export default {date_fmt, valid_name, check_name }
+function obj_fmt(obj) {
+    if(!obj) {
+        return '';
+    }
+    let res = [];
+    for(let it in obj) {
+        let v = isNaN(obj[it]) ? `'${obj[it]}'` : obj[it]
+        res.push(it + ':' + v);
+    }
+    return res.join(', ');
+}
+
+export default {date_fmt, valid_name, check_name, obj_fmt }

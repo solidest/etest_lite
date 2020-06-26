@@ -1,53 +1,43 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <e-edit-bar :items="bar_items" :title="title" :icon="cfg.icon" :new_items="cfg.new_items"
+            <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon"
                 :newdef_data="{count:1}" :kind="cfg.kind" @action="on_action">
                 <template v-slot:new_sheet="{new_data}">
-                    <e-newintf-sheet :data="new_data" :types="cfg.types" />
+                    <e-editor-sheet :data="new_data" :widgets="cfg.new_widgets" :hide_name="true" :max_width="260" />
                 </template>
-            </e-edit-bar>
+            </e-editor-bar>
             <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                <v-data-table :headers="headers" :items="items" v-model="selected" no-data-text="空" disable-sort
-                    hide-default-footer disable-pagination single-select show-select>
-                    <template v-slot:item.config="{value}">
-                        <span> {{value?JSON.stringify(value): ''}}</span>
-                    </template>
-                    <template v-slot:item.name="props">
-                        <v-edit-dialog :return-value.sync="props.item.name"> {{ props.item.name }}
-                            <template v-slot:input>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                                <v-text-field v-model="props.item.name" label="Edit" single-line>
-                                </v-text-field>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.config="props">
-                        <v-edit-dialog :return-value.sync="props.item.config"> {{ props.item.config }}
-                            <template v-slot:input>
-                                <v-text-field v-model="props.item.config" label="Edit" single-line counter>
-                                </v-text-field>
-                            </template>
-                        </v-edit-dialog>
-                    </template>
-                    <template v-slot:item.kind="props">
-                        <v-edit-dialog :return-value.sync="props.item.kind"> {{ props.item.kind }}
-                            <template v-slot:input>
-                                <v-text-field v-model="props.item.kind" label="Edit" single-line counter>
-                                </v-text-field>
-                            </template>
-                        </v-edit-dialog>
+                <v-data-table :headers="headers" :items="items" no-data-text="空" disable-sort hide-default-footer
+                    disable-pagination>
+                    <template v-slot:item="{item}">
+                        <tr>
+                            <td @click.stop="current_row=item" class="mt-0">
+                                <v-icon small class="pt-0" :color="item===current_row?'primary':''" style="cursor:pointer;">
+                                    {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
+                                </v-icon>
+                            </td>
+                            <td>
+                                <v-chip class="ma-1" @click.stop="current_row=item" >
+                                    {{item.kind}}
+                                </v-chip>
+                            </td>
+                            <td>
+                                <v-edit-dialog :return-value.sync="item.name" @save="on_edited">
+                                    {{item.name}}
+                                    <template v-slot:input>
+                                        <v-text-field class="ma-2" dense hide-details label="接口名称" v-model="item.name"
+                                            outlined>
+                                        </v-text-field>
+                                    </template>
+                                </v-edit-dialog>
+                            </td>
+                            <td> 
+                                <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id" :widgets="cfg.intf_widgets[item.kind]"
+                                    @save="on_edited_cfg">
+                                </e-editor-dlg>
+                            </td>
+                        </tr>
                     </template>
                 </v-data-table>
             </div>
@@ -58,15 +48,17 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/device_cfg';
-    import EEditBar from '../components/EEditBar';
-    import EInterfNewSheet from '../components/sheets/EInterfNewSheet';
     import lman from '../helper/list_man';
     import shortid from 'shortid';
+    import helper from '../helper/helper';
+    import EEditorBar from '../components/EEditorBar';
     import RedoUndo from '../helper/redo_undo';
+    import EEditorSheet from '../components/widgets/EEditorSheet';
     export default {
         components: {
-            'e-edit-bar': EEditBar,
-            'e-newintf-sheet': EInterfNewSheet,
+            'e-editor-bar': EEditorBar,
+            'e-editor-sheet': EEditorSheet,
+            'e-editor-dlg': () => import( /* webpackChunkName: "eeditordlg" */ '../components/EEditorDlg'),
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -87,7 +79,7 @@
                 bar_items: [],
                 headers: [],
                 items: [],
-                selected: [],
+                current_row: null,
             }
         },
         computed: {
@@ -98,20 +90,16 @@
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
-            current_row: function () {
-                if (!this.selected || this.selected.length === 0) {
-                    return null;
-                }
-                return this.selected[0];
-            }
         },
         watch: {
-            selected: function (vs) {
-                let i = vs ? vs.length : 0;
-                this.$store.commit('setSeleCount', i);
+            current_row: function (v) {
+                this.$store.commit('setSeleCount', v ? 1 : 0);
             }
         },
         methods: {
+            obj_fmt: function (o) {
+                return helper.obj_fmt(o);
+            },
             load_doc: async function () {
                 let doc = await ipc.load({
                     kind: 'doc',
@@ -174,7 +162,7 @@
                     return false;
                 }
                 let idx = lman.insertAfter(this.items, this.current_row, ns);
-                this.selected = [this.items[idx]];
+                this.current_row = this.items[idx];
                 return true;
             },
             new_item_before: function (data) {
@@ -183,7 +171,7 @@
                     return false;
                 }
                 let idx = lman.insertBefore(this.items, this.current_row, ns);
-                this.selected = [this.items[idx]];
+                this.current_row = this.items[idx];
                 return true;
             },
             move_up: function () {
@@ -210,14 +198,14 @@
                 let obj = JSON.parse(str);
                 obj.id = shortid.generate();
                 let idx = lman.insertAfter(this.items, this.current_row, [obj]);
-                this.selected = [this.items[idx]];
+                this.current_row = this.items[idx];
                 return true;
             },
             undo: function () {
                 let its = this.redo_undo.popUndo();
                 if (its) {
                     this.items = its;
-                    this.selected = [];
+                    this.current_row = null;
                     return true;
                 }
             },
@@ -225,27 +213,36 @@
                 let its = this.redo_undo.popRedo();
                 if (its) {
                     this.items = its;
-                    this.selected = [];
+                    this.current_row = null;
                     return true;
                 }
             },
             del_item: function () {
-                if(!this.current_row) {
+                if (!this.current_row) {
                     return false;
                 }
                 lman.removeItem(this.items, this.current_row);
-                this.selected = [];
+                this.current_row = null;
                 return true;
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
                     this.save_doc();
-                    if(!(ac==='redo'||ac==='undo')) {
+                    if (!(ac === 'redo' || ac === 'undo')) {
                         this.redo_undo.pushChange(this.items);
                     }
                     this.update_redo_undo();
                 }
-            }
+            },
+            on_edited: function() {
+                this.save_doc();
+                this.redo_undo.pushChange(this.items);
+                this.update_redo_undo();
+            },
+            on_edited_cfg: function(id, cfg) {
+                this.items.find(it => it.id===id).config = cfg;
+                this.on_edited();
+            },
         }
     }
 </script>

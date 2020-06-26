@@ -31,7 +31,7 @@
 
 <script>
     export default {
-        props: ['title', 'items', 'icon', 'new_items', 'newdef_data', 'kind'],
+        props: ['title', 'items', 'icon', 'newdef_data', 'kind'],
         data: () => {
             return {
                 new_action: null,
