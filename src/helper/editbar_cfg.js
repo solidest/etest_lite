@@ -26,13 +26,11 @@ const cfg = {
         }, {
             text: '撤销',
             value: 'undo',
-            icon: 'mdi-undo',
-            enable: 'can_undo'
+            icon: 'mdi-undo'
         }, {
             text: '恢复',
             value: 'redo',
             icon: 'mdi-redo',
-            enable: 'can_redo'
         }, {
             text: '删除',
             value: 'del_item',

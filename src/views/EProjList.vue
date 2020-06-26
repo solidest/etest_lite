@@ -1,12 +1,11 @@
 <template>
   <v-container fluid>
     <v-data-iterator :items="projs" :search="search" :sort-by="sortBy" :sort-desc="sortDesc" hide-default-footer
-      no-data-text="暂时还没有项目" disable-pagination>
+      no-data-text="暂时还没有项目" no-results-text="没有找到匹配的项目" disable-pagination>
       <template v-slot:header>
         <v-toolbar class="mb-1">
           <v-text-field class="mx-2" v-model="search" clearable flat solo-inverted hide-details
             prepend-inner-icon="mdi-folder-search-outline" label="搜索"></v-text-field>
-          <template v-if="$vuetify.breakpoint.mdAndUp">
             <v-select class="mx-2" v-model="sortBy" flat solo-inverted hide-details :items="sortKeys" prepend-inner-icon="mdi-sort"
               label="排序"></v-select>
             <v-btn-toggle class="mx-2" v-model="sortDesc" mandatory>
@@ -18,10 +17,9 @@
               </v-btn>
             </v-btn-toggle>
             <v-spacer></v-spacer>
-            <v-btn large  tile color='grey darken-3' :to="{ name:'NewProj'}">
+            <v-btn large color='grey darken-3' :to="{ name:'NewProj'}">
               <v-icon left >mdi-plus-thick</v-icon>新建
             </v-btn>
-          </template>
         </v-toolbar>
       </template>
 
