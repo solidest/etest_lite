@@ -46,7 +46,10 @@
                 return;
             }
             this.load_main();
-            this.update_draw_size();
+            let self = this;
+            setTimeout(() => {
+                self.update_draw_size();
+            }, 200);
         },
 
         data() {
@@ -83,7 +86,10 @@
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
-                this.$refs.drawor.update(this.main);
+                let self = this;
+                setTimeout(() => {
+                    self.$refs.drawor.update(self.main);
+                }, 300);
             },
             save_linking: async function(linking) {
                 this.main.linking = linking;

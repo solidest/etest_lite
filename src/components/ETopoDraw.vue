@@ -10,7 +10,7 @@ export default {
     props: ['size'],
     data: () => {
         return {
-            draw_size: {x: 100, y: 100},
+            draw_size: null,
             draw_data: {},
         }
     },
@@ -32,16 +32,23 @@ export default {
             console.log('udpate')
         },
         create_graph: function(size) {
+            console.log('size', size)
             this.graph = new G6.Graph({
                     container: '__topo',
                     width: size.width,
                     height: size.height,
                     fitCenter: true,
                     fitView: true,
-                    fitViewPadding: 40,
+                    fitViewPadding: 20,
                 });
             this.graph.data(this.draw_data);
             this.graph.render();
+            this.$nextTick(() => {
+                //this.graph.changeSize(size.width, size.height);
+                this.graph.changeData(this.draw_data);
+                //this.graph.render();                
+            })
+
             console.log('draw0')
         },
         redraw: function() {
@@ -49,27 +56,31 @@ export default {
                 if(!this.draw_size) {
                     return;
                 }
-                this.create_graph(this.draw_size);
+                this.resize(this.draw_size);
             } else {
                 this.graph.changeData(this.draw_data);
-                this.graph.render();
+                //this.graph.render();
                 console.log('draw1')
             }
         },
         resize: function(size) {
-            if(this.is_resize) {
+            if(this.is_resize || this.is_create) {
                 return;
             }
             if(!this.graph) {
-                this.create_graph(size);
+                this.is_resize = true;
+                let self = this;
+                setTimeout(() =>{
+                    self.create_graph(size);
+                    self.is_resize = false;
+                }, 200);
             } else {
                 this.is_resize = true;
                 let self = this;
                 setTimeout(() => {
                     self.graph.changeSize(self.draw_size.width, self.draw_size.height);
-                    self.graph.changeData(self.draw_data);
+                    self.graph.data(self.draw_data);
                     self.graph.render();
-                    console.log('draw3')
                     self.is_resize = false;
                 }, 100);                
             }
