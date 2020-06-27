@@ -10,8 +10,8 @@
                         <span>{{ conn_short_name(item.value) }}</span>
                     </v-chip>
                 </template>
-                <template  v-slot:append>
-                    <v-icon small @click="remove(item)">mdi-close</v-icon>
+                <template v-slot:append>
+                    <v-icon v-if="item!==linking[linking.length-1]" small @click="remove(item)">mdi-close</v-icon>
                 </template>
             </v-select>
         </template>
