@@ -5,7 +5,8 @@
             </e-editor-bar>
             <v-row>
                 <v-col cols=8 class="pa-0">
-                    <div style="height: calc(100vh - 83px); ">
+                    <div style="height: calc(100vh - 83px); " ref="__draw_rect" v-resize="update_draw_size">
+                        <e-topo-draw :main="main" :size="draw_size" ref="drawor" > </e-topo-draw>
                     </div>
                 </v-col>
                 <v-col cols=4 class="pa-0">
@@ -28,6 +29,7 @@
     import EDeviceMapping from '../components/EDeviceMapping';
     import EDeviceLinking from '../components/EDeviceLinking';
     import EDeviceBinding from '../components/EDeviceBinding';
+    import ETopoDraw from '../components/ETopoDraw';
 
     export default {
         components: {
@@ -35,6 +37,7 @@
             'e-device-mapping': EDeviceMapping,
             'e-device-linking': EDeviceLinking,
             'e-device-binding': EDeviceBinding,
+            'e-topo-draw': ETopoDraw,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -43,6 +46,7 @@
                 return;
             }
             this.load_main();
+            this.update_draw_size();
         },
 
         data() {
@@ -53,6 +57,7 @@
                 bar_items: [],
                 main: {},
                 kind: cfg.kind,
+                draw_size: null,
             }
         },
         computed: {
@@ -70,18 +75,23 @@
                     return;
                 }
                 this.step = step;
-
+            },
+            update_draw_size: function() {
+                let self = this;
+                let el = self.$refs.__draw_rect;
+                self.draw_size = {height: el.offsetHeight, width: el.offsetWidth}
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
+                this.$refs.drawor.update(this.main);
             },
             save_linking: async function(linking) {
                 this.main.linking = linking;
-                await this.save_doc();
+                this.save_doc();
             },
             save_binding: async function(binding) {
                 this.main.binding = binding;
-                await this.save_doc();
+                this.save_doc();
             },
             save_doc: async function () {
                 let doc = {
@@ -90,10 +100,11 @@
                     kind: this.kind,
                     content: {mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding }
                 };
-                await ipc.update({
+                ipc.update({
                     kind: 'doc',
                     doc: doc
                 });
+                this.$refs.drawor.update(this.main);
             },
         }
     }
