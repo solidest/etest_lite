@@ -64,9 +64,9 @@
     import EListEditor from './widgets/EListEditor';
     import ETreeEditor from './widgets/ETreeEditor';
     import r_ipc from '../feature/r_ipc';
-    import cfg from '../helper/toolbar_cfg';
+    import cfg from '../helper/cfg_topbar';
 
-    const show_ = 420;
+    const show_ = cfg.width;
     const hide_ = 80;
 
     export default {

@@ -34,7 +34,7 @@
                             </td>
                             <td> 
                                 <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id" :widgets="cfg.intf_widgets[item.kind]"
-                                    @save="on_edited_cfg">
+                                    :title="`${title}.${item.name}`" @save="on_edited_cfg">
                                 </e-editor-dlg>
                             </td>
                         </tr>
@@ -47,7 +47,7 @@
 
 <script>
     import ipc from '../feature/r_ipc';
-    import cfg from '../helper/device_cfg';
+    import cfg from '../helper/cfg_device';
     import lman from '../helper/list_man';
     import shortid from 'shortid';
     import helper from '../helper/helper';

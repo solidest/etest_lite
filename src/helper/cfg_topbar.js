@@ -1,5 +1,6 @@
 
 const cfg = {
+    width: 360,
     pages: [{
         icon: 'mdi-animation-play-outline',
         title: '测试用例',
@@ -32,7 +33,7 @@ const cfg = {
         title: '连接拓扑',
         catalog: 'topology',
         type: 'list',
-        file_icon: 'mdi-link'
+        file_icon: 'mdi-link-box-variant-outline'
     }, {
         icon: 'mdi-developer-board',
         title: '设备接口',

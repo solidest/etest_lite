@@ -40,6 +40,11 @@ Vue.use(VueRouter)
     name: 'Device',
     component: () => import( /* webpackChunkName: "e_editor_device" */ '../views/EDeviceEditor'),
   },
+  {
+    path: '/topology',
+    name: 'Topology',
+    component: () => import( /* webpackChunkName: "e_editor_topo" */ '../views/ETopologyEditor'),
+  },
 ]
 
 const router = new VueRouter({

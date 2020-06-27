@@ -74,7 +74,9 @@
           case 'device':
             res.route_name = 'Device';
             break;
-        
+          case 'topology':
+            res.route_name = 'Topology';
+            break;
           default:
             console.log('editor route', ed);
             return null;
