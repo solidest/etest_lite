@@ -2,10 +2,11 @@
     <v-data-table :headers="headers" :items="linking" no-data-text="空" disable-sort hide-default-footer
         disable-pagination hide-default-header dense>
         <template v-slot:item.conns="{item}">
-            <v-select v-model="item.conns" dense full-width :items="get_conn_list(item)" multiple class="py-1" hide-details
-                @change="on_change" no-data-text="无可用的设备接口" :menu-props="{ maxHeight: 600}" chips flat solo>
+            <v-select v-model="item.conns" dense full-width :items="get_conn_list(item)" multiple class="body-2 py-1" hide-details
+                @change="on_change" no-data-text="无可用的设备接口" :menu-props="{ maxHeight: 600}" chips flat solo 
+                :placeholder="conn_list.length>0 ?'选择连接接口':'无可用设备接口'">
                 <template v-slot:selection="{ item }">
-                    <v-chip>
+                    <v-chip small>
                         <span>{{ conn_short_name(item.value) }}</span>
                     </v-chip>
                 </template>

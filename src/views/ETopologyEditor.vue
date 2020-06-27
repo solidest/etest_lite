@@ -12,6 +12,7 @@
                     <div style="height: calc(100vh - 85px); overflow-y:auto;">
                         <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_doc"> </e-device-mapping>
                         <e-device-linking v-if="step==='link'" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
+                        <e-device-binding v-if="step==='bind'" :items="main.binding" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_binding"> </e-device-binding>
                     </div>
                 </v-col>
             </v-row>
@@ -23,16 +24,17 @@
     import h from '../feature/h_topo';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_topology';
-    // import helper from '../helper/helper';
     import EEditorBar from '../components/ETopologyBar';
     import EDeviceMapping from '../components/EDeviceMapping';
     import EDeviceLinking from '../components/EDeviceLinking';
+    import EDeviceBinding from '../components/EDeviceBinding';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
             'e-device-mapping': EDeviceMapping,
             'e-device-linking': EDeviceLinking,
+            'e-device-binding': EDeviceBinding,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -77,12 +79,16 @@
                 this.main.linking = linking;
                 await this.save_doc();
             },
+            save_binding: async function(binding) {
+                this.main.binding = binding;
+                await this.save_doc();
+            },
             save_doc: async function () {
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: {mapping: this.main.mapping, linking: this.main.linking }
+                    content: {mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding }
                 };
                 await ipc.update({
                     kind: 'doc',

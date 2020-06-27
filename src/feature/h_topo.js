@@ -35,10 +35,10 @@ function _get_linking(doc, all_conns) {
 function _get_binding(doc, all_conns) {
     let raw = doc.binding || [];
     let binding = [];
-    for(let conn of raw) {
-        let c = all_conns.find(it => it.id === conn.id);
+    for(let bind of raw) {
+        let c = all_conns.find(it => it.id === bind.conn_id);
         if(c) {
-            binding.push(conn);
+            binding.push(bind);
         }
     }
     return binding;
@@ -57,7 +57,7 @@ async function load(proj_id, topo_id) {
     }
     let doc = await ipc.load({kind: 'doc', id: topo_id});
     doc = (doc && doc.content) ? doc.content : {};
-    return {devs: devs, conns: conns, mapping: _get_mapping(doc, devs), linking: _get_linking(doc, conns), binding: _get_binding(doc, devs)}
+    return {devs: devs, conns: conns, mapping: _get_mapping(doc, devs), linking: _get_linking(doc, conns), binding: _get_binding(doc, conns)}
 }
 
 function get_dev_name(devs, dev_id) {
@@ -102,6 +102,9 @@ function get_linking(devs, mapping, conns, old_linking) {
             }
             linking.push({id: ol.id, conns: cs});
         }
+        if(linking.length === 0) {
+            linking = _get_init_linking(devs, mapping);
+        }
     }
     return linking;
 }
@@ -123,4 +126,18 @@ function get_conn_list(devs, mapping) {
     return res;
 }
 
-export default { load, get_dev_name, get_linking, get_conn_list }
+function get_binding(devs, mapping, old_binding) {
+    let res = [];
+    for(let map of mapping) {
+        if(map.used ==='etest') {
+            let dev = devs.find(it => it.id === map.dev_id);
+            for(let c of dev.conns) {
+                let old = old_binding.find(it => it.conn_id == c.id);
+                res.push(old || {conn_id: c.id, uri: ''});
+            }
+        }
+    }
+    return res;
+}
+
+export default { load, get_dev_name, get_linking, get_conn_list, get_binding }
