@@ -1,5 +1,5 @@
 <template>
-    <v-sheet tile class="mx-auto pa-2" :max-width="max_width">
+    <v-sheet tile class="mx-auto pa-2" :max-width="max_width?max_width:null">
         <v-row>
             <v-col v-if="title" cols=12 class="pa-1">
                 <v-card-title class="ma-1 pa-0">{{title}}</v-card-title>

@@ -3,7 +3,7 @@
     @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
         {{text}}
         <template v-slot:input>
-            <e-editor-sheet :data="value" :widgets="widgets" :max_width="520" :title="title" />
+            <e-editor-sheet :data="value" :widgets="widgets" :title="title" />
         </template>
     </v-edit-dialog>
 </template>
