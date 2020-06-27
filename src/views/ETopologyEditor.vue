@@ -5,15 +5,15 @@
             </e-editor-bar>
             <v-row>
                 <v-col cols=8 class="pa-0">
-                    <div style="height: calc(100vh - 85px); border: solid grey 1px;">
+                    <div style="height: calc(100vh - 83px); ">
                     </div>
                 </v-col>
                 <v-col cols=4 class="pa-0">
                     <div style="height: calc(100vh - 85px); overflow-y:auto;">
-                        <e-device-used v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_doc"> </e-device-used>
+                        <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_doc"> </e-device-mapping>
+                        <e-device-linking v-if="step==='link'" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
                     </div>
                 </v-col>
-
             </v-row>
         </v-card>
     </v-container>
@@ -23,15 +23,16 @@
     import h from '../feature/h_topo';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_topology';
-    // import shortid from 'shortid';
     // import helper from '../helper/helper';
     import EEditorBar from '../components/ETopologyBar';
-    import EDeviceUsed from '../components/EDeviceUsed';
+    import EDeviceMapping from '../components/EDeviceMapping';
+    import EDeviceLinking from '../components/EDeviceLinking';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
-            'e-device-used': EDeviceUsed,
+            'e-device-mapping': EDeviceMapping,
+            'e-device-linking': EDeviceLinking,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -71,15 +72,17 @@
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
-                // console.log(this.main)
             },
-
+            save_linking: async function(linking) {
+                this.main.linking = linking;
+                await this.save_doc();
+            },
             save_doc: async function () {
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: {mapping: this.main.mapping }
+                    content: {mapping: this.main.mapping, linking: this.main.linking }
                 };
                 await ipc.update({
                     kind: 'doc',

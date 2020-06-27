@@ -6,7 +6,7 @@
         </template>
         <template v-slot:item.used="{item}">
             <div style="width: 120px">
-                <v-select v-model="item.used" dense :items="usedlist" @change="on_change">
+                <v-select v-model="item.used" dense :items="usedlist" @change="on_change" hide-details solo flat>
                     <template v-slot:selection="{ item }">
                         <span :class="`body-2 ${item.value==='none'?'grey--text':''}`">{{item.text}}</span>
                     </template>
