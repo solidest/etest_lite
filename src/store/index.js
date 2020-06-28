@@ -91,7 +91,7 @@ const _store = new Vuex.Store({
     },
     setCheckResult: function(state, info) {
       state.check_result = info;
-      console.log('check result', info);
+      // console.log('check result', info);
     }
   },
   actions: {},
