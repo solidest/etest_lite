@@ -152,10 +152,10 @@
                 this.page = null;
             },
             changePage: function (page) {
+                this.$store.commit('setSeleDoc', null);
                 if (this.page === page) {
                     this.width = this.width === show_ ? hide_ : show_;
                 } else {
-                    this.$store.commit('setSeleDoc', null);
                     this.page = page;
                     this.updateBarItems();
                     this.width = show_;

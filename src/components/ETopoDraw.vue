@@ -3,90 +3,62 @@
     </div>
 </template>
 <script>
-import G6 from '@antv/g6';
-import h from '../feature/h_topo';
+    import G6 from '@antv/g6';
+    import h from '../feature/f_topo';
+    import {
+        debounce
+    } from 'throttle-debounce';
 
-export default {
-    props: ['size'],
-    data: () => {
-        return {
-            draw_size: null,
-            draw_data: {},
-        }
-    },
-    watch: {
-        size: function(n) {
-            this.draw_size = n;
+    export default {
+        mounted: function () {
+            this.redraw = debounce(200, this.redraw_)
         },
-        draw_size: function(n, o) {
-            if(!n || (o && n.width==o.width && n.height==o.height)) {
-                return;
-            }
-            this.resize(n)
-        }
-    },
-    methods: {
-        update: function(main) {
-            this.draw_data = h.get_draw_data(main.devs, main.mapping, main.linking, main.binding);
-            this.redraw();
-            console.log('udpate')
-        },
-        create_graph: function(size) {
-            console.log('size', size)
-            this.graph = new G6.Graph({
-                    container: '__topo',
-                    width: size.width,
-                    height: size.height,
-                    fitCenter: true,
-                    fitView: true,
-                    fitViewPadding: 20,
-                });
-            this.graph.data(this.draw_data);
-            this.graph.render();
-            this.$nextTick(() => {
-                //this.graph.changeSize(size.width, size.height);
-                this.graph.changeData(this.draw_data);
-                //this.graph.render();                
-            })
-
-            console.log('draw0')
-        },
-        redraw: function() {
-            if(!this.graph) {
-                if(!this.draw_size) {
-                    return;
+        methods: {
+            update: function (main, size, draw_data) {
+                if(draw_data) {
+                    this.draw_data = draw_data;
+                } else {
+                    this.draw_data = h.get_draw_data(main.devs, main.conns, main.mapping, main.linking, main.binding);
                 }
-                this.resize(this.draw_size);
-            } else {
-                this.graph.changeData(this.draw_data);
-                //this.graph.render();
-                console.log('draw1')
-            }
-        },
-        resize: function(size) {
-            if(this.is_resize || this.is_create) {
-                return;
-            }
-            if(!this.graph) {
-                this.is_resize = true;
-                let self = this;
-                setTimeout(() =>{
-                    self.create_graph(size);
-                    self.is_resize = false;
-                }, 200);
-            } else {
-                this.is_resize = true;
-                let self = this;
-                setTimeout(() => {
-                    self.graph.changeSize(self.draw_size.width, self.draw_size.height);
-                    self.graph.data(self.draw_data);
-                    self.graph.render();
-                    self.is_resize = false;
-                }, 100);                
-            }
-
+                this.draw_size = size;
+                this.redraw();
+            },
+            on_draged: function() {
+                let edited_data = this.graph.save();
+                this.$emit('save', edited_data);
+            },
+            redraw_: function () {
+                if (!this.graph) {
+                    this.graph = new G6.Graph({
+                        container: '__topo',
+                        width: this.draw_size.width,
+                        height: this.draw_size.height,
+                        fitCenter: true,
+                        fitViewPadding: 20,
+                        modes: {
+                            default: ['drag-canvas', 'drag-node'],
+                        },
+                        nodeStateStyles: {
+                            hover: {
+                                fillOpacity: 0.8,
+                            },
+                            selected: {
+                                lineWidth: 5,
+                            },
+                        },
+                        defaultEdge: h.draw_line_style
+                    });
+                    this.graph.on('node:dragend', this.on_draged);
+                    this.graph.data(this.draw_data);
+                    this.graph.render();
+                } else {
+                    this.graph.changeSize(this.draw_size.width, this.draw_size.height)
+                    this.graph.changeData(this.draw_data);
+                    let edited_data = this.graph.save();
+                    this.$emit('save', edited_data);
+                }
+            },
         }
-    }
 
-}
+    }
 </script>

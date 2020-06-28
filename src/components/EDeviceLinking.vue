@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import h from '../feature/h_topo';
+    import h from '../feature/f_topo';
     import shortid from 'shortid';
     export default {
         props: ['items', 'devs', 'conns', 'mapping'],

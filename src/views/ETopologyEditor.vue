@@ -6,7 +6,7 @@
             <v-row>
                 <v-col cols=8 class="pa-0">
                     <div style="height: calc(100vh - 83px); " ref="__draw_rect" v-resize="update_draw_size">
-                        <e-topo-draw :main="main" :size="draw_size" ref="drawor" > </e-topo-draw>
+                        <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor" > </e-topo-draw>
                     </div>
                 </v-col>
                 <v-col cols=4 class="pa-0">
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-    import h from '../feature/h_topo';
+    import h from '../feature/f_topo';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_topology';
     import EEditorBar from '../components/ETopologyBar';
@@ -46,10 +46,6 @@
                 return;
             }
             this.load_main();
-            let self = this;
-            setTimeout(() => {
-                self.update_draw_size();
-            }, 200);
         },
 
         data() {
@@ -82,14 +78,15 @@
             update_draw_size: function() {
                 let self = this;
                 let el = self.$refs.__draw_rect;
-                self.draw_size = {height: el.offsetHeight, width: el.offsetWidth}
+                self.draw_size = {height: el.offsetHeight, width: el.offsetWidth};
+                this.redraw_topo();
+            },
+            redraw_topo(draw_data) {
+                this.$refs.drawor.update(this.main, this.draw_size, draw_data);
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
-                let self = this;
-                setTimeout(() => {
-                    self.$refs.drawor.update(self.main);
-                }, 300);
+                this.redraw_topo(this.main.draw_data);
             },
             save_linking: async function(linking) {
                 this.main.linking = linking;
@@ -99,18 +96,22 @@
                 this.main.binding = binding;
                 this.save_doc();
             },
+            save_draw_data: async function(draw_data) {
+                this.main.draw_data = draw_data;
+                this.save_doc();
+            },
             save_doc: async function () {
+                this.redraw_topo();
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: {mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding }
+                    content: {mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding, draw_data: this.main.draw_data }
                 };
                 ipc.update({
                     kind: 'doc',
                     doc: doc
                 });
-                this.$refs.drawor.update(this.main);
             },
         }
     }
