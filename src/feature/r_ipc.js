@@ -1,5 +1,6 @@
-
-const { ipcRenderer } = window.require('electron')
+const {
+    ipcRenderer
+} = window.require('electron')
 
 async function list_proj() {
     return await ipcRenderer.invoke('list_proj');
@@ -46,7 +47,25 @@ async function open_proj(proj_id) {
 }
 
 function bind_proj(wid, proj_id) {
-    return ipcRenderer.send('bind-proj', wid||1, proj_id)
+    return ipcRenderer.send('bind-proj', wid || 1, proj_id)
 }
 
-export default { list, insert, load, update, remove, list_proj, insert_proj, update_proj, remove_proj, active_proj, open_proj, bind_proj }
+function check_result(proj_id, version, results) {
+    return ipcRenderer.send('check_result', proj_id, version, results);
+}
+
+export default {
+    list,
+    insert,
+    load,
+    update,
+    remove,
+    list_proj,
+    insert_proj,
+    update_proj,
+    remove_proj,
+    active_proj,
+    open_proj,
+    bind_proj,
+    check_result
+}

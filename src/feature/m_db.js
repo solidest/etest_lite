@@ -6,6 +6,8 @@ import path from 'path';
 import loki  from 'lokijs';
 import fs from 'fs';
 
+const kinds = ['program', 'panel', 'protocol', 'device', 'topology', 'simu', 'doc']
+
 let _db
 
 function setup(is_dev) {
@@ -22,13 +24,16 @@ function setup(is_dev) {
 
     if(!bexists) {
         _db.addCollection("project");
-        _db.addCollection("program");
-        _db.addCollection("panel");
-        _db.addCollection("protocol");
-        _db.addCollection("device");
-        _db.addCollection("topology");
-        _db.addCollection("simu");
-        _db.addCollection("doc");
+        kinds.forEach(kind => {
+            _db.addCollection(kind);
+        });
+        // _db.addCollection("program");
+        // _db.addCollection("panel");
+        // _db.addCollection("protocol");
+        // _db.addCollection("device");
+        // _db.addCollection("topology");
+        // _db.addCollection("simu");
+        // _db.addCollection("doc");
     }
 }
 
@@ -101,17 +106,30 @@ function _remove_doc(id) {
     console.log('remove doc', id);
 }
 
-function _remove_docs(proj_id) {
-    let coll = _db.getCollection('doc');
-    let items = coll.find({'proj_id': { '$eq' : proj_id }});
-    if(!items || items.length===0) {
-        return;
-    }
-    for(let it of items) {
-        coll.remove(it);
-    }
-    console.log('remove docs', items.length);
+// function _remove_docs(proj_id) {
+//     let coll = _db.getCollection('doc');
+//     let items = coll.find({'proj_id': { '$eq' : proj_id }});
+//     if(!items || items.length===0) {
+//         return;
+//     }
+//     for(let it of items) {
+//         coll.remove(it);
+//     }
+//     console.log('remove docs', items.length);
+// }
+
+function _remove_kinds(proj_id) {
+    kinds.forEach(k => {
+        let coll = _db.getCollection(k);
+        let items = coll.find({'proj_id': { '$eq' : proj_id }});
+        if(items) {
+            for(let it of items) {
+                coll.remove(it);
+            };
+        }
+    });
 }
+
 
 function remove(kind, doc) {
     let coll = _db.getCollection(kind);
@@ -122,12 +140,11 @@ function remove(kind, doc) {
     let id = doc.id;
     let proj_id = doc.proj_id;
     let item = coll.find({'id': { '$eq' : id }})[0];
-    if(kind!=='doc') {
+    if(!item) {
+        return;
+    }
+    if(kind!=='doc' && id!==proj_id) {
         _remove_doc(id);
-    } else {
-        if(!item) {
-            return;
-        }
     }
     coll.remove(item);
     update_proj({id: proj_id});
@@ -172,7 +189,7 @@ function remove_proj(proj) {
         return;
     }
     let doc = coll.find({'id': { '$eq' : proj.id }})[0];
-    _remove_docs(proj.id);
+    _remove_kinds(proj.id);
     coll.remove(doc);
 }
 

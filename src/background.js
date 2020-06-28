@@ -22,7 +22,7 @@ if (!gotTheLock) {
 }
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-ipc.setup();
+
 db.setup(isDevelopment);
 
 protocol.registerSchemesAsPrivileged([{
@@ -40,6 +40,25 @@ function quit() {
     app.quit()
     // }
   }, 300)
+}
+
+let worker = null;
+function createWorker() {
+  worker = new BrowserWindow({
+    show: true,
+    webPreferences: { nodeIntegration: true }
+  });
+  ipc.setup(worker);
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
+    if (!process.env.IS_TEST) worker.webContents.openDevTools()
+  } else {
+    createProtocol('app')
+    worker.loadURL('app://./worker.html')
+  }
+  worker.on('closed', () => {
+    worker = null;
+  })
 }
 
 function createWindow(proj_id) {
@@ -88,7 +107,16 @@ function createWindow(proj_id) {
 
   win.on('closed', () => {
     wins.del(win);
-  })
+    if(wins.size() === 0) {
+      if(worker) {
+        worker.close();
+      }
+    }
+  });
+
+  win.on('focus', () => {
+    beginCheck(wins.search(win), 'focus');
+  });
 }
 
 app.on('window-all-closed', () => {
@@ -99,10 +127,14 @@ app.on('activate', () => {
   if (wins.size() === 0) {
     createWindow(null);
   }
+  if(!worker) {
+    createWorker();
+  }
 })
 
 app.on('ready', async () => {
   createWindow(null);
+  createWorker();
 })
 
 if (isDevelopment) {
@@ -119,12 +151,20 @@ if (isDevelopment) {
   }
 }
 
+function beginCheck(proj_id, reason) {
+  if(worker && proj_id) {
+    worker.webContents.send('check', proj_id, reason);
+  }
+}
+
+// ipcMain
 ipcMain.on('bind-proj', (_, wid, proj_id) => {
   let win = BrowserWindow.fromId(Number.parseInt(wid));
   if (!win) {
     console.log('error win from id')
   }
   wins.update(win, proj_id);
+  beginCheck(proj_id, 'bind proj');
 })
 
 ipcMain.handle('open-proj', (_, id) => {
@@ -137,6 +177,7 @@ ipcMain.handle('open-proj', (_, id) => {
     win.focus();
   }
   createWindow(id);
+  beginCheck(id, 'open-proj');
 });
 
 ipcMain.on('close-win', (_, wid) => {
@@ -156,6 +197,7 @@ ipcMain.handle('active-proj', (_, proj_id) => {
     }
     win.show();
     win.focus();
+    beginCheck(proj_id, 'active proj');
     return win.id;
   }
   return 0;

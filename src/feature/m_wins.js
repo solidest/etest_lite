@@ -37,8 +37,18 @@ function find(proj_id) {
     return null;
 }
 
+function search(win) {
+    let keys = _wins.keys();
+    for(let k of keys) {
+        if(k.win === win) {
+            return k.proj_id;
+        }
+    }
+    return null;
+}
+
 function size() {
     return _wins.size;
 }
 
-export default { add, del, find, update, size }
+export default { add, del, find, search, update, size }

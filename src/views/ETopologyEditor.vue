@@ -101,7 +101,6 @@
                 this.save_doc();
             },
             save_doc: async function () {
-                this.redraw_topo();
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
