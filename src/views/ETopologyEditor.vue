@@ -11,7 +11,7 @@
                 </v-col>
                 <v-col cols=4 class="pa-0">
                     <div style="height: calc(100vh - 85px); overflow-y:auto;">
-                        <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_doc"> </e-device-mapping>
+                        <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_mapping"> </e-device-mapping>
                         <e-device-linking v-if="step==='link'" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
                         <e-device-binding v-if="step==='bind'" :items="main.binding" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_binding"> </e-device-binding>
                     </div>
@@ -26,10 +26,10 @@
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_topology';
     import EEditorBar from '../components/ETopologyBar';
+    import ETopoDraw from '../components/ETopologyDraw';
     import EDeviceMapping from '../components/EDeviceMapping';
     import EDeviceLinking from '../components/EDeviceLinking';
     import EDeviceBinding from '../components/EDeviceBinding';
-    import ETopoDraw from '../components/ETopoDraw';
 
     export default {
         components: {
@@ -75,29 +75,34 @@
                 }
                 this.step = step;
             },
-            update_draw_size: function() {
-                let self = this;
-                let el = self.$refs.__draw_rect;
-                self.draw_size = {height: el.offsetHeight, width: el.offsetWidth};
-                this.redraw_topo();
-            },
             redraw_topo(draw_data) {
                 this.$refs.drawor.update(this.main, this.draw_size, draw_data);
+            },
+            update_draw_size: function() {
+                let el = this.$refs.__draw_rect;
+                this.draw_size = {height: el.offsetHeight, width: el.offsetWidth};
+                this.redraw_topo();
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
                 this.redraw_topo(this.main.draw_data);
             },
+            save_draw_data: async function(draw_data) {
+                this.main.draw_data = draw_data;
+                this.save_doc();
+            },
             save_linking: async function(linking) {
                 this.main.linking = linking;
+                this.redraw_topo();
                 this.save_doc();
             },
             save_binding: async function(binding) {
                 this.main.binding = binding;
+                this.redraw_topo();
                 this.save_doc();
             },
-            save_draw_data: async function(draw_data) {
-                this.main.draw_data = draw_data;
+            save_mapping: async function() {
+                this.redraw_topo();
                 this.save_doc();
             },
             save_doc: async function () {

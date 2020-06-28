@@ -18,9 +18,14 @@
                                 </v-icon>
                             </td>
                             <td>
-                                <v-chip class="ma-1" @click.stop="current_row=item" >
-                                    {{item.kind}}
-                                </v-chip>
+                                <v-tooltip left color='red lighten-1'>
+                                    <template v-slot:activator="{ on }">
+                                        <v-chip class="ma-1" v-on="error_obj[item.id] && on" @click.stop="current_row=item" :color="error_obj[item.id]?'red lighten-1':''" >
+                                            {{item.kind}}
+                                        </v-chip>
+                                    </template>
+                                    <span>{{errtip_fmt(error_obj[item.id])}}</span>
+                                </v-tooltip>
                             </td>
                             <td>
                                 <v-edit-dialog :return-value.sync="item.name" @save="on_edited">
@@ -90,6 +95,17 @@
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
+            error_obj: function() {
+                let res = this.$store.getters.check_result;
+                if(!res) {
+                    return {}
+                }
+                res = res.device;
+                if(!res) {
+                    return {}
+                }
+                return res[this.doc_id] || {};
+            }
         },
         watch: {
             current_row: function (v) {
@@ -99,6 +115,13 @@
         methods: {
             obj_fmt: function (o) {
                 return helper.obj_fmt(o);
+            },
+            errtip_fmt: function(errs) {
+                if(!errs) {
+                    return '';
+                }
+                let res = errs.map(it=>it.msg);
+                return res.join('\n');
             },
             load_doc: async function () {
                 let doc = await ipc.load({

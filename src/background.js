@@ -202,3 +202,10 @@ ipcMain.handle('active-proj', (_, proj_id) => {
   }
   return 0;
 });
+
+ipcMain.on('check_result', (_, proj_id, version, results) => {
+  let win = wins.find(proj_id);
+  if(win) {
+    win.webContents.send('check_result', proj_id, results);
+  }
+})

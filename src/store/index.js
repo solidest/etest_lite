@@ -1,10 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import ipc from '../feature/r_ipc';
+const {
+  ipcRenderer
+} = window.require('electron')
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const _store = new Vuex.Store({
   state: {
     last_tip: {
       tip: false,
@@ -18,7 +21,8 @@ export default new Vuex.Store({
     undo_count: 0,
     proj: null,
     winid: 1,
-    copys: { device: ''}
+    copys: { device: ''},
+    check_result: null,
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -56,7 +60,7 @@ export default new Vuex.Store({
       state.winid = id;
     },
     setEditDoc: function(state, info) {
-      console.log('open doc', info.doc.id);
+      // console.log('open doc', info.doc.id);
       state.edit_doc = info;
     },
     setSeleDoc: function(state, info) {
@@ -83,11 +87,28 @@ export default new Vuex.Store({
     deletedDoc: function(state, id) {
       if(state.edit_doc && state.edit_doc.doc.id === id) {
         state.edit_doc = null;
-        console.log('close doc', id)
       }
+    },
+    setCheckResult: function(state, info) {
+      state.check_result = info;
+      console.log('check result', info);
     }
   },
   actions: {},
   modules: {},
-
+  getters: {
+    check_result: state => {
+      if(state.check_result && state.proj && state.check_result.proj_id === state.proj.id) {
+        return state.check_result.results;
+      }
+      return null;
+    },
+  }
 })
+
+//更新执行机状态
+ipcRenderer.on('check_result', (_, proj_id, results) => {
+  _store.commit('setCheckResult', {proj_id: proj_id, results: results});
+});
+
+export default _store

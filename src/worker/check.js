@@ -1,7 +1,6 @@
 
-import ipc from '../../feature/r_ipc';
-import check_device from './check_device';
-import check_topology from './check_topology';
+import ipc from '../feature/r_ipc';
+import load_proj from './wrapper/loader';
 
 let _task_id
 let _task_version;
@@ -13,23 +12,6 @@ function need_stop(proj_id, version) {
         return true;
     }
     return false;
-}
-
-async function check_start(proj_id, version) {
-    let res = [];
-    res = await check_device(proj_id, version, res, need_stop);
-    if(!res || need_stop(proj_id, version)) {
-        return null;
-    }
-    res = await check_topology(proj_id, version, res, need_stop);
-    if(!res || need_stop(proj_id, version)) {
-        return null;
-    }
-
-    if(need_stop(proj_id, version)) {
-        return null;
-    }
-    return res;
 }
 
 async function check(proj_id, reason) {
@@ -51,12 +33,16 @@ async function check(proj_id, reason) {
 
     _task_id = proj_id;
     _task_version = proj.updated;
-    _result = await check_start(_task_id, _task_version);
+    
+    let proj_obj = await load_proj(proj, need_stop);
+    if(!proj_obj) {
+        return;
+    }
+    _result = proj_obj.check();
+    console.log('check result', _result);
     if(_result && _task_id === proj_id && _task_version === proj.updated) {
         ipc.check_result(_task_id, _task_version, _result);
     }
 }
 
-
-
-export default { check,  }
+export default check;

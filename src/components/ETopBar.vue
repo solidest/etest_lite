@@ -7,8 +7,12 @@
                         <v-list-item-action>
                             <v-tooltip right open-delay="1500">
                                 <template v-slot:activator="{ on }">
-                                    <v-icon large v-on="on" :color="proj && page===item ? 'white':'grey'">{{ item.icon }}
-                                    </v-icon>
+                                    <v-badge :content="check_result[item.catalog]?check_result[item.catalog].$count:''"
+                                        :value="!!check_result[item.catalog]" color="red" overlap bottom offset-y="20" offset-x="20">
+                                        <v-icon large v-on="on" :color="proj && page===item ? 'white':'grey'">
+                                            {{ item.icon }}
+                                        </v-icon>
+                                    </v-badge>
                                 </template>
                                 <span>{{item.title}}</span>
                             </v-tooltip>
@@ -22,7 +26,8 @@
                     <v-list-item-action>
                         <v-tooltip right open-delay="1500">
                             <template v-slot:activator="{ on }">
-                                <v-icon large v-on="on" :color="isListPublic ? 'white':'grey'">mdi-view-dashboard-outline</v-icon>
+                                <v-icon large v-on="on" :color="isListPublic ? 'white':'grey'">
+                                    mdi-view-dashboard-outline</v-icon>
                             </template>
                             <span>资源库</span>
                         </v-tooltip>
@@ -35,7 +40,8 @@
                     <v-list-item-action>
                         <v-tooltip right open-delay="1500">
                             <template v-slot:activator="{ on }">
-                                <v-icon large v-on="on" :color="isListProj ? 'white':'grey'">mdi-view-sequential</v-icon>
+                                <v-icon large v-on="on" :color="isListProj ? 'white':'grey'">mdi-view-sequential
+                                </v-icon>
                             </template>
                             <span>项目库</span>
                         </v-tooltip>
@@ -49,9 +55,12 @@
                 <v-card :width="width-80" height="100%" tile>
                     <e-mini-bar :items="bar_items" :title="page.title" @edit_item="onMiniBar" />
                     <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                        <e-tree-editor v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog" :icons = "page.icons"> </e-tree-editor>
-                        <e-list-editor v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :icon="page.file_icon"> </e-list-editor>
-                        <e-list-editor v-else-if="page.type==='items'" :catalog="page.catalog" :icon="page.file_icon" :lists="page.items"> </e-list-editor>
+                        <e-tree-editor v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog"
+                            :icons="page.icons"> </e-tree-editor>
+                        <e-list-editor v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :errors="check_result[page.catalog]"
+                            :icon="page.file_icon"> </e-list-editor>
+                        <e-list-editor v-else-if="page.type==='items'" :catalog="page.catalog" :icon="page.file_icon"
+                            :lists="page.items"> </e-list-editor>
                     </div>
                 </v-card>
             </div>
@@ -77,11 +86,11 @@
             'e-tree-editor': ETreeEditor,
         },
 
-        mounted: function() {
-            if(this.$route.query.autoopen || this.$route.query.proj_id) {
+        mounted: function () {
+            if (this.$route.query.autoopen || this.$route.query.proj_id) {
                 let self = this;
                 setTimeout(() => {
-                    if(self.proj) {
+                    if (self.proj) {
                         self.width = show_;
                     } else {
                         self.page = null;
@@ -108,19 +117,23 @@
             proj: function () {
                 return this.$store.state.proj;
             },
-            page_route: function() {
+            page_route: function () {
                 return this.$route.name;
+            },
+            check_result: function () {
+                let res = this.$store.getters.check_result || {};
+                return res;
             }
         },
 
         watch: {
-            page_route: function(v) {
-                if(v === 'TestCase') {
+            page_route: function (v) {
+                if (v === 'TestCase') {
                     this.width = show_;
-                    if(this.page !== cfg.pages[0]) {
+                    if (this.page !== cfg.pages[0]) {
                         this.changePage(cfg.pages[0]);
                     }
-                } 
+                }
             }
         },
 
@@ -159,7 +172,7 @@
                     this.page = page;
                     this.updateBarItems();
                     this.width = show_;
-                    if(this.$route.name === 'ListProj' || this.$route.name === 'ListPublic') {
+                    if (this.$route.name === 'ListProj' || this.$route.name === 'ListPublic') {
                         this.$router.push({
                             name: 'Home'
                         });
@@ -179,15 +192,15 @@
                     });
                 }
             },
-            onMiniBar: function(action, value) {
-                if(this.page.type === 'tree') {
+            onMiniBar: function (action, value) {
+                if (this.page.type === 'tree') {
                     this.$refs.tree_editor.action(action, value);
-                } else if(this.page.type === 'list') {
+                } else if (this.page.type === 'list') {
                     this.$refs.list_editor.action(action, value);
                 }
             },
-            onOutClick: function() {
-                if(this.page.type === 'tree') {
+            onOutClick: function () {
+                if (this.page.type === 'tree') {
                     // this.$refs.tree_editor.action(action, value);
                     console.log('out click')
                 }

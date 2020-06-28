@@ -27,13 +27,6 @@ function setup(is_dev) {
         kinds.forEach(kind => {
             _db.addCollection(kind);
         });
-        // _db.addCollection("program");
-        // _db.addCollection("panel");
-        // _db.addCollection("protocol");
-        // _db.addCollection("device");
-        // _db.addCollection("topology");
-        // _db.addCollection("simu");
-        // _db.addCollection("doc");
     }
 }
 
