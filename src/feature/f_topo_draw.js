@@ -203,14 +203,11 @@ function _set_multi_lines(edges, offsetDiff = 50) {
 }
 
 function get_draw_data(devs, conns, mapping, linking) {
-    // console.log(binding ? binding.length : 'null');
     let nodes = _get_draw_nodes(devs, mapping);
     let lines = _get_draw_lines(conns, linking, nodes);
     if(lines) {
         lines = _set_multi_lines(lines);
     }
-    // console.log('nodes', nodes)
-    // console.log('lines', lines)
     return {
         nodes: nodes,
         edges: lines,
@@ -222,7 +219,9 @@ function merge_data(data, draw) {
     let old_ns = draw.nodes || [];
     let new_ns = data.nodes || [];
     for(let n of old_ns) {
-        if(new_ns.find(it => it.id === n.id)) {
+        let f = new_ns.find(it => it.id === n.id);
+        if(f) {
+            n.label = f.label;
             nodes.push(n);
         }
     }
@@ -230,7 +229,9 @@ function merge_data(data, draw) {
     let old_es = draw.edges || [];
     let new_es = data.edges || [];
     for(let n of old_es) {
-        if(new_es.find(it => it.source === n.source && it.target === it.target)) {
+        let f = new_es.find(it => it.source === n.source && it.target === n.target);
+        if(f) {
+            n.label = f.label;
             edges.push(n);
         }
     }
