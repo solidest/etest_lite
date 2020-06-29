@@ -11,8 +11,8 @@
                 <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
                     hide-default-footer disable-pagination>
                     <template v-slot:top>
-                        <v-text-field v-model="content.memo" placeholder="设备说明"
-                            label="说明" class="px-4 pt-4 pb-1" outlined hide-details @change="save_doc"> 
+                        <v-text-field v-model="content.memo" placeholder="设备说明" label="说明" class="px-4 pt-4 pb-1"
+                            outlined hide-details @change="save_doc">
                         </v-text-field>
                     </template>
                     <template v-slot:item="{item}">
@@ -24,20 +24,20 @@
                                 </v-icon>
                             </td>
                             <td>
-                                <v-tooltip left color='red lighten-1'>
+                                <v-chip class="ma-1" v-on="error_obj[item.id] && on" @click.stop="current_row=item">
+                                    {{item.kind}}
+                                </v-chip>
+                                <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
                                     <template v-slot:activator="{ on }">
-                                        <v-chip class="ma-1" v-on="error_obj[item.id] && on"
-                                            @click.stop="current_row=item"
-                                            :color="error_obj[item.id]?'red lighten-1':''">
-                                            {{item.kind}}
-                                        </v-chip>
+                                        <v-icon color="red lighten-1" v-on="on">mdi-alert</v-icon>
                                     </template>
                                     <span>{{errtip_fmt(error_obj[item.id])}}</span>
                                 </v-tooltip>
                             </td>
                             <td>
-                                <e-editor-dlg :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}" :id="item.id"
-                                    :widgets="cfg.name_widgets"  @save="on_edited_name_memo" :hide_name="true">
+                                <e-editor-dlg :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
+                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
+                                    :hide_name="true">
                                 </e-editor-dlg>
                             </td>
                             <td>
@@ -124,7 +124,7 @@
             obj_fmt: function (o) {
                 return helper.obj_fmt(o);
             },
-            name_fmt: function(it) {
+            name_fmt: function (it) {
                 return it.name + (it.memo ? `  (${it.memo})` : '');
             },
             errtip_fmt: function (errs) {
@@ -255,7 +255,7 @@
                 this.redo_undo.pushChange(this.content);
                 this.update_redo_undo();
             },
-            on_edited_name_memo: function(id, info) {
+            on_edited_name_memo: function (id, info) {
                 let it = this.content.items.find(it => it.id === id);
                 it.name = info.name || '';
                 it.memo = info.memo || '';

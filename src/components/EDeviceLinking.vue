@@ -10,16 +10,6 @@
                         {{ conn_short_name(item.value) }}
                     </v-chip>
                 </template>
-                <!-- <template v-slot:item="{ item, attrs }">
-                    <v-list-item v-bind="attrs">
-            
-                            <v-list-item-content>
-                                <v-checkbox></v-checkbox>
-                                <v-list-item-title v-text="item.text"></v-list-item-title>
-                            </v-list-item-content>
-
-                    </v-list-item>
-                </template> -->
                 <template v-slot:append>
                     <v-icon v-if="item!==linking[linking.length-1]" small @click="remove(item)">mdi-close</v-icon>
                 </template>
