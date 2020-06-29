@@ -21,6 +21,9 @@ class Project {
         if(this.device) {
             this.device.forEach(dev => dev.check());
         }
+        if(this.topology) {
+            this.topology.forEach(topo => topo.check());
+        }
         return this.check_res;
     }
    

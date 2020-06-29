@@ -50,6 +50,35 @@ function _get_binding(doc, all_conns) {
     return binding;
 }
 
+function load_topo(devs, doc) {
+    let conns = [];
+    for (let d of devs) {
+        let items = d.items || [];
+        d.conns = items.map(it => {
+            return {
+                id: it.id,
+                name: it.name,
+                kind: it.kind
+            }
+        });
+        for (let c of d.conns) {
+            conns.push({
+                id: c.id,
+                conn_obj: c,
+                dev_obj: d
+            });
+        }
+    }
+    return {
+        devs: devs,
+        conns: conns,
+        mapping: _get_mapping(doc, devs),
+        linking: _get_linking(doc, conns),
+        binding: _get_binding(doc, conns),
+        draw_data: doc.draw_data,
+    }
+}
+
 async function load(proj_id, topo_id) {
     let devlist = await ipc.list({
         kind: 'device',
@@ -61,40 +90,21 @@ async function load(proj_id, topo_id) {
             name: it.name
         }
     }) : [];
-    let conns = [];
     for (let d of devs) {
         let doc = await ipc.load({
             kind: 'doc',
             id: d.id
         });
-        d.conns = (doc && doc.content) ? doc.content.map(it => {
-            return {
-                id: it.id,
-                name: it.name,
-                kind: it.kind
-            }
-        }) : [];
-        for (let c of d.conns) {
-            conns.push({
-                id: c.id,
-                conn_obj: c,
-                dev_obj: d
-            });
-        }
+        doc = (doc ? doc.content : {}) || {};
+        d.items = doc.items || [];
     }
+
     let doc = await ipc.load({
         kind: 'doc',
         id: topo_id
     });
     doc = (doc && doc.content) ? doc.content : {};
-    return {
-        devs: devs,
-        conns: conns,
-        mapping: _get_mapping(doc, devs),
-        linking: _get_linking(doc, conns),
-        binding: _get_binding(doc, conns),
-        draw_data: doc.draw_data,
-    }
+    return load_topo(devs, doc);
 }
 
 function get_dev_name(devs, dev_id) {
@@ -192,6 +202,7 @@ function get_binding(devs, mapping, old_binding) {
 
 export default {
     load,
+    load_topo,
     get_dev_name,
     get_linking,
     get_conn_list,

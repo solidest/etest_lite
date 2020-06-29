@@ -12,7 +12,7 @@
                 <v-col cols=4 class="pa-0">
                     <div style="height: calc(100vh - 85px); overflow-y:auto;">
                         <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_mapping"> </e-device-mapping>
-                        <e-device-linking v-if="step==='link'" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
+                        <e-device-linking v-if="step==='link'" :doc_id="doc_id" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
                         <e-device-binding v-if="step==='bind'" :items="main.binding" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_binding"> </e-device-binding>
                     </div>
                 </v-col>
@@ -83,10 +83,6 @@
                 this.draw_size = {height: el.offsetHeight, width: el.offsetWidth};
                 this.redraw_topo();
             },
-            load_main: async function () {
-                this.main = await h.load(this.proj_id, this.doc_id);
-                this.redraw_topo(this.main.draw_data);
-            },
             save_draw_data: async function(draw_data) {
                 this.main.draw_data = draw_data;
                 this.save_doc();
@@ -104,6 +100,10 @@
             save_mapping: async function() {
                 this.redraw_topo();
                 this.save_doc();
+            },
+            load_main: async function () {
+                this.main = await h.load(this.proj_id, this.doc_id);
+                this.redraw_topo(this.main.draw_data);
             },
             save_doc: async function () {
                 let doc = {

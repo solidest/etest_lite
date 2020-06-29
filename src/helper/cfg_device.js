@@ -233,5 +233,9 @@ const cfg = {
         serial_ttl: serial_widgets,
     },
     new_widgets: new_widgets,
+    name_widgets: [
+        {name: 'name', type: 'text', cols: 4, label: '名称'},
+        {name: 'memo', type: 'text', cols: 8, label: '说明'},
+    ]
 }
 export default cfg

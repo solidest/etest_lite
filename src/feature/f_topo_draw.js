@@ -217,7 +217,30 @@ function get_draw_data(devs, conns, mapping, linking) {
     }
 }
 
+function merge_data(data, draw) {
+    let nodes = [];
+    let old_ns = draw.nodes || [];
+    let new_ns = data.nodes || [];
+    for(let n of old_ns) {
+        if(new_ns.find(it => it.id === n.id)) {
+            nodes.push(n);
+        }
+    }
+    let edges = [];
+    let old_es = draw.edges || [];
+    let new_es = data.edges || [];
+    for(let n of old_es) {
+        if(new_es.find(it => it.source === n.source && it.target === it.target)) {
+            edges.push(n);
+        }
+    }
+    draw.edges = edges;
+    draw.nodes = nodes;
+    return draw;
+}
+
 export default {
     get_draw_data,
+    merge_data,
     draw_line_style,
 }

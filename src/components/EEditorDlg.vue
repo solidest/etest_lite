@@ -3,14 +3,14 @@
     @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
         {{text}}
         <template v-slot:input>
-            <e-editor-sheet :data="value" :widgets="widgets" :title="title" />
+            <e-editor-sheet :data="value" :widgets="widgets" :title="title" :hide_name="hide_name" />
         </template>
     </v-edit-dialog>
 </template>
 
 <script>
     export default {
-        props: ['text', 'data', 'id', 'widgets', 'title'],
+        props: ['text', 'data', 'id', 'widgets', 'title', 'hide_name'],
         components: {
             'e-editor-sheet': () => import( /* webpackChunkName: "eeditorsheet" */ './widgets/EEditorSheet'),
         },

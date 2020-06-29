@@ -30,4 +30,31 @@ function valid_name(names, n) {
     return res;
 }
 
-export default { check_name, valid_name }
+function isPositiveNumber(n) {
+    if(isNaN(n)) {
+        return false;
+    }
+    return Number(n) > 0;
+}
+
+function isPositiveZeroNumber(n) {
+    if(isNaN(n)) {
+        return false;
+    }
+    return Number(n) >= 0;
+}
+
+function check_ip(ip) {
+    if(!ip) {
+        return false;
+    }
+    return /^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$/.test(ip);
+}
+
+export default { 
+    check_name,
+    valid_name,
+    check_ip,
+    isPositiveNumber,
+    isPositiveZeroNumber,
+}

@@ -1,26 +1,34 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon"
-                :newdef_data="{count:1}" :kind="cfg.kind" @action="on_action">
+            <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1}" :kind="cfg.kind"
+                @action="on_action">
                 <template v-slot:new_sheet="{new_data}">
                     <e-editor-sheet :data="new_data" :widgets="cfg.new_widgets" :hide_name="true" :max_width="260" />
                 </template>
             </e-editor-bar>
             <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                <v-data-table :headers="headers" :items="items" no-data-text="空" disable-sort hide-default-footer
-                    disable-pagination>
+                <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
+                    hide-default-footer disable-pagination>
+                    <template v-slot:top>
+                        <v-text-field full-width v-model="content.memo" placeholder="设备说明"
+                            single-line class="px-4 py-2" outlined hide-details @change="save_doc"> 
+                        </v-text-field>
+                    </template>
                     <template v-slot:item="{item}">
                         <tr>
                             <td @click.stop="current_row=item" class="mt-0">
-                                <v-icon small class="pt-0" :color="item===current_row?'primary':''" style="cursor:pointer;">
+                                <v-icon small class="pt-0" :color="item===current_row?'primary':''"
+                                    style="cursor:pointer;">
                                     {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
                                 </v-icon>
                             </td>
                             <td>
                                 <v-tooltip left color='red lighten-1'>
                                     <template v-slot:activator="{ on }">
-                                        <v-chip class="ma-1" v-on="error_obj[item.id] && on" @click.stop="current_row=item" :color="error_obj[item.id]?'red lighten-1':''" >
+                                        <v-chip class="ma-1" v-on="error_obj[item.id] && on"
+                                            @click.stop="current_row=item"
+                                            :color="error_obj[item.id]?'red lighten-1':''">
                                             {{item.kind}}
                                         </v-chip>
                                     </template>
@@ -28,18 +36,14 @@
                                 </v-tooltip>
                             </td>
                             <td>
-                                <v-edit-dialog :return-value.sync="item.name" @save="on_edited">
-                                    {{item.name}}
-                                    <template v-slot:input>
-                                        <v-text-field class="ma-2" dense hide-details label="接口名称" v-model="item.name"
-                                            outlined>
-                                        </v-text-field>
-                                    </template>
-                                </v-edit-dialog>
+                                <e-editor-dlg :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}" :id="item.id"
+                                    :widgets="cfg.name_widgets"  @save="on_edited_name_memo" :hide_name="true">
+                                </e-editor-dlg>
                             </td>
-                            <td> 
-                                <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id" :widgets="cfg.intf_widgets[item.kind]"
-                                    :title="`${title}.${item.name}`" @save="on_edited_cfg">
+                            <td>
+                                <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
+                                    :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
+                                    @save="on_edited_cfg">
                                 </e-editor-dlg>
                             </td>
                         </tr>
@@ -83,7 +87,11 @@
                 cfg: cfg,
                 bar_items: [],
                 headers: [],
-                items: [],
+                content: {
+                    items: [],
+                    memo: ''
+                },
+                memo: '',
                 current_row: null,
             }
         },
@@ -95,13 +103,13 @@
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
-            error_obj: function() {
+            error_obj: function () {
                 let res = this.$store.getters.check_result;
-                if(!res) {
+                if (!res) {
                     return {}
                 }
                 res = res.device;
-                if(!res) {
+                if (!res) {
                     return {}
                 }
                 return res[this.doc_id] || {};
@@ -116,32 +124,15 @@
             obj_fmt: function (o) {
                 return helper.obj_fmt(o);
             },
-            errtip_fmt: function(errs) {
-                if(!errs) {
+            name_fmt: function(it) {
+                return it.name + (it.memo ? `  (${it.memo})` : '');
+            },
+            errtip_fmt: function (errs) {
+                if (!errs) {
                     return '';
                 }
-                let res = errs.map(it=>it.msg);
+                let res = errs.map(it => it.msg);
                 return res.join('\n');
-            },
-            load_doc: async function () {
-                let doc = await ipc.load({
-                    kind: 'doc',
-                    id: this.doc_id
-                });
-                this.items = doc ? doc.content : [];
-                this.redo_undo.reset(this.items);
-            },
-            save_doc: async function () {
-                let doc = {
-                    id: this.doc_id,
-                    proj_id: this.proj_id,
-                    kind: this.kind,
-                    content: this.items
-                };
-                await ipc.update({
-                    kind: 'doc',
-                    doc: doc
-                });
             },
             update_redo_undo: function () {
                 this.$store.commit('setRedoUndo', {
@@ -163,6 +154,7 @@
                 let nd = {
                     id: shortid.generate(),
                     name: data.name || '',
+                    memo: '',
                     kind: data.type,
                     config: JSON.parse(JSON.stringify(dcfg)),
                 };
@@ -184,8 +176,8 @@
                 if (!ns) {
                     return false;
                 }
-                let idx = lman.insertAfter(this.items, this.current_row, ns);
-                this.current_row = this.items[idx];
+                let idx = lman.insertAfter(this.content.items, this.current_row, ns);
+                this.current_row = this.content.items[idx];
                 return true;
             },
             new_item_before: function (data) {
@@ -193,15 +185,15 @@
                 if (!ns) {
                     return false;
                 }
-                let idx = lman.insertBefore(this.items, this.current_row, ns);
-                this.current_row = this.items[idx];
+                let idx = lman.insertBefore(this.content.items, this.current_row, ns);
+                this.current_row = this.content.items[idx];
                 return true;
             },
             move_up: function () {
-                return lman.moveUp(this.items, this.current_row);
+                return lman.moveUp(this.content.items, this.current_row);
             },
             move_down: function () {
-                return lman.moveDown(this.items, this.current_row);
+                return lman.moveDown(this.content.items, this.current_row);
             },
             copy: function () {
                 if (!this.current_row) {
@@ -220,14 +212,14 @@
                 }
                 let obj = JSON.parse(str);
                 obj.id = shortid.generate();
-                let idx = lman.insertAfter(this.items, this.current_row, [obj]);
-                this.current_row = this.items[idx];
+                let idx = lman.insertAfter(this.content.items, this.current_row, [obj]);
+                this.current_row = this.content.items[idx];
                 return true;
             },
             undo: function () {
                 let its = this.redo_undo.popUndo();
                 if (its) {
-                    this.items = its;
+                    this.content = its;
                     this.current_row = null;
                     return true;
                 }
@@ -235,7 +227,7 @@
             redo: function () {
                 let its = this.redo_undo.popRedo();
                 if (its) {
-                    this.items = its;
+                    this.content = its;
                     this.current_row = null;
                     return true;
                 }
@@ -244,27 +236,56 @@
                 if (!this.current_row) {
                     return false;
                 }
-                lman.removeItem(this.items, this.current_row);
-                this.current_row = null;
+                let idx = this.content.items.findIndex(it => it === this.current_row);
+                lman.removeItem(this.content.items, this.current_row);
+                this.current_row = this.content.items[idx];
                 return true;
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
                     this.save_doc();
                     if (!(ac === 'redo' || ac === 'undo')) {
-                        this.redo_undo.pushChange(this.items);
+                        this.redo_undo.pushChange(this.content);
                     }
                     this.update_redo_undo();
                 }
             },
-            on_edited: function() {
+            on_edited: function () {
                 this.save_doc();
-                this.redo_undo.pushChange(this.items);
+                this.redo_undo.pushChange(this.content);
                 this.update_redo_undo();
             },
-            on_edited_cfg: function(id, cfg) {
-                this.items.find(it => it.id===id).config = cfg;
+            on_edited_name_memo: function(id, info) {
+                let it = this.content.items.find(it => it.id === id);
+                it.name = info.name || '';
+                it.memo = info.memo || '';
                 this.on_edited();
+            },
+            on_edited_cfg: function (id, cfg) {
+                this.content.items.find(it => it.id === id).config = cfg;
+                this.on_edited();
+            },
+            load_doc: async function () {
+                let doc = await ipc.load({
+                    kind: 'doc',
+                    id: this.doc_id
+                });
+                let content = doc ? (doc.content || {}) : {};
+                this.content.items = content.items || [];
+                this.content.memo = content.memo || '';
+                this.redo_undo.reset(this.content);
+            },
+            save_doc: async function () {
+                let doc = {
+                    id: this.doc_id,
+                    proj_id: this.proj_id,
+                    kind: this.kind,
+                    content: this.content
+                };
+                await ipc.update({
+                    kind: 'doc',
+                    doc: doc
+                });
             },
         }
     }

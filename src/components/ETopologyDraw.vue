@@ -9,11 +9,8 @@
     export default {
         methods: {
             update: function (main, size, draw_data) {
-                if(draw_data) {
-                    this.draw_data = draw_data;
-                } else {
-                    this.draw_data = h.get_draw_data(main.devs, main.conns, main.mapping, main.linking, main.binding);
-                }
+                let dd = h.get_draw_data(main.devs, main.conns, main.mapping, main.linking, main.binding);
+                this.draw_data = draw_data ? (h.merge_data(dd, draw_data)) : dd;
                 this.draw_size = size;
                 main.draw_data = this.redraw();
             },
