@@ -77,8 +77,11 @@
           case 'topology':
             res.route_name = 'Topology';
             break;
+          case 'protocol':
+            res.route_name = 'Protocol';
+            break;
           default:
-            console.log('editor route', ed);
+            console.log('TODO', ed);
             return null;
         }
         return res;

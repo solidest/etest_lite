@@ -11,7 +11,7 @@
                 <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
                     hide-default-footer disable-pagination>
                     <template v-slot:top>
-                        <v-text-field v-model="content.memo" placeholder="设备说明" label="说明" class="px-4 pt-4 pb-1"
+                        <v-text-field v-model="content.memo" placeholder="协议说明" label="说明" class="px-4 pt-4 pb-1"
                             outlined hide-details @change="save_doc">
                         </v-text-field>
                     </template>
@@ -24,7 +24,7 @@
                                 </v-icon>
                             </td>
                             <td>
-                                <v-chip class="ma-1" @click.stop="current_row=item">
+                                <v-chip class="ma-1" v-on="error_obj[item.id] && on" @click.stop="current_row=item">
                                     {{item.kind}}
                                 </v-chip>
                                 <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
