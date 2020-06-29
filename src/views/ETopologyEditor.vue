@@ -3,23 +3,28 @@
         <v-card height="100%" width="100%" tile>
             <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" :value="step" @step="on_step">
             </e-editor-bar>
-            <v-row>
-                <v-col cols=8 class="pa-0">
-                    <v-text-field  v-model="main.memo" placeholder="连接拓扑说明"
-                        label="说明" hide-details class="px-6 pt-4 pb-2" outlined  @change="save_doc"> 
-                    </v-text-field>
-                    <div style="height: calc(100vh - 83px); " ref="__draw_rect" v-resize="update_draw_size">
-                        <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor" > </e-topo-draw>
-                    </div>
-                </v-col>
-                <v-col cols=4 class="pa-0">
-                    <div style="height: calc(100vh - 85px); overflow-y:auto;">
-                        <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs" @save="save_mapping"> </e-device-mapping>
-                        <e-device-linking v-if="step==='link'" :doc_id="doc_id" :items="main.linking" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking"> </e-device-linking>
-                        <e-device-binding v-if="step==='bind'" :items="main.binding" :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_binding"> </e-device-binding>
-                    </div>
-                </v-col>
-            </v-row>
+                <v-row>
+                    <v-col cols=8 class="pa-2">
+                        <v-text-field v-model="main.memo" placeholder="连接拓扑说明" label="说明" hide-details
+                            class="px-6 pt-4 pb-2" outlined @change="save_doc">
+                        </v-text-field>
+                        <div style="height: calc(100vh - 180px);" ref="__draw_rect" v-resize="update_draw_size">
+                            <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor">
+                            </e-topo-draw>
+                        </div>
+                    </v-col>
+                    <v-col cols=4 class="pa-0">
+                        <div style="height: calc(100vh - 90px);  overflow-y:auto">
+                            <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs"
+                                @save="save_mapping"> </e-device-mapping>
+                            <e-device-linking v-if="step==='link'" :doc_id="doc_id" :items="main.linking"
+                                :devs="main.devs" :mapping="main.mapping" :conns="main.conns" @save="save_linking">
+                            </e-device-linking>
+                            <e-device-binding v-if="step==='bind'" :items="main.binding" :devs="main.devs"
+                                :mapping="main.mapping" :conns="main.conns" @save="save_binding"> </e-device-binding>
+                        </div>
+                    </v-col>
+                </v-row>
         </v-card>
     </v-container>
 </template>
@@ -73,7 +78,7 @@
         },
         methods: {
             on_step: function (step) {
-                if(this.step === step) {
+                if (this.step === step) {
                     return;
                 }
                 this.step = step;
@@ -81,33 +86,36 @@
             redraw_topo(draw_data) {
                 this.$refs.drawor.update(this.main, this.draw_size, draw_data);
             },
-            update_draw_size: function() {
+            update_draw_size: function () {
                 let el = this.$refs.__draw_rect;
-                this.draw_size = {height: el.offsetHeight, width: el.offsetWidth};
+                this.draw_size = {
+                    height: el.offsetHeight,
+                    width: el.offsetWidth
+                };
                 this.redraw_topo();
             },
-            save_draw_data: async function(draw_data) {
+            save_draw_data: async function (draw_data) {
                 this.main.draw_data = draw_data;
                 this.save_doc();
             },
-            save_linking: async function(linking) {
+            save_linking: async function (linking) {
                 this.main.linking = linking;
                 this.redraw_topo();
                 this.save_doc();
             },
-            save_binding: async function(binding) {
+            save_binding: async function (binding) {
                 this.main.binding = binding;
                 this.redraw_topo();
                 this.save_doc();
             },
-            save_mapping: async function() {
+            save_mapping: async function () {
                 this.redraw_topo();
                 this.save_doc();
             },
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
                 this.redraw_topo(this.main.draw_data);
-                if(this.main.linking.length>0) {
+                if (this.main.linking.length > 0) {
                     this.step = 'link';
                 }
             },
@@ -116,7 +124,13 @@
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: {memo: this.main.memo, mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding, draw_data: this.main.draw_data }
+                    content: {
+                        memo: this.main.memo,
+                        mapping: this.main.mapping,
+                        linking: this.main.linking,
+                        binding: this.main.binding,
+                        draw_data: this.main.draw_data
+                    }
                 };
                 ipc.update({
                     kind: 'doc',

@@ -46,21 +46,24 @@ const cfg = {
         catalog: 'tools',
         type: 'items',
         file_icon: 'mdi-help-rhombus-outline',
-        items: [
-            {
+        items: [{
                 name: '组合配对',
                 value: 'pairwise',
                 id: 'tool_pairwise'
             },{
-                name: '调试助手',
+                name: '图标库',
+                value: 'iconlib',
+                id: 'tool_iconlib'
+            },{
+                name: '(调试助手)',
                 value: 'assistant',
                 id: 'tool_assistant'
             },{
-                name: '历史记录',
+                name: '(历史记录)',
                 value: 'history',
                 id: 'tool_history'
             },{
-                name: '执行报告',
+                name: '(执行报告)',
                 value: 'report',
                 id: 'tool_report'
             },
