@@ -3,17 +3,19 @@
         <v-card height="100%" width="100%" tile>
             <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" :value="step" @step="on_step">
             </e-editor-bar>
-                <v-row>
-                    <v-col cols=8 class="pa-2">
+            <div style="height: calc(100vh - 90px);  overflow-y:auto">
+
+                <v-row class="pa-0 ma-0">
+                    <v-col cols=8 class="pa-0 ma-0">
                         <v-text-field v-model="main.memo" placeholder="连接拓扑说明" label="说明" hide-details
-                            class="px-6 pt-4 pb-2" outlined @change="save_doc">
+                            class="px-4 pt-4 pb-1" outlined @change="save_doc">
                         </v-text-field>
                         <div style="height: calc(100vh - 180px);" ref="__draw_rect" v-resize="update_draw_size">
                             <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor">
                             </e-topo-draw>
                         </div>
                     </v-col>
-                    <v-col cols=4 class="pa-0">
+                    <v-col cols=4 class="pa-0 ma-0">
                         <div style="height: calc(100vh - 90px);  overflow-y:auto">
                             <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs"
                                 @save="save_mapping"> </e-device-mapping>
@@ -25,6 +27,7 @@
                         </div>
                     </v-col>
                 </v-row>
+            </div>
         </v-card>
     </v-container>
 </template>
