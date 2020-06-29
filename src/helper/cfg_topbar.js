@@ -55,7 +55,7 @@ const cfg = {
                 value: 'iconlib',
                 id: 'tool_iconlib'
             },{
-                name: '(调试助手)',
+                name: '调试助手',
                 value: 'assistant',
                 id: 'tool_assistant'
             },{

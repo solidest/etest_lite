@@ -7,7 +7,7 @@
 
                 <v-row class="pa-0 ma-0">
                     <v-col cols=8 class="pa-0 ma-0">
-                        <v-text-field v-model="main.memo" placeholder="连接拓扑说明" label="说明" hide-details
+                        <v-text-field dense v-model="main.memo" placeholder="连接拓扑说明" label="说明" hide-details
                             class="px-4 pt-4 pb-1" outlined @change="save_doc">
                         </v-text-field>
                         <div style="height: calc(100vh - 180px);" ref="__draw_rect" v-resize="update_draw_size">

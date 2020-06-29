@@ -2,11 +2,11 @@ const cfg = {
     kind: 'protocol',
     icon: 'mdi-message-outline',
     bar_items: [{
-        text: '向后添加接口',
+        text: '向后添加',
         value: 'new_item_after',
         icon: 'mdi-table-row-plus-after'
     }, {
-        text: '向前添加接口',
+        text: '向前添加',
         value: 'new_item_before',
         icon: 'mdi-table-row-plus-before'
     }, {
@@ -39,18 +39,56 @@ const cfg = {
         icon: 'mdi-delete-outline'
     }, ],
     headers: [{}, {
-            text: '接口类型',
+            text: '类型',
             align: 'start',
             value: 'kind',
         },
         {
-            text: '接口名称',
+            text: '名称',
             value: 'name'
         },
         {
-            text: '接口参数',
+            text: '解析设置',
             value: 'config'
         }
     ],
+    bitaligns: [{
+        text: "高位在前",
+        value: "bitrl",
+    }, {
+        text: "低位在前",
+        value: "bitlr",
+    }],
+    new_widgets: [{
+            name: 'type',
+            type: 'select',
+            cols: 8,
+            items: [{
+                    text: 'segment (协议段)',
+                    value: 'segment'
+                },
+                {
+                    text: 'segments (协议段分组)',
+                    value: 'segments'
+                }, {
+                    text: 'oneof (动态分支)',
+                    value: 'oneof'
+                }
+            ],
+            label: '类型',
+        },
+        {
+            name: 'count',
+            type: 'number',
+            cols: 4,
+            label: '数量'
+        },
+        {
+            name: 'name',
+            type: 'text',
+            cols: 12,
+            label: '名称'
+        }
+    ]
 }
 export default cfg

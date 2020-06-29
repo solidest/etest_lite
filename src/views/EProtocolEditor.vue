@@ -11,9 +11,17 @@
                 <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
                     hide-default-footer disable-pagination>
                     <template v-slot:top>
-                        <v-text-field v-model="content.memo" placeholder="协议说明" label="说明" class="px-4 pt-4 pb-1"
-                            outlined hide-details @change="save_doc">
-                        </v-text-field>
+                        <v-row class="pa-0 ma-0">
+                            <v-col class="pa-0 ma-0" cols=10>
+                                <v-text-field dense v-model="content.memo" placeholder="协议说明" label="说明"
+                                    class="px-4 pt-4 pb-1" outlined hide-details @change="save_doc">
+                                </v-text-field>
+                            </v-col>
+                            <v-col class="pa-0 ma-0" cols=2 >
+                                <v-select dense class="pt-3 pr-3" :items="cfg.bitaligns" v-model="content.bitalign">
+                                </v-select>
+                            </v-col>
+                        </v-row>
                     </template>
                     <template v-slot:item="{item}">
                         <tr>
@@ -56,7 +64,7 @@
 
 <script>
     import ipc from '../feature/r_ipc';
-    import cfg from '../helper/cfg_device';
+    import cfg from '../helper/cfg_protocol';
     import lman from '../helper/list_man';
     import shortid from 'shortid';
     import helper from '../helper/helper';
@@ -90,7 +98,8 @@
                 headers: [],
                 content: {
                     items: [],
-                    memo: ''
+                    memo: '',
+                    bitalign: 'bitlr'
                 },
                 memo: '',
                 current_row: null,
