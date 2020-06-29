@@ -50,7 +50,7 @@ function _get_binding(doc, all_conns) {
     return binding;
 }
 
-function load_topo(devs, doc) {
+function load_topo(devs, content) {
     let conns = [];
     for (let d of devs) {
         let items = d.items || [];
@@ -72,10 +72,11 @@ function load_topo(devs, doc) {
     return {
         devs: devs,
         conns: conns,
-        mapping: _get_mapping(doc, devs),
-        linking: _get_linking(doc, conns),
-        binding: _get_binding(doc, conns),
-        draw_data: doc.draw_data,
+        mapping: _get_mapping(content, devs),
+        linking: _get_linking(content, conns),
+        binding: _get_binding(content, conns),
+        draw_data: content.draw_data,
+        memo: content.memo || '',
     }
 }
 

@@ -14,8 +14,8 @@ function need_stop(proj_id, version) {
     return false;
 }
 
-async function check(proj_id, reason) {
-    console.log('begin check', proj_id, reason)
+async function check(proj_id) {
+    // console.log('begin check', proj_id, reason)
     if(!proj_id) {
         return;
     }

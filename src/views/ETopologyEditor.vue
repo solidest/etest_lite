@@ -1,10 +1,13 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" @step="on_step">
+            <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" :value="step" @step="on_step">
             </e-editor-bar>
             <v-row>
                 <v-col cols=8 class="pa-0">
+                    <v-text-field  v-model="main.memo" placeholder="连接拓扑说明"
+                        label="说明" hide-details class="px-6 pt-4 pb-2" outlined  @change="save_doc"> 
+                    </v-text-field>
                     <div style="height: calc(100vh - 83px); " ref="__draw_rect" v-resize="update_draw_size">
                         <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor" > </e-topo-draw>
                     </div>
@@ -104,13 +107,16 @@
             load_main: async function () {
                 this.main = await h.load(this.proj_id, this.doc_id);
                 this.redraw_topo(this.main.draw_data);
+                if(this.main.linking.length>0) {
+                    this.step = 'link';
+                }
             },
             save_doc: async function () {
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: {mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding, draw_data: this.main.draw_data }
+                    content: {memo: this.main.memo, mapping: this.main.mapping, linking: this.main.linking, binding: this.main.binding, draw_data: this.main.draw_data }
                 };
                 ipc.update({
                     kind: 'doc',

@@ -18,8 +18,12 @@
 
 <script>
     export default {
-        props: ['title', 'items', 'icon'],
+        props: ['title', 'items', 'icon', 'value'],
         mounted: function () {
+            if(this.value) {
+                this.step = this.value;
+                return;
+            }
             if (this.items && this.items.length > 0) {
                 this.step = this.items[0].value;
             }
@@ -33,6 +37,11 @@
             step: function (nv, ov) {
                 if (nv && nv !== ov) {
                     this.$emit('step', nv);
+                }
+            },
+            value: function(v) {
+                if(v) {
+                    this.step = v;
                 }
             }
         }

@@ -11,8 +11,8 @@
                 <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
                     hide-default-footer disable-pagination>
                     <template v-slot:top>
-                        <v-text-field full-width v-model="content.memo" placeholder="设备说明"
-                            single-line class="px-4 py-2" outlined hide-details @change="save_doc"> 
+                        <v-text-field v-model="content.memo" placeholder="设备说明"
+                            label="说明" class="px-4 pt-4 pb-1" outlined hide-details @change="save_doc"> 
                         </v-text-field>
                     </template>
                     <template v-slot:item="{item}">
