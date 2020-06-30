@@ -10,7 +10,7 @@
                         <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                     </v-btn>
                     <v-btn v-else-if="item.value==='re_name'" icon small v-on="on" class="mx-1"
-                        @click="on_rename(item)">
+                        @click="(e)=>{selected?on_rename(item):e.stopPropagation()}">
                         <v-icon :color="selected ? 'grey lighten-1' : 'grey darken-1'">{{item.icon}}</v-icon>
                     </v-btn>
                     <v-btn v-else-if="item.value === 'del_item'" icon small v-on="on" class="mx-1"
