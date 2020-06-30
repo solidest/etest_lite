@@ -42,7 +42,7 @@ const cfg = {
         value: 'del_item',
         icon: 'mdi-delete-outline'
     }, ],
-    headers: [{}, {}, {
+    headers: [{width: 48}, {width:48}, {
         text: '名称',
         value: 'name'
     }, {

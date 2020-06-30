@@ -143,7 +143,7 @@ const cfg = {
 
     ],
     icon: 'mdi-dev-to',
-    headers: [{}, {
+    headers: [{width: 48}, {
             text: '接口类型',
             align: 'start',
             value: 'kind',
