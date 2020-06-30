@@ -42,24 +42,17 @@ const cfg = {
         value: 'del_item',
         icon: 'mdi-delete-outline'
     }, ],
-    headers: [{}, {
-            text: 'name',
-            value: 'name'
-        }, {
-            text: 'kind',
-            align: 'start',
-            value: 'kind',
-        }, {
-            text: 'config',
-            value: 'config'
-        }, {
-            text: 'level',
-            value: 'level',
-        }, {
-            text: 'deep',
-            value: 'deep'
-        }
-    ],
+    headers: [{}, {}, {
+        text: '名称',
+        value: 'name'
+    }, {
+        text: '解析',
+        align: 'start',
+        value: 'kind',
+    }, {
+        text: '设置',
+        value: 'config'
+    }],
     bitaligns: [{
         text: "高位在前",
         value: "bitrl",
@@ -72,14 +65,14 @@ const cfg = {
             type: 'select',
             cols: 8,
             items: [{
-                    text: 'segment (协议段)',
+                    text: '协议段',
                     value: 'segment'
                 },
                 {
-                    text: 'segments (协议段分组)',
+                    text: '协议段分组',
                     value: 'segments'
                 }, {
-                    text: 'oneof (动态分支)',
+                    text: '动态分支',
                     value: 'oneof'
                 }
             ],
@@ -96,17 +89,32 @@ const cfg = {
             type: 'text',
             cols: 12,
             label: '名称',
-            disabled: function (el_name, data) {
-                if (el_name === 'name') {
-                    return data.type === 'oneof';
-                }
-                return false;
+            visual: function (data) {
+                return data.type !== 'oneof';
+            },
+        },
+        {
+            name: 'parser',
+            type: 'text',
+            cols: 12,
+            label: '解析字符串',
+            visual: function (data) {
+                return data.type === 'segment';
             },
         }
     ],
-    name_widgets: [
-        {name: 'name', type: 'text', cols: 4, label: '名称'},
-        {name: 'memo', type: 'text', cols: 8, label: '说明'},
+    name_widgets: [{
+            name: 'name',
+            type: 'text',
+            cols: 4,
+            label: '名称'
+        },
+        {
+            name: 'memo',
+            type: 'text',
+            cols: 8,
+            label: '说明'
+        },
     ]
 }
 export default cfg

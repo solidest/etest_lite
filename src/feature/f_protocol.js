@@ -1,6 +1,13 @@
 
 import shortid from 'shortid';
 
+function property_str(name, value) {
+    if(value === null || value === undefined) {
+        return '';
+    }
+    return `${name}: ${value}`;
+}
+
 class OneofItem {
     constructor(data, parent, condition) {
         this.parent = parent;
@@ -21,7 +28,7 @@ class OneofItem {
     }
     lastIndex(draw_items) {
         if(this.children.length === 0) {
-            return draw_items.findIndex(it => it=== this);
+            return draw_items.findIndex(it => it === this.parent);
         } else {
             return this.children[this.children.length-1].lastIndex(draw_items);
         }
@@ -43,12 +50,12 @@ class OneofItem {
             child.list_append(items);
         });
     }
-    // insert_children(segs, draw_items) {
-    //     let draw_idx = this.lastIndex(draw_items);
-    //     segs.forEach(seg => seg.level++);
-    //     this.children.push(...segs);
-    //     draw_items.splice(draw_idx+1, 0, ...segs);
-    // }
+    insert_children(segs, draw_items) {
+        let draw_idx = this.lastIndex(draw_items);
+        // segs.forEach(seg => seg.deep++);
+        this.children.push(...segs);
+        draw_items.splice(draw_idx+1, 0, ...segs);
+    }
 }
 
 class Oneof{
@@ -113,10 +120,10 @@ class Oneof{
     }
     draw_append(items, level, deep) {
         this.level = level;
-        this.deep = deep;
+        this.deep = deep + 1;
         items.push(this);
         if(this.selected) {
-            this.selected.draw_append(items, level, deep+1);
+            this.selected.draw_append(items, level, this.deep);
         }
     }
     list_append(items) {
@@ -129,15 +136,15 @@ class Oneof{
         for(let i=0; i<count; i++) {
             let br = new OneofItem(null, self);
             br.level = this.level;
-            br.deep = this.deep + 1;
+            br.deep = this.deep;
             this.children.push(br);
         }
         this.select();
     }
-    // insert_children(segs, draw_items) {
-    //     this.check_children();
-    //     this.selected.insert_children(segs, draw_items);
-    // }
+    insert_children(segs, draw_items) {
+        this.check_children();
+        this.selected.insert_children(segs, draw_items);
+    }
 }
 
 class Segments {
@@ -221,8 +228,37 @@ class Segment {
     get kind() {
         return this.data.kind;
     }
+    get parser() {
+        return this.data.parser;
+    }
+    get config() {
+        let p1 = property_str('autovalue', this.data.autovalue);
+        let p2 = property_str('endwith', this.data.endwith);
+        let p3 = property_str('length', this.data.length);
+        let res = [];
+        if(p1) {
+            res.push(p1);
+        }
+        if(p2) {
+            res.push(p2);
+        }
+        if(p3) {
+            res.push(p3);
+        }
+        if(res.length===0) {
+            return '';
+        }
+        return res.join(', ');
+    }
+    set_config(parser, autovalue, endwith, length) {
+        this.data.parser = parser;
+        this.data.autovalue = autovalue;
+        this.data.endwith = endwith;
+        this.length = length;
+    }
     full_name() {
-        return `${this.parent.full_name()}.${this.name}`
+        let pn = this.parent.full_name();
+        return pn ? `${pn}.${this.name}` : this.name;
     }
     to_code() {
         return JSON.stringify(this.data);
@@ -315,16 +351,23 @@ function insert_brother_(segs, frm, parent, seg, offset) {
         }
 
     } else {
-        data_idx = parent.children.length;
-        draw_idx = frm.draw_items.length ;
-    }
+        if(offset===0) {
+            data_idx = 0;
+            draw_idx = 0;
+        } else {
+            data_idx = parent.children.length;
+            draw_idx = frm.draw_items.length ;            
+        }
 
+    }
     parent.children.splice(data_idx, 0, ...segs);
     frm.draw_items.splice(draw_idx, 0, ...segs);
 }
 
-function insert(frm, seg, kind, name, count, offset) {
-    count = count || 1;
+function insert(frm, seg, info, offset) {
+    let kind = info.type;
+    let count = info.count || 1;
+    let name = info.name || '';
     if(count<1) {
         count = 1;
     } else {
@@ -335,28 +378,26 @@ function insert(frm, seg, kind, name, count, offset) {
     let parent = seg ? seg.parent : frm;
     let segs = [];
     if(kind === 'oneof') {
-        let nseg = new Oneof(null, parent);
-        nseg.level = seg ? seg.level : 0;
-        nseg.deep = seg ? seg.deep : 0;
+        let nseg = new Oneof(null, offset===-1 ? seg : parent);
         nseg.add_oneof_branchs(count);
         segs.push(nseg);
     } else {
         for(let i=0; i<count; i++) {
-            let n = name || '';
             let nseg = null;
+            let n = name;
             if(count>1) {
-                n = (name||'') + (i+1);
+                n = name + (i+1);
             }
+            let p = offset===-1 ? seg : parent;
             if(kind === 'segment') {
-                nseg = new Segment(null, parent, n);
+                nseg = new Segment(null, p, n);
+                nseg.set_config(info.parser);
             } else if(kind === 'segments') {
-                nseg = new Segments(null, parent, n);
+                nseg = new Segments(null, p, n);
             }
             if(!nseg){
-                console.log('TODO', kind);
+                console.log('TODO new type', kind);
             } else {
-                nseg.level = seg ? seg.level : 0;
-                nseg.deep = seg ? seg.deep : 0;
                 segs.push(nseg);
             }
         }        
@@ -366,7 +407,23 @@ function insert(frm, seg, kind, name, count, offset) {
         return null;
     }
 
-    if(offset===-100) {
+    let level = seg ? seg.level : 0;
+    let deep = seg ? seg.deep : 0;
+    if(seg && seg.kind === 'segments' && offset===-1) {
+        level++;
+    }
+    if(seg && seg.kind === 'oneof' && offset!==-1) {
+        deep--;
+    }
+    if(kind==='oneof') {
+        deep++;
+    }
+    segs.forEach(s => {
+        s.level = level;
+        s.deep = deep;
+    })
+
+    if(offset===-1) {
         seg.insert_children(segs, frm.draw_items);
     } else {
         insert_brother_(segs, frm, parent, seg, offset);

@@ -17,23 +17,33 @@
                     </template>
                     <template v-slot:item="{item}">
                         <tr>
-                            <td @click.stop="current_row=item" class="mt-0">
-                                <v-icon small class="pt-0" :color="item===current_row?'primary':''"
+                            <td @click.stop="current_row=item">
+                                <v-icon small :color="item===current_row?'primary':''"
                                     style="cursor:pointer;">
                                     {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
                                 </v-icon>
+                                
+                            </td>
+                            <td class="pa-0 ma-0">
+                                <div v-if="item.deep>0" style="width: 100%; height: 100%; ">
+                                    <div  v-for="index of item.deep" :key="index" 
+                                        style="width: 10px; height: 100%; margin: 0px; border-left: 1px solid grey; display: inline-block">
+                                    </div>
+                                </div>
                             </td>
                             <td>
-                                <e-editor-dlg v-if="item.kind!=='oneof'" :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
+                                <span v-if="item.kind==='oneof'" :class="`pl-${item.level*4}`" style="cursor: pointer">...</span>
+                                <e-editor-dlg v-else :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
                                     :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
                                     :hide_name="true" :cls="`pl-${item.level*4}`">
                                 </e-editor-dlg>
                             </td>
                             <td>
-                                <span v-if="item.kind==='oneof'" class="ml-3" style="cursor: pointer">---</span>
-                                <span v-if="item.kind==='segments'" class="ml-3">{  }</span>
+                                <v-chip v-if="item.kind==='segments'" class="ma-1" @click.stop="current_row=item">
+                                    { }
+                                </v-chip>
                                 <v-chip v-else-if="item.kind==='segment'" class="ma-1" @click.stop="current_row=item">
-                                    {{item.kind}}
+                                    {{item.parser}}
                                 </v-chip>
                                 <!-- <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
                                     <template v-slot:activator="{ on }">
@@ -47,15 +57,7 @@
                                     :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
                                     @save="on_edited_cfg">
                                 </e-editor-dlg> -->
-                                <span>  {{item.to_code()}}
-                                </span>
-                            </td>
-                             <td>
-                                <span>  {{item.level}}
-                                </span>
-                            </td>
-                             <td>
-                                <span>  {{item.deep}}
+                                <span>  {{item.config}}
                                 </span>
                             </td>
                         </tr>
@@ -135,7 +137,7 @@
                 return it.full_name() + (it.memo ? `  (${it.memo})` : '');
             },
             disabled_sub_insert: function() {
-                return !(this.current_row && this.current_row.kind==='segments');
+                return !(this.current_row && ['segments', 'oneof'].includes(this.current_row.kind));
             },
             get_save_obj: function () {
                 return {
@@ -157,7 +159,7 @@
             },
 
             new_item_after: function (data) {
-                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, 1);
+                let res = h.insert(this.content.frm, this.current_row, data, 1);
                 if (res && res.length > 0) {
                     this.current_row = res[0];
                     return true;
@@ -165,7 +167,7 @@
                 return false;
             },
             new_item_before: function (data) {
-                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, 0);
+                let res = h.insert(this.content.frm, this.current_row, data, 0);
                 if (res && res.length > 0) {
                     this.current_row = res[0];
                     return true;
@@ -173,7 +175,7 @@
                 return false;
             },
             new_item_sub: function (data) {
-                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, -100);
+                let res = h.insert(this.content.frm, this.current_row, data, -1);
                 if (res && res.length > 0) {
                     this.current_row = res[0];
                     return true;

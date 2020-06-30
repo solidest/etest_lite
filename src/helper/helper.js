@@ -59,7 +59,7 @@ function obj_fmt(obj) {
     let res = [];
     for(let it in obj) {
         let v = isNaN(obj[it]) ? `'${obj[it]}'` : obj[it]
-        res.push(it + ':' + v);
+        res.push(it + ': ' + v);
     }
     return res.join(', ');
 }
