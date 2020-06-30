@@ -89,6 +89,7 @@
 <script>
   import ipc from '../feature/r_ipc';
   import helper from '../helper/helper';
+  import h from '../feature/f_project'
 
   export default {
     components: {
@@ -248,7 +249,7 @@
         }
         let self = this;
         let proj = this.editing_proj.data;
-        helper.check_proj_newname(n).then((r) => {
+        h.check_proj_newname(n).then((r) => {
           if (r !== 'ok') {
             self.$store.commit('setMsgError', r);
           } else {

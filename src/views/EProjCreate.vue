@@ -109,6 +109,7 @@
 
 <script>
     import ipc from '../feature/r_ipc';
+    import h from '../feature/f_project'
     import shortid from 'shortid'
     export default {
         data() {
@@ -123,11 +124,8 @@
                     text: '空项目',
                     value: null
                 }, {
-                    text: '克隆历史项目',
+                    text: '复制历史项目',
                     value: 'clone'
-                }, {
-                    text: '从历史项目选择复制',
-                    value: 'copy'
                 }, {
                     text: '从文件导入',
                     value: 'import'
@@ -162,24 +160,9 @@
             nextStep() {
                 this.step++;
             },
-            check_proj_newname: async function (name) {
-                name = (name ? name : '').trim();
-                if(!name) {
-                    return '名称不能为空';
-                }
-                let projs = await ipc.list_proj();
-                if(!projs) {
-                    return 'ok';
-                }
-                for(let p of projs) {
-                    if(p.name === name) {
-                        return '名称重复';
-                    }
-                }
-                return 'ok';
-            },
+            
             ok: async function () {
-                let res = await this.check_proj_newname(this.input_text);
+                let res = await h.check_proj_newname(this.input_text);
                 if (res !== 'ok') {
                     this.$store.commit('setMsgError', res);
                 } else {

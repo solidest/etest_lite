@@ -45,7 +45,7 @@ function quit() {
 let worker = null;
 function createWorker() {
   worker = new BrowserWindow({
-    show: true,
+    show: isDevelopment,
     webPreferences: { nodeIntegration: true }
   });
   ipc.setup(worker);
