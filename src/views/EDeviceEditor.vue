@@ -92,7 +92,6 @@
                     items: [],
                     memo: ''
                 },
-                memo: '',
                 current_row: null,
             }
         },

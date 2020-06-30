@@ -2,6 +2,10 @@ const cfg = {
     kind: 'protocol',
     icon: 'mdi-message-outline',
     bar_items: [{
+        text: '添加子级',
+        value: 'new_item_sub',
+        icon: 'mdi-table-row',
+    }, {
         text: '向后添加',
         value: 'new_item_after',
         icon: 'mdi-table-row-plus-after'
@@ -39,17 +43,21 @@ const cfg = {
         icon: 'mdi-delete-outline'
     }, ],
     headers: [{}, {
-            text: '类型',
+            text: 'name',
+            value: 'name'
+        }, {
+            text: 'kind',
             align: 'start',
             value: 'kind',
-        },
-        {
-            text: '名称',
-            value: 'name'
-        },
-        {
-            text: '解析设置',
+        }, {
+            text: 'config',
             value: 'config'
+        }, {
+            text: 'level',
+            value: 'level',
+        }, {
+            text: 'deep',
+            value: 'deep'
         }
     ],
     bitaligns: [{
@@ -87,8 +95,18 @@ const cfg = {
             name: 'name',
             type: 'text',
             cols: 12,
-            label: '名称'
+            label: '名称',
+            disabled: function (el_name, data) {
+                if (el_name === 'name') {
+                    return data.type === 'oneof';
+                }
+                return false;
+            },
         }
+    ],
+    name_widgets: [
+        {name: 'name', type: 'text', cols: 4, label: '名称'},
+        {name: 'memo', type: 'text', cols: 8, label: '说明'},
     ]
 }
 export default cfg

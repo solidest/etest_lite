@@ -1,7 +1,7 @@
 <template>
     <v-edit-dialog large save-text="确定" cancel-text="取消"
     @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
-        {{text}}
+        <span :class="cls">{{text}}</span>
         <template v-slot:input>
             <e-editor-sheet :data="value" :widgets="widgets" :title="title" :hide_name="hide_name" />
         </template>
@@ -10,7 +10,7 @@
 
 <script>
     export default {
-        props: ['text', 'data', 'id', 'widgets', 'title', 'hide_name'],
+        props: ['text', 'data', 'id', 'widgets', 'title', 'hide_name', 'cls'],
         components: {
             'e-editor-sheet': () => import( /* webpackChunkName: "eeditorsheet" */ './widgets/EEditorSheet'),
         },

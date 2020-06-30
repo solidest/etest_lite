@@ -1,27 +1,19 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1}" :kind="cfg.kind"
-                @action="on_action">
+            <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1, name:''}"
+                :kind="cfg.kind" @action="on_action">
                 <template v-slot:new_sheet="{new_data}">
                     <e-editor-sheet :data="new_data" :widgets="cfg.new_widgets" :hide_name="true" :max_width="260" />
                 </template>
             </e-editor-bar>
             <div style="height: calc(100vh - 90px);  overflow-y:auto">
-                <v-data-table :headers="headers" :items="content.items" no-data-text="空" disable-sort
-                    hide-default-footer disable-pagination>
+                <v-data-table :headers="headers" :items="draw_items" no-data-text="空" disable-sort hide-default-footer
+                    disable-pagination>
                     <template v-slot:top>
-                        <v-row class="pa-0 ma-0">
-                            <v-col class="pa-0 ma-0" cols=10>
-                                <v-text-field dense v-model="content.memo" placeholder="协议说明" label="说明"
-                                    class="px-4 pt-4 pb-1" outlined hide-details @change="save_doc">
-                                </v-text-field>
-                            </v-col>
-                            <v-col class="pa-0 ma-0" cols=2 >
-                                <v-select dense class="pt-3 pr-3" :items="cfg.bitaligns" v-model="content.bitalign">
-                                </v-select>
-                            </v-col>
-                        </v-row>
+                        <v-text-field dense v-model="content.memo" placeholder="协议说明" label="说明" class="px-4 pt-4 pb-1"
+                            outlined hide-details @change="save_doc">
+                        </v-text-field>
                     </template>
                     <template v-slot:item="{item}">
                         <tr>
@@ -32,27 +24,39 @@
                                 </v-icon>
                             </td>
                             <td>
-                                <v-chip class="ma-1" v-on="error_obj[item.id] && on" @click.stop="current_row=item">
+                                <e-editor-dlg v-if="item.kind!=='oneof'" :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
+                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
+                                    :hide_name="true" :cls="`pl-${item.level*4}`">
+                                </e-editor-dlg>
+                            </td>
+                            <td>
+                                <span v-if="item.kind==='oneof'" class="ml-3" style="cursor: pointer">---</span>
+                                <span v-if="item.kind==='segments'" class="ml-3">{  }</span>
+                                <v-chip v-else-if="item.kind==='segment'" class="ma-1" @click.stop="current_row=item">
                                     {{item.kind}}
                                 </v-chip>
-                                <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
+                                <!-- <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
                                     <template v-slot:activator="{ on }">
                                         <v-icon color="red lighten-1" v-on="on">mdi-alert</v-icon>
                                     </template>
                                     <span>{{errtip_fmt(error_obj[item.id])}}</span>
-                                </v-tooltip>
+                                </v-tooltip> -->
                             </td>
                             <td>
-                                <e-editor-dlg :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
-                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
-                                    :hide_name="true">
-                                </e-editor-dlg>
-                            </td>
-                            <td>
-                                <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
+                                <!-- <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
                                     :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
                                     @save="on_edited_cfg">
-                                </e-editor-dlg>
+                                </e-editor-dlg> -->
+                                <span>  {{item.to_code()}}
+                                </span>
+                            </td>
+                             <td>
+                                <span>  {{item.level}}
+                                </span>
+                            </td>
+                             <td>
+                                <span>  {{item.deep}}
+                                </span>
                             </td>
                         </tr>
                     </template>
@@ -65,9 +69,10 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_protocol';
-    import lman from '../helper/list_man';
-    import shortid from 'shortid';
-    import helper from '../helper/helper';
+    import h from '../feature/f_protocol';
+    // import lman from '../helper/list_man';
+    // import shortid from 'shortid';
+    // import helper from '../helper/helper';
     import EEditorBar from '../components/EEditorBar';
     import RedoUndo from '../helper/redo_undo';
     import EEditorSheet from '../components/widgets/EEditorSheet';
@@ -87,21 +92,21 @@
             this.bar_items = this.cfg.bar_items;
             this.headers = this.cfg.headers;
             this.load_doc();
+            this.cfg.bar_items[0].disabled = this.disabled_sub_insert;
         },
 
         data() {
             return {
                 doc_id: null,
+                bar_items: [],
                 cfg: cfg,
                 kind: cfg.kind,
-                bar_items: [],
                 headers: [],
                 content: {
-                    items: [],
                     memo: '',
-                    bitalign: 'bitlr'
+                    bitalign: 'bitlr',
+                    frm: null,
                 },
-                memo: '',
                 current_row: null,
             }
         },
@@ -113,16 +118,11 @@
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
-            error_obj: function () {
-                let res = this.$store.getters.check_result;
-                if (!res) {
-                    return {}
+            draw_items: function () {
+                if (!this.content.frm) {
+                    return [];
                 }
-                res = res.device;
-                if (!res) {
-                    return {}
-                }
-                return res[this.doc_id] || {};
+                return this.content.frm.draw_items || [];
             }
         },
         watch: {
@@ -131,18 +131,23 @@
             }
         },
         methods: {
-            obj_fmt: function (o) {
-                return helper.obj_fmt(o);
-            },
             name_fmt: function (it) {
-                return it.name + (it.memo ? `  (${it.memo})` : '');
+                return it.full_name() + (it.memo ? `  (${it.memo})` : '');
             },
-            errtip_fmt: function (errs) {
-                if (!errs) {
-                    return '';
+            disabled_sub_insert: function() {
+                return !(this.current_row && this.current_row.kind==='segments');
+            },
+            get_save_obj: function () {
+                return {
+                    items: this.content.frm.save(),
+                    memo: this.content.memo,
+                    bitalign: this.content.bitalign
                 }
-                let res = errs.map(it => it.msg);
-                return res.join('\n');
+            },
+            restore_from_obj: function (obj) {
+                this.content.memo = obj.memo || '',
+                    this.content.bitalign = obj.bitalign || 'bitlr';
+                this.content.frm = h.load_frm(obj.items);
             },
             update_redo_undo: function () {
                 this.$store.commit('setRedoUndo', {
@@ -150,130 +155,84 @@
                     undo_count: this.redo_undo.undoCount
                 });
             },
-            get_new_items_: function (data) {
-                if (!data.type) {
-                    return null;
-                }
-                let count = isNaN(data.count) ? 1 : Number.parseInt(data.count);
-                if (count <= 0) {
-                    count = 1;
-                } else if (count > 20) {
-                    count = 20;
-                }
-                let dcfg = this.cfg.intf_default[data.type];
-                let nd = {
-                    id: shortid.generate(),
-                    name: data.name || '',
-                    memo: '',
-                    kind: data.type,
-                    config: JSON.parse(JSON.stringify(dcfg)),
-                };
-                let res = [];
-                if (count > 1) {
-                    for (let i = 0; i < count; i++) {
-                        let ndd = JSON.parse(JSON.stringify(nd));
-                        ndd.name = nd.name + (i + 1);
-                        ndd.id = shortid.generate();
-                        res.push(ndd);
-                    }
-                } else {
-                    res.push(nd);
-                }
-                return res;
-            },
+
             new_item_after: function (data) {
-                let ns = this.get_new_items_(data);
-                if (!ns) {
-                    return false;
+                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, 1);
+                if (res && res.length > 0) {
+                    this.current_row = res[0];
+                    return true;
                 }
-                let idx = lman.insertAfter(this.content.items, this.current_row, ns);
-                this.current_row = this.content.items[idx];
-                return true;
-            },
-            new_item_before: function (data) {
-                let ns = this.get_new_items_(data);
-                if (!ns) {
-                    return false;
-                }
-                let idx = lman.insertBefore(this.content.items, this.current_row, ns);
-                this.current_row = this.content.items[idx];
-                return true;
-            },
-            move_up: function () {
-                return lman.moveUp(this.content.items, this.current_row);
-            },
-            move_down: function () {
-                return lman.moveDown(this.content.items, this.current_row);
-            },
-            copy: function () {
-                if (!this.current_row) {
-                    return false;
-                }
-                this.$store.commit('setCopyObject', {
-                    kind: this.cfg.kind,
-                    obj: this.current_row
-                });
                 return false;
             },
-            paste: function () {
-                let str = this.$store.state.copys[this.cfg.kind];
-                if (!str) {
-                    return false;
+            new_item_before: function (data) {
+                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, 0);
+                if (res && res.length > 0) {
+                    this.current_row = res[0];
+                    return true;
                 }
-                let obj = JSON.parse(str);
-                obj.id = shortid.generate();
-                let idx = lman.insertAfter(this.content.items, this.current_row, [obj]);
-                this.current_row = this.content.items[idx];
-                return true;
+                return false;
+            },
+            new_item_sub: function (data) {
+                let res = h.insert(this.content.frm, this.current_row, data.type, data.name, data.count, -100);
+                if (res && res.length > 0) {
+                    this.current_row = res[0];
+                    return true;
+                }
+                return false;
+            },
+            move_up: function () {
+
+            },
+            move_down: function () {
+
+            },
+            copy: function () {
+
+            },
+            paste: function () {
+
             },
             undo: function () {
-                let its = this.redo_undo.popUndo();
-                if (its) {
-                    this.content = its;
+                let content = this.redo_undo.popUndo();
+                if (content) {
+                    this.restore_from_obj(content);
                     this.current_row = null;
                     return true;
                 }
             },
             redo: function () {
-                let its = this.redo_undo.popRedo();
-                if (its) {
-                    this.content = its;
+                let content = this.redo_undo.popRedo();
+                if (content) {
+                    this.restore_from_obj(content);
                     this.current_row = null;
                     return true;
                 }
             },
             del_item: function () {
-                if (!this.current_row) {
-                    return false;
-                }
-                let idx = this.content.items.findIndex(it => it === this.current_row);
-                lman.removeItem(this.content.items, this.current_row);
-                this.current_row = this.content.items[idx];
-                return true;
+
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
                     this.save_doc();
                     if (!(ac === 'redo' || ac === 'undo')) {
-                        this.redo_undo.pushChange(this.content);
+
+                        this.redo_undo.pushChange(this.get_save_obj());
                     }
                     this.update_redo_undo();
                 }
             },
             on_edited: function () {
                 this.save_doc();
-                this.redo_undo.pushChange(this.content);
+                this.redo_undo.pushChange(this.get_save_obj());
                 this.update_redo_undo();
             },
             on_edited_name_memo: function (id, info) {
-                let it = this.content.items.find(it => it.id === id);
-                it.name = info.name || '';
-                it.memo = info.memo || '';
+                let it = this.content.frm.draw_items.find(it => it.id === id);
+                it.update_name_memo(info.name, info.memo);
                 this.on_edited();
             },
             on_edited_cfg: function (id, cfg) {
-                this.content.items.find(it => it.id === id).config = cfg;
-                this.on_edited();
+                console.log('on_edited_cfg', id, cfg);
             },
             load_doc: async function () {
                 let doc = await ipc.load({
@@ -281,16 +240,15 @@
                     id: this.doc_id
                 });
                 let content = doc ? (doc.content || {}) : {};
-                this.content.items = content.items || [];
-                this.content.memo = content.memo || '';
-                this.redo_undo.reset(this.content);
+                this.restore_from_obj(content);
+                this.redo_undo.reset(content);
             },
             save_doc: async function () {
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,
                     kind: this.kind,
-                    content: this.content
+                    content: this.get_save_obj(),
                 };
                 await ipc.update({
                     kind: 'doc',

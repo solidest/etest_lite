@@ -51,7 +51,7 @@ const cfg = {
                 value: 'pairwise',
                 id: 'tool_pairwise'
             },{
-                name: '图标库',
+                name: '图标库',
                 value: 'iconlib',
                 id: 'tool_iconlib'
             },{
