@@ -23,14 +23,20 @@ class OneofItem {
     get kind() {
         return this.data.kind;
     }
+    get condition() {
+        return this.data.condition;
+    }
+    set_condition(c) {
+        this.data.condition = c;
+    }
     full_name() {
         return this.parent.full_name();
     }
-    lastIndex(draw_items) {
+    last_index(draw_items) {
         if(this.children.length === 0) {
             return draw_items.findIndex(it => it === this.parent);
         } else {
-            return this.children[this.children.length-1].lastIndex(draw_items);
+            return this.children[this.children.length-1].last_index(draw_items);
         }
     }
     save_append(items) {
@@ -51,8 +57,7 @@ class OneofItem {
         });
     }
     insert_children(segs, draw_items) {
-        let draw_idx = this.lastIndex(draw_items);
-        // segs.forEach(seg => seg.deep++);
+        let draw_idx = this.last_index(draw_items);
         this.children.push(...segs);
         draw_items.splice(draw_idx+1, 0, ...segs);
     }
@@ -71,7 +76,7 @@ class Oneof{
         }
         this.children = branchs;
         this.check_children();
-        this.select(this.data.sel_id);
+        this.data.sel_id = this.select(this.data.sel_id);
     }
     get id() {
         return this.data.id;
@@ -85,6 +90,14 @@ class Oneof{
     get memo() {
         return '';
     }
+    get condition() {
+        return this.selected ? this.selected.condition : '';
+    }
+    conditions() {
+        let res = [];
+        this.children.forEach(child => res.push({id: child.id, condition: child.condition, selected: child===this.selected}));
+        return res;
+    }
     full_name() {
         return this.parent.full_name();
     }
@@ -97,17 +110,19 @@ class Oneof{
     select(id) {
         if(this.children.length === 0) {
             this.selected = null;
+            return null;
         } else {
             let sel = this.children.find(it => it.id === id);
             this.selected = sel || this.children[0];
+            return this.selected.id;
         }
     }
     to_code() {
         return JSON.stringify(this.data);
     }
-    lastIndex(draw_items) {
+    last_index(draw_items) {
         if(this.selected) {
-            return this.selected.lastIndex(draw_items);
+            return this.selected.last_index(draw_items);
         }
         return draw_items.findIndex(it => it=== this);
     }
@@ -115,7 +130,7 @@ class Oneof{
         let its = [];
         this.children.forEach(ch => ch.save_append(its));
         this.data.items = its;
-        this.data.sel_id = this.selected ? this.selected.id : null;
+        this.data.sel_id = this.sel_id;
         items.push(this.data);
     }
     draw_append(items, level, deep) {
@@ -145,6 +160,26 @@ class Oneof{
         this.check_children();
         this.selected.insert_children(segs, draw_items);
     }
+    udpate_conditions(items) {
+        let chs = [];
+        this.selected = null;
+        items.forEach( e => {
+            let ch = this.children.find(c => c.id === e.id);
+            if(ch) {
+                ch.set_condition(e.condition);
+                chs.push(ch);
+            } else {
+                chs.push(new OneofItem(null, this, e.condition));
+            }
+            if(e.selected) {
+                this.selected = chs[chs.length-1];
+            }
+        });
+        this.children = chs;
+        if(!this.selected && this.children.length>0) {
+            this.selected = this.children[0];
+        }
+    }
 }
 
 class Segments {
@@ -172,11 +207,11 @@ class Segments {
     to_code() {
         return JSON.stringify(this.data);
     }
-    lastIndex(draw_items) {
+    last_index(draw_items) {
         if(this.children.length === 0) {
             return draw_items.findIndex(it => it=== this);
         } else {
-            return this.children[this.children.length-1].lastIndex(draw_items);
+            return this.children[this.children.length-1].last_index(draw_items);
         }
     }
     save_append(items) {
@@ -200,8 +235,7 @@ class Segments {
         });
     }
     insert_children(segs, draw_items) {
-        let draw_idx = this.lastIndex(draw_items);
-        segs.forEach(seg => seg.level++);
+        let draw_idx = this.last_index(draw_items);
         this.children.push(...segs);
         draw_items.splice(draw_idx+1, 0, ...segs);
     }
@@ -263,7 +297,7 @@ class Segment {
     to_code() {
         return JSON.stringify(this.data);
     }
-    lastIndex(draw_items) {
+    last_index(draw_items) {
         return draw_items.findIndex(it => it=== this);
     }
     save_append(items) {
@@ -272,9 +306,6 @@ class Segment {
     draw_append(items, level, deep) {
         this.level = level;
         this.deep = deep;
-        items.push(this);
-    }
-    list_append(items) {
         items.push(this);
     }
     update_name_memo(name, memo){
@@ -293,6 +324,14 @@ class Frame {
         return null;
     }
 
+    last_index(draw_items) {
+        if(this.children.length===0) {
+            return -1;
+        } else {
+            return this.children[this.children.length-1].last_index(draw_items);
+        }
+    }
+
     save() {
         let items = [];
         this.children.forEach(it => {
@@ -300,6 +339,7 @@ class Frame {
         });
         return items;
     }
+
 
     draw() {
         let items = [];
@@ -327,7 +367,7 @@ function load(items, parent) {
         } else if(it.kind === 'oneof') {
             objs.push(new Oneof(it, parent));
         } else {
-            console.log('TODO', it);
+            console.log('TODO load', it);
         }
     });
     return objs;
@@ -347,7 +387,7 @@ function insert_brother_(segs, frm, parent, seg, offset) {
         if(offset===0) {
             draw_idx = frm.draw_items.findIndex(it => it===seg);           
         } else {
-            draw_idx = seg.lastIndex(frm.draw_items)+1;
+            draw_idx = seg.last_index(frm.draw_items)+1;
         }
 
     } else {
@@ -431,17 +471,103 @@ function insert(frm, seg, info, offset) {
     return segs;
 }
 
-function remove(seg, draw_items) {
+function remove(frm, seg) {
     let items = [];
-    seg.list_append(items);
+    seg.draw_append(items, seg.level, seg.deep);
     let index = seg.parent.children.findIndex(it => it === seg);
-    seg.parent.splice(index, 1);
+    seg.parent.children.splice(index, 1);
     items.forEach(item => {
-        let idx = draw_items.findIndex(it => it === item);
+        let idx = frm.draw_items.findIndex(it => it === item);
         if(idx>=0) {
-            draw_items.splice(idx, 1);
+            frm.draw_items.splice(idx, 1);
         }
     })
 }
 
-export default { load_frm, insert, remove, }
+function moveup(frm, seg) {
+    let index = seg.parent.children.findIndex(it => it === seg);
+    if(index===0) {
+        return false;
+    }
+
+    let up_seg = seg.parent.children[index-1];
+    let items = [];
+    seg.draw_append(items, seg.level, seg.deep-(seg.kind==='oneof'?1:0));
+
+    seg.parent.children.splice(index, 1);
+    seg.parent.children.splice(index-1, 0, seg);
+    items.forEach(item => {
+        let idx = frm.draw_items.findIndex(it => it === item);
+        if(idx>=0) {
+            frm.draw_items.splice(idx, 1);
+        }
+    })
+    let draw_idx = frm.draw_items.findIndex(it => it === up_seg);
+    frm.draw_items.splice(draw_idx, 0, ...items);
+    return true;
+}
+
+function movedown(frm, seg) {
+    let index = seg.parent.children.findIndex(it => it === seg);
+    if(index===seg.parent.children.length-1) {
+        return false;
+    }
+    let down_seg = seg.parent.children[index+1];
+    let items = [];
+    seg.draw_append(items, seg.level, seg.deep-(seg.kind==='oneof'?1:0));
+
+    seg.parent.children.splice(index, 1);
+    seg.parent.children.splice(index+1, 0, seg);
+    items.forEach(item => {
+        let idx = frm.draw_items.findIndex(it => it === item);
+        if(idx>=0) {
+            frm.draw_items.splice(idx, 1);
+        }
+    })
+    let draw_idx = down_seg.last_index(frm.draw_items)+1;
+    frm.draw_items.splice(draw_idx, 0, ...items);
+    return true;
+}
+
+function copy(seg) {
+    let res = [];
+    seg.save_append(res);
+    return res;
+}
+
+function _update_id(items) {
+    if(!items) {
+        return;
+    }
+    for(let it of items) {
+        it.id = shortid.generate();
+        _update_id(it.items);
+    }
+}
+
+function paste(frm, seg, its) {
+    _update_id(its);
+    let p = seg ? seg.parent : frm;
+    let obj = load(its, p)[0];
+    let deep = seg ? seg.deep : 0;
+    let level = seg ? seg.level : 0;
+    let data_idx = seg ? p.children.findIndex(it=>it===seg)+1 : p.children.length;
+    let draw_idx = seg? seg.last_index(frm.draw_items)+1 : p.last_index(frm.draw_items)+1;
+    let draw_its = [];
+    if(seg && seg.kind==='oneof') {
+        deep--;
+    }
+
+    p.children.splice(data_idx, 0, obj);
+    obj.draw_append(draw_its, level, deep);
+    frm.draw_items.splice(draw_idx, 0, ...draw_its);
+    return draw_its[0];
+}
+
+function udpate_conditions(frm, oneof_id, conditions) {
+    let seg = frm.draw_items.find(it => it.id === oneof_id);
+    seg.udpate_conditions(conditions);
+    frm.draw_items = frm.draw();
+}
+
+export default { load_frm, insert, remove, moveup, movedown, copy, paste, udpate_conditions }

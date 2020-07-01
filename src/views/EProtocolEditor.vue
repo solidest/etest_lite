@@ -11,31 +11,41 @@
                 <v-data-table :headers="headers" :items="draw_items" no-data-text="空" disable-sort hide-default-footer
                     disable-pagination>
                     <template v-slot:top>
-                        <v-text-field dense v-model="content.memo" placeholder="协议说明" label="说明" class="px-4 pt-4 pb-1"
-                            outlined hide-details @change="save_doc">
-                        </v-text-field>
+                        <v-row class="pa-0 ma-0">
+                            <v-col class="pa-0 ma-0" cols=10>
+                                <v-text-field dense v-model="content.memo" placeholder="协议说明" label="说明"
+                                    class="px-4 pt-4 pb-1" outlined hide-details @change="save_doc">
+                                </v-text-field>
+                            </v-col>
+                            <v-col class="pa-0 ma-0" cols=2>
+                                <v-select :items="cfg.bitaligns" hide-details v-model="content.bitalign"
+                                    @change="save_doc">
+                                </v-select>
+                            </v-col>
+                        </v-row>
                     </template>
                     <template v-slot:item="{item}">
                         <tr>
                             <td @click.stop="current_row=item">
-                                <v-icon small :color="item===current_row?'primary':''"
-                                    style="cursor:pointer;">
+                                <v-icon small :color="item===current_row?'primary':''" style="cursor:pointer;">
                                     {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
                                 </v-icon>
-                                
                             </td>
                             <td class="pa-0 ma-0">
                                 <div v-if="item.deep>0" style="width: 100%; height: 100%; ">
-                                    <div  v-for="index of item.deep" :key="index" 
+                                    <div v-for="index of item.deep" :key="index"
                                         style="width: 10px; height: 100%; margin: 0px; border-left: 1px solid grey; display: inline-block">
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span v-if="item.kind==='oneof'" :class="`pl-${item.level*4}`" style="cursor: pointer">...</span>
-                                <e-editor-dlg v-else :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
-                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
-                                    :hide_name="true" :cls="`pl-${item.level*4}`">
+                                <!-- <span v-if="item.kind==='oneof'" :class="`pl-${item.level*4}`" style="cursor: pointer" color="grey">...</span> -->
+                                <e-condition-editor v-if="item.kind==='oneof'" text="..." :items="item.conditions()"
+                                    :id="item.id" :cls="`pl-${item.level*4}`" @save="on_edited_conditions">
+                                </e-condition-editor>
+                                <e-editor-dlg v-else :text="item.name" :memo="item.memo"
+                                    :data="{name: item.name, memo: item.memo}" :id="item.id" :widgets="cfg.name_widgets"
+                                    @save="on_edited_name_memo" :hide_name="true" :cls="`pl-${item.level*4}`">
                                 </e-editor-dlg>
                             </td>
                             <td>
@@ -45,19 +55,16 @@
                                 <v-chip v-else-if="item.kind==='segment'" class="ma-1" @click.stop="current_row=item">
                                     {{item.parser}}
                                 </v-chip>
-                                <!-- <v-tooltip v-if="error_obj[item.id]" right color='red lighten-1'>
-                                    <template v-slot:activator="{ on }">
-                                        <v-icon color="red lighten-1" v-on="on">mdi-alert</v-icon>
-                                    </template>
-                                    <span>{{errtip_fmt(error_obj[item.id])}}</span>
-                                </v-tooltip> -->
+                                <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition"
+                                    :items="item.conditions()" :id="item.id" @save="on_edited_conditions">
+                                </e-condition-editor>
                             </td>
                             <td>
                                 <!-- <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
                                     :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
                                     @save="on_edited_cfg">
                                 </e-editor-dlg> -->
-                                <span>  {{item.config}}
+                                <span> {{item.config}}
                                 </span>
                             </td>
                         </tr>
@@ -83,6 +90,8 @@
             'e-editor-bar': EEditorBar,
             'e-editor-sheet': EEditorSheet,
             'e-editor-dlg': () => import( /* webpackChunkName: "eeditordlg" */ '../components/EEditorDlg'),
+            'e-condition-editor': () => import( /* webpackChunkName: "econditioneditordlg" */
+                '../components/editor/EEditorOneofDlg'),
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -133,10 +142,7 @@
             }
         },
         methods: {
-            name_fmt: function (it) {
-                return it.full_name() + (it.memo ? `  (${it.memo})` : '');
-            },
-            disabled_sub_insert: function() {
+            disabled_sub_insert: function () {
                 return !(this.current_row && ['segments', 'oneof'].includes(this.current_row.kind));
             },
             get_save_obj: function () {
@@ -183,16 +189,29 @@
                 return false;
             },
             move_up: function () {
-
+                return h.moveup(this.content.frm, this.current_row);
             },
             move_down: function () {
-
+                return h.movedown(this.content.frm, this.current_row);
             },
             copy: function () {
-
+                if (!this.current_row) {
+                    return false;
+                }
+                this.$store.commit('setCopyObject', {
+                    kind: this.cfg.kind,
+                    obj: h.copy(this.current_row),
+                });
+                return false;
             },
             paste: function () {
-
+                let str = this.$store.state.copys[this.cfg.kind];
+                if (!str) {
+                    return false;
+                }
+                let obj = JSON.parse(str);
+                this.current_row = h.paste(this.content.frm, this.current_row, obj);
+                return true;
             },
             undo: function () {
                 let content = this.redo_undo.popUndo();
@@ -211,7 +230,14 @@
                 }
             },
             del_item: function () {
-
+                if (!this.current_row) {
+                    return false;
+                }
+                let idx = this.content.frm.draw_items.findIndex(it => it === this.current_row);
+                h.remove(this.content.frm, this.current_row);
+                this.current_row = idx < this.content.frm.draw_items.length ? this.content.frm.draw_items[idx] :
+                    null;
+                return true;
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
@@ -227,6 +253,7 @@
                 this.save_doc();
                 this.redo_undo.pushChange(this.get_save_obj());
                 this.update_redo_undo();
+                this.current_row = this.content.frm.draw_items.find(it => it === this.current_row);
             },
             on_edited_name_memo: function (id, info) {
                 let it = this.content.frm.draw_items.find(it => it.id === id);
@@ -235,6 +262,10 @@
             },
             on_edited_cfg: function (id, cfg) {
                 console.log('on_edited_cfg', id, cfg);
+            },
+            on_edited_conditions: function (id, conditions, sel_id) {
+                h.udpate_conditions(this.content.frm, id, conditions, sel_id);
+                this.on_edited();
             },
             load_doc: async function () {
                 let doc = await ipc.load({

@@ -35,7 +35,7 @@
                                 </v-tooltip>
                             </td>
                             <td>
-                                <e-editor-dlg :text="name_fmt(item)" :data="{name: item.name, memo: item.memo}"
+                                <e-editor-dlg :text="item.name" :memo="item.memo" :data="{name: item.name, memo: item.memo}"
                                     :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
                                     :hide_name="true">
                                 </e-editor-dlg>
@@ -124,9 +124,9 @@
             obj_fmt: function (o) {
                 return helper.obj_fmt(o);
             },
-            name_fmt: function (it) {
-                return it.name + (it.memo ? `  (${it.memo})` : '');
-            },
+            // name_fmt: function (it) {
+            //     return it.name + (it.memo ? `  (${it.memo})` : '');
+            // },
             errtip_fmt: function (errs) {
                 if (!errs) {
                     return '';

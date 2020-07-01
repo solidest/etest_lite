@@ -55,9 +55,6 @@
             }
         },
         methods: {
-            on_toggle: function(it, attrs) {
-                console.log( attrs)
-            },
             errtip_fmt: function (errs) {
                 if (!errs) {
                     return '';
