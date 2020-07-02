@@ -94,10 +94,19 @@ const cfg = {
             },
         },
         {
+            name: 'arrlen',
+            type: 'text',
+            cols: 12,
+            label: '数组长度',
+            visual: function (data) {
+                return data.type !== 'oneof';
+            },
+        },
+        {
             name: 'parser',
             type: 'text',
             cols: 12,
-            label: '解析字符串',
+            label: '解析方式',
             visual: function (data) {
                 return data.type === 'segment';
             },
@@ -115,6 +124,43 @@ const cfg = {
             cols: 8,
             label: '说明'
         },
-    ]
+        {
+            name: 'arrlen',
+            type: 'text',
+            cols: 12,
+            label: '数组长度',
+        },
+    ],
+    config_widgets: [{
+        name: 'parser',
+        type: 'text',
+        cols: 6,
+        label: '解析方式'
+    },
+    {
+        name: 'autovalue',
+        type: 'text',
+        cols: 6,
+        label: '自动赋值'
+    },
+    {
+        name: 'length',
+        type: 'text',
+        cols: 6,
+        label: '字节长度',
+        visual: function (data) {
+            return data.parser && data.parser.indexOf('string')>=0;
+        },
+    },
+    {
+        name: 'endwith',
+        type: 'text',
+        cols: 6,
+        label: '结尾符',
+        visual: function (data) {
+            return data.parser && data.parser.indexOf('string')>=0;
+        },
+    },
+]
 }
 export default cfg

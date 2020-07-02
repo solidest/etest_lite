@@ -2,8 +2,9 @@
     <v-edit-dialog large save-text="确定" cancel-text="取消"
     @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
         <span :class="cls">{{text}}</span>
+        <span class = "ml-2 grey--text">{{memo}}</span>
         <template v-slot:input>
-            <v-sheet width=260>
+            <v-sheet width=460>
                 <v-text-field v-for="item of values" :key="item.id" placeholder="分支条件" v-model="item.condition" hide-details>
                     <template v-slot:append-outer>
                         <v-icon small @click="remove(item)">mdi-close</v-icon>
@@ -22,7 +23,7 @@
 <script>
     import shortid from 'shortid'
     export default {
-        props: ['id', 'items', 'text', 'cls'],
+        props: ['id', 'items', 'text', 'cls', 'memo'],
         data: () => {
             return {
                 values: [],

@@ -2,7 +2,7 @@
 import shortid from 'shortid';
 
 function property_str(name, value) {
-    if(value === null || value === undefined) {
+    if(value === null || value === undefined || value==='') {
         return '';
     }
     return `${name}: ${value}`;
@@ -75,7 +75,6 @@ class Oneof{
             });
         }
         this.children = branchs;
-        this.check_children();
         this.data.sel_id = this.select(this.data.sel_id);
     }
     get id() {
@@ -100,12 +99,6 @@ class Oneof{
     }
     full_name() {
         return this.parent.full_name();
-    }
-    check_children() {
-        if(this.children.length===0) {
-            this.children.push(new OneofItem(null, this));
-            this.selected = this.children[0];
-        }
     }
     select(id) {
         if(this.children.length === 0) {
@@ -157,7 +150,6 @@ class Oneof{
         this.select();
     }
     insert_children(segs, draw_items) {
-        this.check_children();
         this.selected.insert_children(segs, draw_items);
     }
     udpate_conditions(items) {
@@ -183,9 +175,9 @@ class Oneof{
 }
 
 class Segments {
-    constructor(data, parent, name) {
+    constructor(data, parent, name, arrlen) {
         this.parent = parent;
-        this.data = data || {id: shortid.generate(), name: name||'', kind: 'segments', items: []};
+        this.data = data || {id: shortid.generate(), name: name||'', arrlen: arrlen, kind: 'segments', items: [], memo: ''};
         this.children = load(this.data.items, this);
     }
     get id() {
@@ -199,6 +191,9 @@ class Segments {
     }
     get kind() {
         return this.data.kind;
+    }
+    get arrlen() {
+        return this.data.arrlen;
     }
     full_name() {
         let pn = this.parent.full_name();
@@ -239,22 +234,27 @@ class Segments {
         this.children.push(...segs);
         draw_items.splice(draw_idx+1, 0, ...segs);
     }
-    update_name_memo(name, memo){
+    update_name_arrlen(name, memo, arrlen){
+        console.log(name, memo, arrlen)
         this.data.name = name || '';
         this.data.memo = memo || '';
+        this.data.arrlen = arrlen;
     }
 }
 
 class Segment {
-    constructor(data, parent, name) {
+    constructor(data, parent, name, arrlen) {
         this.parent = parent;
-        this.data = data || {id: shortid.generate(), name: name||'', kind: 'segment'};
+        this.data = data || {id: shortid.generate(), name: name||'', kind: 'segment', arrlen: arrlen, memo: ''};
     }
     get id() {
         return this.data.id;
     }
     get name() {
         return this.data.name;
+    }
+    get arrlen() {
+        return this.data.arrlen;
     }
     get memo() {
         return this.data.memo;
@@ -263,7 +263,16 @@ class Segment {
         return this.data.kind;
     }
     get parser() {
-        return this.data.parser;
+        return this.data.parser||'';
+    }
+    get autovalue() {
+        return this.data.autovalue||'';
+    }
+    get length() {
+        return this.data.length||'';
+    }
+    get endwith() {
+        return this.data.endwith || '';
     }
     get config() {
         let p1 = property_str('autovalue', this.data.autovalue);
@@ -284,11 +293,11 @@ class Segment {
         }
         return res.join(', ');
     }
-    set_config(parser, autovalue, endwith, length) {
+    update_config(parser, autovalue, length, endwith) {
         this.data.parser = parser;
-        this.data.autovalue = autovalue;
-        this.data.endwith = endwith;
-        this.length = length;
+        this.data.autovalue = autovalue||'';
+        this.data.endwith = endwith||'';
+        this.data.length = length||'';
     }
     full_name() {
         let pn = this.parent.full_name();
@@ -308,9 +317,10 @@ class Segment {
         this.deep = deep;
         items.push(this);
     }
-    update_name_memo(name, memo){
+    update_name_arrlen(name, memo, arrlen){
         this.data.name = name || '';
         this.data.memo = memo || '';
+        this.data.arrlen = arrlen;
     }
 }
 
@@ -408,6 +418,7 @@ function insert(frm, seg, info, offset) {
     let kind = info.type;
     let count = info.count || 1;
     let name = info.name || '';
+    let arrlen = info.arrlen;
     if(count<1) {
         count = 1;
     } else {
@@ -430,10 +441,10 @@ function insert(frm, seg, info, offset) {
             }
             let p = offset===-1 ? seg : parent;
             if(kind === 'segment') {
-                nseg = new Segment(null, p, n);
-                nseg.set_config(info.parser);
+                nseg = new Segment(null, p, n, arrlen);
+                nseg.update_config(info.parser);
             } else if(kind === 'segments') {
-                nseg = new Segments(null, p, n);
+                nseg = new Segments(null, p, n, arrlen);
             }
             if(!nseg){
                 console.log('TODO new type', kind);

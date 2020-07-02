@@ -18,7 +18,7 @@
                                 </v-text-field>
                             </v-col>
                             <v-col class="pa-0 ma-0" cols=2>
-                                <v-select :items="cfg.bitaligns" hide-details v-model="content.bitalign"
+                                <v-select class="px-3" :items="cfg.bitaligns" hide-details v-model="content.bitalign"
                                     @change="save_doc">
                                 </v-select>
                             </v-col>
@@ -31,6 +31,7 @@
                                     {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
                                 </v-icon>
                             </td>
+                            <!-- 选择 -->
                             <td class="pa-0 ma-0">
                                 <div v-if="item.deep>0" style="width: 100%; height: 100%; ">
                                     <div v-for="index of item.deep" :key="index"
@@ -38,34 +39,38 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <!-- <span v-if="item.kind==='oneof'" :class="`pl-${item.level*4}`" style="cursor: pointer" color="grey">...</span> -->
+                            <!-- 名称数组长度 -->
+                            <td> 
                                 <e-condition-editor v-if="item.kind==='oneof'" text="..." :items="item.conditions()"
                                     :id="item.id" :cls="`pl-${item.level*4}`" @save="on_edited_conditions">
                                 </e-condition-editor>
-                                <e-editor-dlg v-else :text="item.name" :memo="item.memo"
-                                    :data="{name: item.name, memo: item.memo}" :id="item.id" :widgets="cfg.name_widgets"
-                                    @save="on_edited_name_memo" :hide_name="true" :cls="`pl-${item.level*4}`">
+                                <e-editor-dlg v-else :text="fmt_name_arrlen(item)" :memo="item.memo"
+                                    :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id" :widgets="cfg.name_widgets"
+                                    @save="on_edited_name_arrlen" :hide_name="true" :cls="`pl-${item.level*4}`">
                                 </e-editor-dlg>
                             </td>
+                            <!-- 解析类型 -->
                             <td>
-                                <v-chip v-if="item.kind==='segments'" class="ma-1" @click.stop="current_row=item">
-                                    { }
-                                </v-chip>
-                                <v-chip v-else-if="item.kind==='segment'" class="ma-1" @click.stop="current_row=item">
-                                    {{item.parser}}
-                                </v-chip>
-                                <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition"
+                                <e-editor-dlg v-if="item.kind==='segments'" :text="'{ }'" cls="grey--text"
+                                    :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id" :widgets="cfg.name_widgets"
+                                    @save="on_edited_name_arrlen" :hide_name="true">
+                                </e-editor-dlg>
+                                <e-editor-dlg  v-else-if="item.kind==='segment'" :text="item.parser"
+                                    :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
+                                    :id="item.id" :widgets="cfg.config_widgets"
+                                    @save="on_edited_config">
+                                </e-editor-dlg>
+                                <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition" cls="grey--text"
                                     :items="item.conditions()" :id="item.id" @save="on_edited_conditions">
                                 </e-condition-editor>
                             </td>
+                            <!-- 配置 -->
                             <td>
-                                <!-- <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
-                                    :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
-                                    @save="on_edited_cfg">
-                                </e-editor-dlg> -->
-                                <span> {{item.config}}
-                                </span>
+                                <e-editor-dlg  v-if="item.kind==='segment'" :text="item.config"
+                                    :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
+                                    :id="item.id" :widgets="cfg.config_widgets"
+                                    @save="on_edited_config">
+                                </e-editor-dlg>
                             </td>
                         </tr>
                     </template>
@@ -142,6 +147,13 @@
             }
         },
         methods: {
+            fmt_name_arrlen: function(item) {
+                if(item.arrlen && item.arrlen.trim()) {
+                    return `${item.name} [ ${item.arrlen.trim()} ]`
+                } else {
+                    return item.name
+                }
+            },
             disabled_sub_insert: function () {
                 return !(this.current_row && ['segments', 'oneof'].includes(this.current_row.kind));
             },
@@ -255,13 +267,15 @@
                 this.update_redo_undo();
                 this.current_row = this.content.frm.draw_items.find(it => it === this.current_row);
             },
-            on_edited_name_memo: function (id, info) {
+            on_edited_name_arrlen: function (id, info) {
                 let it = this.content.frm.draw_items.find(it => it.id === id);
-                it.update_name_memo(info.name, info.memo);
+                it.update_name_arrlen(info.name, info.memo, info.arrlen);
                 this.on_edited();
             },
-            on_edited_cfg: function (id, cfg) {
-                console.log('on_edited_cfg', id, cfg);
+            on_edited_config: function (id, cfg) {
+                let it = this.content.frm.draw_items.find(it => it.id === id);
+                it.update_config(cfg.parser, cfg.autovalue, cfg.length, cfg.endwith);
+                this.on_edited();
             },
             on_edited_conditions: function (id, conditions, sel_id) {
                 h.udpate_conditions(this.content.frm, id, conditions, sel_id);
