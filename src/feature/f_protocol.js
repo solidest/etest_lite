@@ -34,8 +34,10 @@ class OneofItem {
     }
     last_index(draw_items) {
         if(this.children.length === 0) {
+            // console.log('pid',  draw_items.findIndex(it => it === this.parent))
             return draw_items.findIndex(it => it === this.parent);
         } else {
+            // console.log('lid',  this.children[this.children.length-1].last_index(draw_items))
             return this.children[this.children.length-1].last_index(draw_items);
         }
     }
@@ -58,6 +60,7 @@ class OneofItem {
     }
     insert_children(segs, draw_items) {
         let draw_idx = this.last_index(draw_items);
+        console.log('index', draw_idx)
         this.children.push(...segs);
         draw_items.splice(draw_idx+1, 0, ...segs);
     }
@@ -142,7 +145,7 @@ class Oneof{
     }
     add_oneof_branchs(count) {
         for(let i=0; i<count; i++) {
-            let br = new OneofItem(null, self);
+            let br = new OneofItem(null, this);
             br.level = this.level;
             br.deep = this.deep;
             this.children.push(br);
@@ -177,7 +180,7 @@ class Oneof{
 class Segments {
     constructor(data, parent, name, arrlen) {
         this.parent = parent;
-        this.data = data || {id: shortid.generate(), name: name||'', arrlen: arrlen, kind: 'segments', items: [], memo: ''};
+        this.data = data || {id: shortid.generate(), name: name||'', arrlen: arrlen, kind: 'segments', items: [], memo: '', autovalue: ''};
         this.children = load(this.data.items, this);
     }
     get id() {
@@ -195,10 +198,20 @@ class Segments {
     get arrlen() {
         return this.data.arrlen;
     }
+    get autovalue() {
+        return this.data.autovalue;
+    }
+    get config() {
+        return property_str('autovalue', this.data.autovalue);
+    }
     full_name() {
         let pn = this.parent.full_name();
         return pn ? `${pn}.${this.name}` : this.name;
     }
+    udpate_autovalue(av) {
+        this.data.autovalue = av;
+    }
+
     to_code() {
         return JSON.stringify(this.data);
     }

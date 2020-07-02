@@ -52,8 +52,8 @@
                             <!-- 解析类型 -->
                             <td>
                                 <e-editor-dlg v-if="item.kind==='segments'" :text="'{ }'" cls="grey--text"
-                                    :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id" :widgets="cfg.name_widgets"
-                                    @save="on_edited_name_arrlen" :hide_name="true">
+                                    :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
+                                    @save="on_edited_autovalue">
                                 </e-editor-dlg>
                                 <e-editor-dlg  v-else-if="item.kind==='segment'" :text="item.parser"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
@@ -66,7 +66,11 @@
                             </td>
                             <!-- 配置 -->
                             <td>
-                                <e-editor-dlg  v-if="item.kind==='segment'" :text="item.config"
+                                <e-editor-dlg v-if="item.kind==='segments'" :text="item.config"
+                                    :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
+                                    @save="on_edited_autovalue">
+                                </e-editor-dlg>
+                                <e-editor-dlg  v-else-if="item.kind==='segment'" :text="item.config"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
                                     :id="item.id" :widgets="cfg.config_widgets"
                                     @save="on_edited_config">
@@ -149,9 +153,9 @@
         methods: {
             fmt_name_arrlen: function(item) {
                 if(item.arrlen && item.arrlen.trim()) {
-                    return `${item.name} [ ${item.arrlen.trim()} ]`
+                    return `${item.full_name()} [ ${item.arrlen.trim()} ]`
                 } else {
-                    return item.name
+                    return item.full_name();
                 }
             },
             disabled_sub_insert: function () {
@@ -266,6 +270,11 @@
                 this.redo_undo.pushChange(this.get_save_obj());
                 this.update_redo_undo();
                 this.current_row = this.content.frm.draw_items.find(it => it === this.current_row);
+            },
+            on_edited_autovalue: function(id, info) {
+                let it = this.content.frm.draw_items.find(it => it.id === id);
+                it.udpate_autovalue(info.autovalue);
+                this.on_edited();
             },
             on_edited_name_arrlen: function (id, info) {
                 let it = this.content.frm.draw_items.find(it => it.id === id);

@@ -13,9 +13,16 @@ let _db
 function setup(is_dev) {
     let df = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_lite/db' : 'C:/Users/solidest/Desktop/etest_lite/db';
     let exe_path = is_dev ? df : path.dirname(app.getPath('exe'));
-    let f = path.resolve(exe_path, 'db.json');
+    let f = path.resolve(exe_path, '../etest_dev_db/db.json');
+    let p = path.resolve(exe_path, '../etest_dev_db/');
+
+    console.log(f)
+    if(!fs.existsSync(p)) {
+        fs.mkdirSync(p);
+    }
 
     let bexists = fs.existsSync(f);
+
     _db = new loki(f, {
         autoload: true,
         autosave: true, 

@@ -42,7 +42,11 @@ const cfg = {
         value: 'del_item',
         icon: 'mdi-delete-outline'
     }, ],
-    headers: [{width: 48}, {width:48}, {
+    headers: [{
+        width: 48
+    }, {
+        width: 48
+    }, {
         text: '名称',
         value: 'name'
     }, {
@@ -131,36 +135,42 @@ const cfg = {
             label: '数组长度',
         },
     ],
-    config_widgets: [{
-        name: 'parser',
-        type: 'text',
-        cols: 6,
-        label: '解析方式'
-    },
-    {
+    autovalue_widgets: [{
         name: 'autovalue',
         type: 'text',
-        cols: 6,
+        cols: 12,
         label: '自动赋值'
-    },
-    {
-        name: 'length',
-        type: 'text',
-        cols: 6,
-        label: '字节长度',
-        visual: function (data) {
-            return data.parser && data.parser.indexOf('string')>=0;
+    }, ],
+    config_widgets: [{
+            name: 'parser',
+            type: 'text',
+            cols: 6,
+            label: '解析方式'
         },
-    },
-    {
-        name: 'endwith',
-        type: 'text',
-        cols: 6,
-        label: '结尾符',
-        visual: function (data) {
-            return data.parser && data.parser.indexOf('string')>=0;
+        {
+            name: 'autovalue',
+            type: 'text',
+            cols: 6,
+            label: '自动赋值'
         },
-    },
-]
+        {
+            name: 'length',
+            type: 'text',
+            cols: 6,
+            label: '字节长度',
+            visual: function (data) {
+                return data.parser && data.parser.indexOf('string') >= 0;
+            },
+        },
+        {
+            name: 'endwith',
+            type: 'text',
+            cols: 6,
+            label: '结尾符',
+            visual: function (data) {
+                return data.parser && data.parser.indexOf('string') >= 0;
+            },
+        },
+    ]
 }
 export default cfg
