@@ -48,7 +48,8 @@ const cfg = {
         width: 48
     }, {
         text: '名称',
-        value: 'name'
+        value: 'name',
+        width: '20%',
     }, {
         text: '解析',
         align: 'start',

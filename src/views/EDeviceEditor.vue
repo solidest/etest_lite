@@ -132,7 +132,7 @@
                     return '';
                 }
                 let res = errs.map(it => it.msg);
-                return res.join('\n');
+                return res.join('; ');
             },
             update_redo_undo: function () {
                 this.$store.commit('setRedoUndo', {

@@ -24,6 +24,9 @@ class Project {
         if(this.topology) {
             this.topology.forEach(topo => topo.check());
         }
+        if(this.protocol) {
+            this.protocol.forEach(topo => topo.check());
+        }
         return this.check_res;
     }
    

@@ -26,28 +26,41 @@
                     </template>
                     <template v-slot:item="{item}">
                         <tr>
+                            <!-- 选择 -->
                             <td @click.stop="current_row=item">
-                                <v-icon small :color="item===current_row?'primary':''" style="cursor:pointer;">
+                                <v-icon small :color="item===current_row?'primary':''" style="cursor:pointer;" >
                                     {{item===current_row?'mdi-radiobox-marked':'mdi-radiobox-blank'}}
                                 </v-icon>
                             </td>
-                            <!-- 选择 -->
+                            <!-- oneof连线 -->
                             <td class="pa-0 ma-0">
-                                <div v-if="item.deep>0" style="width: 100%; height: 100%; ">
-                                    <div v-for="index of item.deep" :key="index"
-                                        style="width: 10px; height: 100%; margin: 0px; border-left: 1px solid grey; display: inline-block">
+                                <div style="width: 100%; height: 100%; ">
+                                    
+                                    <div v-if="item.deep>0" style="width: 100%; height: 100%; ">
+                                        <div v-for="index of item.deep" :key="index"
+                                            style="width: 10px; height: 100%; margin: 0px; border-left: 1px solid grey; display: inline-block">
+                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <!-- 名称数组长度 -->
-                            <td> 
+                            <td>
+                                <div class="d-flex">
                                 <e-condition-editor v-if="item.kind==='oneof'" text="..." :items="item.conditions()"
                                     :id="item.id" :cls="`pl-${item.level*4}`" @save="on_edited_conditions">
                                 </e-condition-editor>
                                 <e-editor-dlg v-else :text="fmt_name_arrlen(item)" :memo="item.memo"
-                                    :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id" :widgets="cfg.name_widgets"
-                                    @save="on_edited_name_arrlen" :hide_name="true" :cls="`pl-${item.level*4}`">
+                                    :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id"
+                                    :widgets="cfg.name_widgets" @save="on_edited_name_arrlen" :hide_name="true"
+                                    :cls="`pl-${item.level*4}`">
                                 </e-editor-dlg>
+                                <v-tooltip v-if="error_obj[item.id]" right color="red lighten-1">
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon color="red lighten-1" v-on="on" class="ml-2 mt-0">mdi-alert</v-icon>
+                                    </template>
+                                    <span>{{errtip_fmt(error_obj[item.id])}}</span>
+                                </v-tooltip>
+                                </div>
                             </td>
                             <!-- 解析类型 -->
                             <td>
@@ -55,14 +68,10 @@
                                     :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
                                     @save="on_edited_autovalue">
                                 </e-editor-dlg>
-                                <e-editor-dlg  v-else-if="item.kind==='segment'" :text="item.parser"
+                                <e-editor-dlg v-else-if="item.kind==='segment'" :text="item.parser"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
-                                    :id="item.id" :widgets="cfg.config_widgets"
-                                    @save="on_edited_config">
+                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config">
                                 </e-editor-dlg>
-                                <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition" cls="grey--text"
-                                    :items="item.conditions()" :id="item.id" @save="on_edited_conditions">
-                                </e-condition-editor>
                             </td>
                             <!-- 配置 -->
                             <td>
@@ -70,10 +79,9 @@
                                     :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
                                     @save="on_edited_autovalue">
                                 </e-editor-dlg>
-                                <e-editor-dlg  v-else-if="item.kind==='segment'" :text="item.config"
+                                <e-editor-dlg v-else-if="item.kind==='segment'" :text="item.config"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
-                                    :id="item.id" :widgets="cfg.config_widgets"
-                                    @save="on_edited_config">
+                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config">
                                 </e-editor-dlg>
                             </td>
                         </tr>
@@ -88,9 +96,6 @@
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_protocol';
     import h from '../feature/f_protocol';
-    // import lman from '../helper/list_man';
-    // import shortid from 'shortid';
-    // import helper from '../helper/helper';
     import EEditorBar from '../components/EEditorBar';
     import RedoUndo from '../helper/redo_undo';
     import EEditorSheet from '../components/widgets/EEditorSheet';
@@ -143,6 +148,18 @@
                     return [];
                 }
                 return this.content.frm.draw_items || [];
+            },
+            error_obj: function () {
+                let res = this.$store.getters.check_result;
+                if (!res) {
+                    return {}
+                }
+                res = res[this.kind];
+                if (!res) {
+                    return {}
+                }
+                // console.log(res[this.doc_id])
+                return res[this.doc_id] || {};
             }
         },
         watch: {
@@ -151,12 +168,19 @@
             }
         },
         methods: {
-            fmt_name_arrlen: function(item) {
-                if(item.arrlen && item.arrlen.trim()) {
+            fmt_name_arrlen: function (item) {
+                if (item.arrlen && item.arrlen.trim()) {
                     return `${item.full_name()} [ ${item.arrlen.trim()} ]`
                 } else {
                     return item.full_name();
                 }
+            },
+            errtip_fmt: function (errs) {
+                if (!errs) {
+                    return '';
+                }
+                let res = errs.map(it => it.msg);
+                return res.join('; ');
             },
             disabled_sub_insert: function () {
                 return !(this.current_row && ['segments', 'oneof'].includes(this.current_row.kind));
@@ -271,7 +295,7 @@
                 this.update_redo_undo();
                 this.current_row = this.content.frm.draw_items.find(it => it === this.current_row);
             },
-            on_edited_autovalue: function(id, info) {
+            on_edited_autovalue: function (id, info) {
                 let it = this.content.frm.draw_items.find(it => it.id === id);
                 it.udpate_autovalue(info.autovalue);
                 this.on_edited();

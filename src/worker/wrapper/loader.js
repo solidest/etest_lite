@@ -3,6 +3,7 @@ import ipc from '../../feature/r_ipc';
 import Project from './Project';
 import Device from './Device';
 import Topology from './Topology';
+import Protocol from './Protocol';
 
 
 const kinds = [ {
@@ -11,6 +12,9 @@ const kinds = [ {
     }, {
         kind: 'topology',
         cls: Topology,
+    }, {
+        kind: 'protocol',
+        cls: Protocol,
     }
 ]
 //['program', 'panel', 'protocol', 'device', 'topology', 'simu', 'doc']

@@ -60,7 +60,7 @@ class OneofItem {
     }
     insert_children(segs, draw_items) {
         let draw_idx = this.last_index(draw_items);
-        console.log('index', draw_idx)
+        // console.log('index', draw_idx)
         this.children.push(...segs);
         draw_items.splice(draw_idx+1, 0, ...segs);
     }

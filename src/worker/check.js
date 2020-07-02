@@ -39,6 +39,7 @@ async function check(proj_id) {
         return;
     }
     _result = proj_obj.check();
+    console.log('check result', _result)
     if(_result && _task_id === proj_id && _task_version === proj.updated) {
         ipc.check_result(_task_id, _task_version, _result);
     }

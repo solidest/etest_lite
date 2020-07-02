@@ -16,7 +16,7 @@ function setup(is_dev) {
     let f = path.resolve(exe_path, '../etest_dev_db/db.json');
     let p = path.resolve(exe_path, '../etest_dev_db/');
 
-    console.log(f)
+    // console.log(f)
     if(!fs.existsSync(p)) {
         fs.mkdirSync(p);
     }
