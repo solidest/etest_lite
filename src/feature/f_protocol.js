@@ -58,11 +58,11 @@ class OneofItem {
             child.list_append(items);
         });
     }
-    insert_children(segs, draw_items) {
-        let draw_idx = this.last_index(draw_items);
+    insert_children(segs) {
+        // let draw_idx = this.last_index(draw_items);
         // console.log('index', draw_idx)
         this.children.push(...segs);
-        draw_items.splice(draw_idx+1, 0, ...segs);
+        // draw_items.splice(draw_idx+1, 0, ...segs);
     }
 }
 
@@ -152,8 +152,8 @@ class Oneof{
         }
         this.select();
     }
-    insert_children(segs, draw_items) {
-        this.selected.insert_children(segs, draw_items);
+    insert_children(segs) {
+        this.selected.insert_children(segs);
     }
     udpate_conditions(items) {
         let chs = [];
@@ -242,10 +242,10 @@ class Segments {
             child.list_append(items);
         });
     }
-    insert_children(segs, draw_items) {
-        let draw_idx = this.last_index(draw_items);
+    insert_children(segs) {
+        // let draw_idx = this.last_index(draw_items);
         this.children.push(...segs);
-        draw_items.splice(draw_idx+1, 0, ...segs);
+        // draw_items.splice(draw_idx+1, 0, ...segs);
     }
     update_name_arrlen(name, memo, arrlen){
         console.log(name, memo, arrlen)
@@ -404,27 +404,17 @@ function load_frm(items) {
 }
 
 function insert_brother_(segs, frm, parent, seg, offset) {
-    let data_idx, draw_idx
+    let data_idx //, draw_idx
     if(seg) {
         data_idx = parent.children.findIndex(it => it === seg) + offset;
-        if(offset===0) {
-            draw_idx = frm.draw_items.findIndex(it => it===seg);           
-        } else {
-            draw_idx = seg.last_index(frm.draw_items)+1;
-        }
-
     } else {
         if(offset===0) {
             data_idx = 0;
-            draw_idx = 0;
         } else {
-            data_idx = parent.children.length;
-            draw_idx = frm.draw_items.length ;            
+            data_idx = parent.children.length;    
         }
-
     }
     parent.children.splice(data_idx, 0, ...segs);
-    frm.draw_items.splice(draw_idx, 0, ...segs);
 }
 
 function insert(frm, seg, info, offset) {
@@ -488,9 +478,18 @@ function insert(frm, seg, info, offset) {
     })
 
     if(offset===-1) {
-        seg.insert_children(segs, frm.draw_items);
+        if(seg.kind!=='segments' && seg.kind!=='oneof') {
+            console.error('ERROR1', seg.kind);
+            return null;
+        }
+        seg.insert_children(segs);
     } else {
         insert_brother_(segs, frm, parent, seg, offset);
+    }
+    frm.draw_items = frm.draw();
+    if(frm.draw_items.findIndex(it => it.id === segs[0].id)<0) {
+        console.error('ERROR2 insert');
+        return null;
     }
     return segs;
 }

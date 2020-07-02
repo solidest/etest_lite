@@ -72,6 +72,9 @@
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
                                     :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config">
                                 </e-editor-dlg>
+                                <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition" cls="grey--text"	
+                                    :items="item.conditions()" :id="item.id" @save="on_edited_conditions">	
+                                </e-condition-editor>
                             </td>
                             <!-- 配置 -->
                             <td>
@@ -170,7 +173,7 @@
         methods: {
             fmt_name_arrlen: function (item) {
                 if (item.arrlen && item.arrlen.trim()) {
-                    return `${item.full_name()} [ ${item.arrlen.trim()} ]`
+                    return `${item.full_name()} [ ${item.arrlen.trim()} ]`;
                 } else {
                     return item.full_name();
                 }
@@ -210,6 +213,7 @@
                     this.current_row = res[0];
                     return true;
                 }
+                this.current_row = null;
                 return false;
             },
             new_item_before: function (data) {
@@ -218,6 +222,7 @@
                     this.current_row = res[0];
                     return true;
                 }
+                this.current_row = null;
                 return false;
             },
             new_item_sub: function (data) {
@@ -226,6 +231,7 @@
                     this.current_row = res[0];
                     return true;
                 }
+                this.current_row = null;
                 return false;
             },
             move_up: function () {
