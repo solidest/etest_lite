@@ -188,15 +188,25 @@ function _set_multi_lines(edges, offsetDiff = 50) {
         const {
             length
         } = arcEdges;
-        for (let k = 0; k < length; k++) {
-            const current = arcEdges[k];
-            const sign = k % 2 === 0 ? 1 : -1;
-            if (length % 2 === 1) {
-                current.curveOffset = sign * Math.ceil(k / 2) * offsetDiff;
-            } else {
-                current.curveOffset = sign * (Math.floor((k) / 2) * offsetDiff + offsetDiff / 2);
+        
+        if(length > 1) {
+            for (let k = 0; k < length; k++) {
+                const current = arcEdges[k];
+                const sign = k % 2 === 0 ? 1 : -1;
+                if (length % 2 === 1) {
+                    current.curveOffset = sign * Math.ceil(k / 2) * offsetDiff;
+                } else {
+                    current.curveOffset = sign * (Math.floor((k) / 2) * offsetDiff + offsetDiff / 2);
+                }
+                delete current.groupById;
             }
-            delete current.groupById;
+        } else {
+            let current = arcEdges[0];
+            if(current.source === current.target) {
+                current.type = 'loop';
+            } else {
+                current.type = 'line';
+            }
         }
     }
     return edges;

@@ -23,6 +23,5 @@
 <script>
     export default {
         props: ['data', 'widgets', 'hide_name', 'max_width', 'title',],
-
     }
 </script>

@@ -5,7 +5,7 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
             <template v-slot:activator="{ on }">
-                <v-edit-dialog v-if="is_newaction(item.value)" @save="on_new_finish">
+                <v-edit-dialog v-if="item.value.startsWith('new_')" @save="on_new_finish">
                     <v-btn icon small v-on="on" class="mx-1" 
                         @click="(e)=>{(item.disabled && item.disabled())?e.stopPropagation():on_new_init(item)}">
                         <v-icon :color="`grey ${(item.disabled && item.disabled())?'darken-2':'lighten-1'}`">{{item.icon}}</v-icon>
@@ -19,6 +19,9 @@
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else-if="item.value==='paste'" icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!allow_paste">
+                    <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
+                </v-btn>
+                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!has_selected">
@@ -62,9 +65,9 @@
                 let self = this;
                 this.$nextTick(()=>self.new_data=d)
             },
-            is_newaction: function (ac) {
-                return ac.substr(0, 4) === 'new_'
-            },
+            // is_newaction: function (ac) {
+            //     return ac.substr(0, 4) === 'new_'
+            // },
             allow_do: function (ac) {
                 return this.$store.state[ac + '_count'] > 0;
             }

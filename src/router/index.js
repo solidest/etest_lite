@@ -35,11 +35,15 @@ const routes = [{
   }, {
     path: '/topology',
     name: 'Topology',
-    component: () => import( /* webpackChunkName: "e_editor_topo" */ '../views/ETopologyEditor'),
+    component: () => import( /* webpackChunkName: "e_editor_topology" */ '../views/ETopologyEditor'),
   }, {
     path: '/protocol',
     name: 'Protocol',
-    component: () => import( /* webpackChunkName: "e_editor_topo" */ '../views/EProtocolEditor'),
+    component: () => import( /* webpackChunkName: "e_editor_protocol" */ '../views/EProtocolEditor'),
+  }, {
+    path: '/panel',
+    name: 'Panel',
+    component: () => import( /* webpackChunkName: "e_editor_panel" */ '../views/EPanelEditor'),
   },
 ]
 

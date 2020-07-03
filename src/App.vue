@@ -80,6 +80,9 @@
           case 'protocol':
             res.route_name = 'Protocol';
             break;
+          case 'panel':
+            res.route_name = 'Panel';
+            break;
           default:
             console.log('TODO', ed);
             return null;

@@ -5,17 +5,17 @@
             </e-editor-bar>
             <div style="height: calc(100vh - 90px);  overflow-y:auto">
 
-                <v-row class="pa-0 ma-0">
-                    <v-col cols=8 class="pa-0 ma-0">
+                <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
+                    <v-col cols=8  class="pa-0 ma-0 flex-grow-1 flex-shrink-0" style ="min-width: 500px; max-width: 100%;">
                         <v-text-field dense v-model="main.memo" placeholder="连接拓扑说明" label="说明" hide-details
                             class="px-4 pt-4 pb-1" outlined @change="save_doc">
                         </v-text-field>
-                        <div style="height: calc(100vh - 180px);" ref="__draw_rect" v-resize="update_draw_size">
+                        <div style="height: calc(100vh - 150px);" ref="__draw_rect" v-resize="update_draw_size">
                             <e-topo-draw :main="main" :size="draw_size" @save="save_draw_data" ref="drawor">
                             </e-topo-draw>
                         </div>
                     </v-col>
-                    <v-col cols=4 class="pa-0 ma-0">
+                    <v-col cols=4 class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 300px; max-width: 380px;">
                         <div style="height: calc(100vh - 90px);  overflow-y:auto">
                             <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs"
                                 @save="save_mapping"> </e-device-mapping>

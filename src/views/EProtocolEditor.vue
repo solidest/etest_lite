@@ -108,7 +108,7 @@
             'e-editor-sheet': EEditorSheet,
             'e-editor-dlg': () => import( /* webpackChunkName: "eeditordlg" */ '../components/EEditorDlg'),
             'e-condition-editor': () => import( /* webpackChunkName: "econditioneditordlg" */
-                '../components/editor/EEditorOneofDlg'),
+                '../components/widgets/EEditorOneofDlg'),
         },
         mounted: function () {
             this.$store.commit('clearEditor');
