@@ -28,25 +28,19 @@
                         </div>
                     </v-col>
                     <v-col v-if="show_cfg" cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
-                        style="min-width: 300px; max-width: 480px;">
+                        style="min-width: 300px; max-width: 480px; ">
                         <div style="height: calc(100vh - 92px); width: 100%; overflow-y:auto;">
-                            <v-expansion-panels accordion>
+                            <v-expansion-panels accordion flat>
                                 <v-expansion-panel>
-                                    <v-expansion-panel-header>子面板配置</v-expansion-panel-header>
+                                    <v-expansion-panel-header>界面配置</v-expansion-panel-header>
                                     <v-expansion-panel-content>
                                         
                                     </v-expansion-panel-content>
                                 </v-expansion-panel>
                                 <v-expansion-panel>
-                                    <v-expansion-panel-header>记录</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>命令</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        <e-script-editor :script="''" type="yaml"> </e-script-editor>
+                                    <v-expansion-panel-header>数据配置</v-expansion-panel-header>
+                                    <v-expansion-panel-content class="pa-0 ma-0">
+                                        <e-data-editor :recorder="recorder" :commander="commander" ref="script_editor"> </e-data-editor>
                                     </v-expansion-panel-content>
                                 </v-expansion-panel>
                             </v-expansion-panels>
@@ -65,13 +59,13 @@
     import RedoUndo from '../helper/redo_undo';
     import EEditorBar from '../components/EEditorBar';
     import EPanel from '../components/panel/EPanel';
-    import EScriptEditor from '../components/EScriptEditor';
+    import EPanelDataEditor from '../components/EPanelDataEditor';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
             'e-panel': EPanel,
-            'e-script-editor': EScriptEditor,
+            'e-data-editor': EPanelDataEditor,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -99,7 +93,6 @@
         },
         watch: {
             selected: function (v) {
-                console.log(v)
                 this.$store.commit('setSeleCount', v ? 1 : 0);
             }
         },
@@ -229,6 +222,7 @@
                 if (!this.selected) {
                     return false;
                 }
+                // console.log(this.cfg.kind, this.selected)
                 this.$store.commit('setCopyObject', {
                     kind: this.cfg.kind,
                     obj: this.selected

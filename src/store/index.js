@@ -21,7 +21,7 @@ const _store = new Vuex.Store({
     undo_count: 0,
     proj: null,
     winid: 1,
-    copys: { device: '', protocol: ''},
+    copys: { device: '', protocol: '', panel: ''},
     check_result: null,
   },
   mutations: {

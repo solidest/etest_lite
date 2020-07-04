@@ -67,6 +67,7 @@ function createWindow(proj_id) {
     height: 768,
     webPreferences: {
       nodeIntegration: true,
+      nodeIntegrationInWorker: true,
       enableRemoteModule: true,
     },
     simpleFullscreen: false,
