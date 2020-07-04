@@ -124,9 +124,6 @@
             obj_fmt: function (o) {
                 return helper.obj_fmt(o);
             },
-            // name_fmt: function (it) {
-            //     return it.name + (it.memo ? `  (${it.memo})` : '');
-            // },
             errtip_fmt: function (errs) {
                 if (!errs) {
                     return '';
