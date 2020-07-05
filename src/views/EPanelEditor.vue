@@ -19,7 +19,7 @@
                                 </v-checkbox>
                             </v-col>
                         </v-row>
-                    <div :style="{height: `calc(100vh - ${show_cfg?'150':'110'}px)`, width:'100%',  'overflow-y':'auto'}">
+                    <div :style="{height: `calc(100vh - ${show_cfg?'160':'110'}px)`, width:'100%',  'overflow-y':'auto'}">
                         <e-panel :layout="layout" :cfg="cfg" :show_line="show_line" :design="show_cfg"
                             @change="on_changed" :recorder="recorder" :commander="commander" @selected="on_selected">
                         </e-panel>
@@ -32,7 +32,7 @@
                             <v-expansion-panel>
                                 <v-expansion-panel-header>界面配置</v-expansion-panel-header>
                                 <v-expansion-panel-content v-if="selected">
-                                    <e-config-editor :weds="selected" ref="script_editor" @change="on_changed">
+                                    <e-config-editor :wids="selected" ref="script_editor" @change="on_changed">
                                     </e-config-editor>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
@@ -128,7 +128,7 @@
                 this.layout = content.layout || [];
                 this.show_line = content.show_line;
                 this.panel_data.script = content.data_yaml;
-                this.panel_data.load_yaml(content.data_yaml);
+                this.panel_data.load_yaml(content.data_yaml||'');
             },
             get_content: function () {
                 return {
@@ -262,7 +262,6 @@
                 return true;
             },
             on_action: function (ac, data) {
-                console.log('ac', ac)
                 if (this[ac](data)) {
                     this.save_doc();
                     if (!(ac === 'redo' || ac === 'undo')) {
@@ -278,10 +277,6 @@
                 });
                 if (doc && doc.content) {
                     this.load_content(doc.content);
-                } else {
-                    let layout = JSON.parse(JSON.stringify(cfg.default_layout));
-                    layout.forEach(it => it.id = shortid.generate());
-                    this.layout = layout;
                 }
                 this.redo_undo.reset(this.get_content());
             },

@@ -13,7 +13,7 @@ const cfg = {
         value: 'd_new_widgets',
         icon: 'mdi-table-large-plus'
     }, {
-        text: '添加图标子面板',
+        text: '添加图形子面板',
         value: 'd_new_chart',
         icon: 'mdi-image-plus'
     }, {
@@ -42,167 +42,165 @@ const cfg = {
             value: 'e-button'
         },
         {
-            text: '文本框',
+            text: '文字显示',
+            value: 'e-label'
+        },
+        {
+            text: '状态指示',
+            value: 'e-lamp'
+        },
+        {
+            text: '文字输入',
             value: 'e-text'
         },
         {
-            text: '数字框',
-            value: 'e-number'
-        },
-    ],
-    default_layout: [{
-            "x": 0,
-            "y": 0,
-            "w": 8,
-            "h": 15,
-            "i": "0",
-            kind: "widgets",
-            title: "Widgets Sub Panel1",
-            items: [{
-                type: 'e-button',
-                config: {
-                    command: 'cmd_name',
-                    label: 'button',
-                    cols: 12
-                }
-            }, {
-                type: 'e-lamp',
-                config: {
-                    command_key: 'seg_lamp',
-                    record_key: 'seg_lamp',
-                    label: 'lamp',
-                    cols: 12,
-                    items: [{
-                            value: null,
-                            foreground: 'white',
-                            background: 'grey',
-                            icon: 'mdi-lock'
-                        },
-                        {
-                            value: 1,
-                            foreground: 'white',
-                            background: 'red',
-                            icon: 'mdi-lock-open-variant'
-                        }
-                    ]
-                }
-            }, {
-                type: 'e-label',
-                config: {
-                    command_key: 'seg_label',
-                    record_key: 'seg_label',
-                    label: 'label: ',
-                    cols: 12
-                }
-            }, {
-                type: 'e-slider',
-                config: {
-                    command_key: 'seg_slider.x',
-                    record_key: 'seg_slider.x',
-                    label: 'slider: ',
-                    max: 120,
-                    min: 20,
-                    cols: 12
-                }
-            }, {
-                type: 'e-checkbox',
-                config: {
-                    command_key: 'seg_checkbox',
-                    record_key: 'seg_checkbox',
-                    label: 'checkbox',
-                    cols: 12
-                }
-            }, {
-                type: 'e-switch',
-                config: {
-                    command_key: 'seg_switch',
-                    record_key: 'seg_switch',
-                    label: 'switch',
-                    cols: 12
-                }
-            }, {
-                type: 'e-radio',
-                config: {
-                    command_key: 'seg_radio',
-                    record_key: 'seg_radio',
-                    cols: 12,
-                    label: 'radio',
-                    items: [{
-                        text: '选项1',
-                        value: 1
-                    }, {
-                        text: '选项2',
-                        value: 2
-                    }]
-                }
-            }]
+            text: '多行文本输入',
+            value: 'e-textarea'
         },
         {
-            "x": 8,
-            "y": 0,
-            "w": 16,
-            "h": 15,
-            "i": "1",
-            kind: "widgets",
-            title: "Widgets Sub Panel2",
-            items: [{
-                    type: 'e-text',
-                    config: {
-                        command_key: 'seg_text',
-                        record_key: 'seg_text',
-                        placeholder: '请输入信息',
-                        label: 'text: ',
-                        cols: 12
-                    }
-                },
-                {
-                    type: 'e-textarea',
-                    config: {
-                        command_key: 'seg_textarea',
-                        record_key: 'seg_textarea',
-                        placeholder: '请输入信息',
-                        label: 'textarea: ',
-                        cols: 12,
-                        rows: 6,
-                    }
-                },
-                {
-                    type: 'e-number',
-                    config: {
-                        command_key: 'seg_number',
-                        record_key: 'seg_number',
-                        placeholder: '请输入数字',
-                        label: 'number: ',
-                        cols: 12
-                    }
-                },
-                {
-                    type: 'e-select',
-                    config: {
-                        command_key: 'seg_select',
-                        record_key: 'seg_select',
-                        cols: 12,
-                        label: 'select',
-                        items: ['opt1', 'opt2']
-                    }
-                }, {
-                    type: 'e-combobox',
-                    config: {
-                        command_key: 'seg_combobox',
-                        record_key: 'seg_combobox',
-                        cols: 12,
-                        label: 'combobox',
-                        items: ['opt1', 'opt2']
-                    }
-                }
-            ]
+            text: '数字输入',
+            value: 'e-number'
+        },
+        {
+            text: '开关按钮',
+            value: 'e-switch'
+        },
+        {
+            text: '复选框',
+            value: 'e-checkbox'
+        },
+        {
+            text: '单选框',
+            value: 'e-radio'
+        },
+        {
+            text: '下拉选择',
+            value: 'e-select'
+        },
+        {
+            text: '复合选择',
+            value: 'e-combobox'
+        },
+        {
+            text: '滑块',
+            value: 'e-slider'
         }
     ],
+    default_item: {
+        'e-button': {
+            command: 'COMMAND_NAME',
+            label: 'button',
+            cols: 12
+        },
+        'e-lamp': {
+            command_key: '',
+            record_key: '',
+            label: '状态指示说明',
+            cols: 12,
+            option_code: '',
+            items: [],
+        },
+        'e-label': {
+            command_key: '',
+            record_key: '',
+            label: '文字显示标题',
+            cols: 12,
+        },
+        'e-text': {
+            command_key: '',
+            record_key: '',
+            placeholder: '请输入',
+            label: '文字输入',
+            cols: 12
+        },
+        'e-textarea': {
+            command_key: '',
+            record_key: '',
+            placeholder: '请输入',
+            label: '多行文本',
+            cols: 12,
+            rows: 6,
+        },
+        'e-number': {
+            command_key: '',
+            record_key: '',
+            placeholder: '请输入数字',
+            label: '数字输入',
+            cols: 12
+        },
+        'e-checkbox': {
+            command_key: '',
+            record_key: '',
+            label: '复选框',
+            cols: 12
+        },
+        'e-switch': {
+            command_key: '',
+            record_key: '',
+            label: '开关',
+            cols: 12
+        },
+        'e-radio': {
+            command_key: '',
+            record_key: '',
+            cols: 12,
+            label: '单选按钮',
+            option_code: '',
+            items: [],
+        },
+        'e-select': {
+                command_key: '',
+                record_key: '',
+                cols: 12,
+                label: '下拉选择',
+                option_code: '',
+                items: [],
+    
+        }, 
+            'e-combobox': {
+                command_key: '',
+                record_key: '',
+                cols: 12,
+                label: '复合选择',
+                option_code: '',
+                items: [],
+            
+        },'e-slider': {
+            command_key: '',
+            record_key: '',
+            label: '滑块',
+            max: 100,
+            min: 0,
+            cols: 12
+        }
+    },
     items_default: {
-        'e-lamp': '- value: null\n  foreground: white\n  background: grey\n  icon: mdi-lock',
-        'e-radio': '- value: 1\n  text: 选项1\n- value: 2\n  text:选项2',
-        'e-select': '- value: 1\n  text: 选项1\n- value: 2\n  text:选项2',
-        'e-combobox': '- value: 1\n  text: 选项1\n- value: 2\n  text:选项2',
+        'e-lamp': [{
+            value: null,
+            foreground: 'white',
+            background: 'grey',
+            icon: 'mdi-lock'
+        }, {
+            value: 1,
+            foreground: 'red',
+            background: 'white',
+            icon: 'mdi-lock-open'
+        }],
+        'e-radio': [{
+            value: 1,
+            text: '选项1'
+        }, {
+            value: 2,
+            text: '选项2'
+        }],
+        'e-select': [{
+            value: 1,
+            text: '选项1'
+        }, {
+            value: 2,
+            text: '选项2'
+        }],
+        'e-combobox': ['选项1', '选项2'],
     },
     config_editor: {
         'e-button': [{
@@ -218,7 +216,7 @@ const cfg = {
                 label: '宽'
             },
             {
-                name: 'cmd_name',
+                name: 'command',
                 type: 'text',
                 cols: 12,
                 label: '命令'

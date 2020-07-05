@@ -1,5 +1,5 @@
-
 import yaml from 'js-yaml'
+
 class PanelData {
     constructor() {
         this.commander = {};
@@ -8,12 +8,12 @@ class PanelData {
     }
     load_yaml(str) {
         this.script = str;
-        if(this.save_yaml() === str) {
+        if (this.save_yaml() === str) {
             return;
         }
         try {
             let doc = yaml.safeLoad(str, 'utf8');
-            if(doc) {
+            if (doc) {
                 this.commander = doc.command || {};
                 this.recorder = doc.record || {};
             }
@@ -23,15 +23,19 @@ class PanelData {
         }
     }
     save_yaml() {
-        let str = yaml.safeDump({record: this.recorder, command: this.commander}, {
+        let obj = {
+            record: this.recorder,
+            command: this.commander
+        };
+        let str = yaml.safeDump(JSON.parse(JSON.stringify(obj)), {
             styles: {
-                '!!null': 'lowercase' // dump null as ~
-              },
+                '!!null': 'lowercase'
+            },
         });
         return str || '';
     }
     init_data_(obj, o_key) {
-        if(!o_key || !o_key.trim()) {
+        if (!o_key || !o_key.trim()) {
             return;
         }
         let keys = o_key.trim().split('.');
@@ -55,9 +59,9 @@ class PanelData {
         this.commander = {};
         this.recorder = {};
         panels.forEach(panel => {
-            if(panel.items) {
+            if (panel.items) {
                 panel.items.forEach(wed => {
-                    if(wed.config) {
+                    if (wed.config) {
                         this.init_data_(this.commander, wed.config.command_key);
                         this.init_data_(this.recorder, wed.config.record_key);
                     }

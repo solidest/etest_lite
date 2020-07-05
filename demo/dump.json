@@ -1,0 +1,42 @@
+{
+    "record": {
+        "seg_lamp": null,
+        "seg_label": null,
+        "seg_slider": {
+            "x": null
+        },
+        "seg_checkbox": null,
+        "seg_switch": null,
+        "seg_radio": null,
+        "seg_text": null,
+        "seg_textarea": null,
+        "seg_number": {
+            "value": null
+        },
+        "seg_select": {
+            "v1": {
+                "v2": null
+            }
+        }
+    },
+    "command": {
+        "seg_lamp": null,
+        "seg_label": null,
+        "seg_slider": {
+            "x": null
+        },
+        "seg_checkbox": null,
+        "seg_switch": null,
+        "seg_radio": null,
+        "seg_text": null,
+        "seg_textarea": null,
+        "seg_number": {
+            "value": null
+        },
+        "seg_select": {
+            "value": {
+                "value": null
+            }
+        }
+    }
+}

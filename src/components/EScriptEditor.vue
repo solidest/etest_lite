@@ -1,5 +1,6 @@
 <template>
-    <v-sheet id="monaco_id" width="100%" height="100%" class="pa-0 ma-0 mb-1" style="border: 1px solid grey" v-resize="layout">
+    <v-sheet id="monaco_id" width="100%" height="100%" @keydown.stop
+        class="pa-0 ma-0 mb-1" style="border: 1px solid grey" v-resize="layout">
     </v-sheet>
 </template>
 
