@@ -1,5 +1,6 @@
 <template>
-    <v-slider class="pa-0 ma-0" :label="config.label" v-model="value" :max="max" :min="min" hide-details>
+    <v-slider class="pa-0 ma-0" :label="config.label" v-model="value" :max="max" :min="min" 
+        color="grey lighten-3" hide-details>
     </v-slider>
 </template>
 <script>

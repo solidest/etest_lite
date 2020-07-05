@@ -1,5 +1,5 @@
 <template>
-    <v-switch class="pa-0 ma-0 no-drag" :label="config.label" v-model="value" hide-details>
+    <v-switch class="pa-0 ma-0 no-drag" color="white" :label="config.label" v-model="value" hide-details inset>
     </v-switch>
 </template>
 <script>

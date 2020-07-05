@@ -1,5 +1,5 @@
 <template>
-    <v-btn class="py-0 px-3 ma-0" block hide-details color="primary">
+    <v-btn class="py-0 px-3 ma-0" block hide-details outlined>
         {{config.label}}
     </v-btn>
 </template>

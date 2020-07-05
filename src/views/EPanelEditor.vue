@@ -4,14 +4,13 @@
             <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1}"
                 :kind="cfg.kind" @action="on_action">
             </e-editor-bar>
-            <div style="height: calc(100vh - 90px); width:100%;  overflow-y:auto;">
-                <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
-                    <v-col cols="1" class="pt-4 px-4 pb-0 ma-0 flex-grow-1 flex-shrink-0"
-                        style="min-width: 100px; max-width: 100%;">
+            <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
+                <v-col cols="1" class="pt-4 px-4 pb-0 ma-0 flex-grow-1 flex-shrink-0"
+                    style="min-width: 100px; max-width: 100%;">
                         <v-row v-if="show_cfg" class="pa-0 ma-0">
                             <v-col class="pa-0 ma-0" cols=10>
-                                <v-text-field dense v-model="memo" placeholder="监控面板说明" label="说明" class="px-0 pt-0 pb-1"
-                                    outlined hide-details @change="save_doc">
+                                <v-text-field dense v-model="memo" placeholder="监控面板说明" label="说明"
+                                    class="px-0 pt-0 pb-1" outlined hide-details @change="save_doc">
                                 </v-text-field>
                             </v-col>
                             <v-col class="pa-0 ma-0" cols=2>
@@ -20,34 +19,34 @@
                                 </v-checkbox>
                             </v-col>
                         </v-row>
-                        <div :style="{height: 'calc(100vh - 155px)', width: '100%'}">
-                            <e-panel :layout="layout" :cfg="cfg" :show_line="show_line" :design="show_cfg"
-                                @change="on_changed" :recorder="recorder" :commander="commander"
-                                @selected="on_selected">
-                            </e-panel>
-                        </div>
-                    </v-col>
-                    <v-col v-if="show_cfg" cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
-                        style="min-width: 300px; max-width: 480px; ">
-                        <div style="height: calc(100vh - 92px); width: 100%; overflow-y:auto;">
-                            <v-expansion-panels accordion flat>
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>界面配置</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>数据配置</v-expansion-panel-header>
-                                    <v-expansion-panel-content class="pa-0 ma-0">
-                                        <e-data-editor :recorder="recorder" :commander="commander" ref="script_editor"> </e-data-editor>
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-                            </v-expansion-panels>
-                        </div>
-                    </v-col>
-                </v-row>
-            </div>
+                    <div :style="{height: `calc(100vh - ${show_cfg?'150':'110'}px)`, width:'100%',  'overflow-y':'auto'}">
+                        <e-panel :layout="layout" :cfg="cfg" :show_line="show_line" :design="show_cfg"
+                            @change="on_changed" :recorder="recorder" :commander="commander" @selected="on_selected">
+                        </e-panel>
+                    </div>
+                </v-col>
+                <v-col v-if="show_cfg" cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
+                    style="min-width: 300px; max-width: 480px; ">
+                    <div style="height: calc(100vh - 90px); width:100%;  overflow-y:auto;">
+                        <v-expansion-panels accordion flat>
+                            <v-expansion-panel>
+                                <v-expansion-panel-header>界面配置</v-expansion-panel-header>
+                                <v-expansion-panel-content v-if="selected">
+                                    <e-config-editor :weds="selected" ref="script_editor" @change="on_changed">
+                                    </e-config-editor>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                            <v-expansion-panel>
+                                <v-expansion-panel-header>数据配置</v-expansion-panel-header>
+                                <v-expansion-panel-content class="pa-0 ma-0">
+                                    <e-data-editor :panel_data="panel_data" @change="on_changed"
+                                        @init_data="on_init_data" ref="script_editor"> </e-data-editor>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
+                    </div>
+                </v-col>
+            </v-row>
         </v-card>
     </v-container>
 </template>
@@ -56,16 +55,19 @@
     import shortid from 'shortid';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_panel';
+    import PanelData from '../helper/panel_data';
     import RedoUndo from '../helper/redo_undo';
     import EEditorBar from '../components/EEditorBar';
     import EPanel from '../components/panel/EPanel';
     import EPanelDataEditor from '../components/EPanelDataEditor';
+    import EPanelConfigEditor from '../components/EPanelConfigEditor';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
             'e-panel': EPanel,
             'e-data-editor': EPanelDataEditor,
+            'e-config-editor': EPanelConfigEditor,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -87,8 +89,7 @@
                 show_cfg: true,
                 memo: '',
                 show_line: true,
-                recorder: {},
-                commander: {},
+                panel_data: new PanelData(),
             }
         },
         watch: {
@@ -114,15 +115,27 @@
                     }
                 }
             },
+            commander: function () {
+                return this.panel_data.commander;
+            },
+            recorder: function () {
+                return this.panel_data.recorder;
+            }
         },
         methods: {
+            load_content: function (content) {
+                this.memo = content.memo || '';
+                this.layout = content.layout || [];
+                this.show_line = content.show_line;
+                this.panel_data.script = content.data_yaml;
+                this.panel_data.load_yaml(content.data_yaml);
+            },
             get_content: function () {
                 return {
                     layout: this.layout,
                     memo: this.memo,
                     show_line: this.show_line,
-                    commander: this.commander,
-                    recorder: this.recorder
+                    data_yaml: this.panel_data.script,
                 }
             },
             get_last_y: function () {
@@ -135,13 +148,6 @@
                     }) + 1;
                 }
                 return last_y;
-            },
-            load_content: function (content) {
-                this.memo = content.memo || '';
-                this.layout = content.layout || [];
-                this.show_line = content.show_line;
-                this.recorder = content.recorder || {};
-                this.commander = content.commander || {};
             },
             d_show_hide_cfg: function () {
                 this.show_cfg = !this.show_cfg;
@@ -197,24 +203,36 @@
                 return true;
             },
             on_changed: function () {
+                let sel = this.selected;
                 this.save_doc();
                 this.redo_undo.pushChange(this.get_content());
                 this.update_redo_undo();
-                this.selected = null;
+                if (sel) {
+                    this.selected = this.layout.find(item => item.id === sel.id);
+                }
+            },
+            on_init_data: function () {
+                this.panel_data.init_data(this.layout);
             },
             undo: function () {
                 let ct = this.redo_undo.popUndo();
                 if (ct) {
+                    let sel = this.selected;
                     this.load_content(ct);
-                    this.selected = null;
+                    if (sel) {
+                        this.selected = this.layout.find(item => item.id === sel.id);
+                    }
                     return true;
                 }
             },
             redo: function () {
                 let ct = this.redo_undo.popRedo();
                 if (ct) {
+                    let sel = this.selected;
                     this.load_content(ct);
-                    this.selected = null;
+                    if (sel) {
+                        this.selected = this.layout.find(item => item.id === sel.id);
+                    }
                     return true;
                 }
             },

@@ -14,29 +14,32 @@
                 value: this.script || '',
                 language: this.type,
                 automaticLayout: true,
-                // occurrencesHighlight: false,
                 overviewRulerBorder: false,
                 lineNumbersMinChars: 3,
-                // overviewRulerBorder: false,
-                // overviewRulerLanes: 1,
                 lineDecorationsWidth: 0,
                 contextmenu: false,
-                // lineNumbers: 'off',
                 codeLens: false,
                 theme: 'vs-dark',
                 minimap: {
                     enabled: false
                 },
             });
-            let model = this.editor.getModel();
-            model.onDidChangeContent(function () {
-                self.on_change(model.getValue());
+            this.model = this.editor.getModel();
+            this.model.onDidChangeContent(function () {
+                self.on_change(self.model.getValue());
             });
+        },
+        watch: {
+            script: function(v) {
+                if(this.script_ !== v) {
+                    this.model.setValue(v);
+                }
+            }
         },
         methods: {
             on_change: function (value) {
-                return value;
-                //console.log('changed', value);
+                this.script_ = value;
+                this.$emit('change', value);
             },
             layout: function() {
                 let self = this;

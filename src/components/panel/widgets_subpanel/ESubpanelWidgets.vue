@@ -14,6 +14,7 @@
 <script>
     import ELabel from './EWidgetLabel';
     import EText from './EWidgetText';
+    import ETextarea from './EWidgetTextarea';
     import ENumber from './EWidgetNumber';
     import ESelect from './EWidgetSelect';
     import ECombobox from './EWidgetCombobox';
@@ -29,6 +30,7 @@
         components: {
             'e-label': ELabel,
             'e-text': EText,
+            'e-textarea': ETextarea,
             'e-number': ENumber,
             'e-select': ESelect,
             'e-combobox': ECombobox,
