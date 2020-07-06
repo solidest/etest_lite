@@ -16,6 +16,7 @@
     "@antv/g6": "^3.5.7",
     "@mdi/font": "^5.3.45",
     "core-js": "^3.6.5",
+    "echarts": "^4.8.0",
     "js-yaml": "^3.14.0",
     "lokijs": "^1.5.8",
     "monaco-editor": "^0.20.0",

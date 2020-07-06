@@ -2,7 +2,7 @@
     <v-edit-dialog large save-text="确定" cancel-text="取消" @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
         <v-icon v-if="xsmall_btn_icon" small>{{xsmall_btn_icon}}</v-icon>
         <template v-slot:input>
-            <div style="width: 360px; height: 300px" class="ma-2">
+            <div style="width: 360px; height: 500px" class="ma-2">
             <e-script-editor :script="script" type="yaml" ref="script_editor" @change="onChange">
             </e-script-editor>
         </div>

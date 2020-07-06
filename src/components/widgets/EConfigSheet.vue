@@ -18,7 +18,7 @@
             </v-col>
         </v-row>
         <v-row class="ma-0 pa-0">
-            <v-menu>
+            <v-menu v-if="kind==='widgets'">
                 <template v-slot:activator="{ on }">
                     <v-btn depressed x-small class="my-0 mx-1 pa-0" v-on="on" color="grey darken-3">
                         添加
@@ -30,6 +30,9 @@
                     </v-list-item>
                 </v-list>
             </v-menu>
+            <v-btn v-else depressed x-small class="my-0 mx-1 pa-0" color="grey darken-3" @click="on_action('new_item', type)">
+                添加
+            </v-btn>
             <v-btn v-if="!is_last" depressed x-small class="my-0 mx-1 pa-0" color="grey darken-3" @click="on_action('move_down')">下移</v-btn>
             <v-btn v-if="!is_first" depressed x-small class="my-0 mx-1 pa-0" color="grey darken-3" @click="on_action('move_up')">上移</v-btn>
             <v-btn depressed x-small class="my-0 mx-1 pa-0" color="grey darken-3" @click="on_action('del_item')">删除</v-btn>
@@ -46,24 +49,25 @@
     import yaml from 'js-yaml';
 
     export default {
-        props: ['idx', 'type', 'data', 'widgets', 'is_last', 'is_first', ],
+        props: ['idx', 'type', 'data', 'widgets', 'kind', 'is_last', 'is_first', ],
         components: {
             'e-option-dlg': EOptionEditor,
         },
         computed: {
             new_types: function () {
-                return cfg.new_types;
+                return cfg.new_types.filter(it => it.kind === this.kind);
             },
             items_default: function () {
                 return cfg.items_default;
             },
             option_code: function () {
-                return this.data.option_code || this.items_default[this.type];
+                return this.data.option_code;
             }
         },
         methods: {
             on_change: function () {
                 this.$emit('change');
+
             },
             on_action: function (ac, opt) {
                 this.$emit('action', this.idx, ac, opt);

@@ -32,7 +32,7 @@
                             <v-expansion-panel>
                                 <v-expansion-panel-header>界面配置</v-expansion-panel-header>
                                 <v-expansion-panel-content v-if="selected">
-                                    <e-config-editor :wids="selected" ref="script_editor" @change="on_changed">
+                                    <e-config-editor :widcharts="selected" @change="on_changed" @redraw="on_redraw">
                                     </e-config-editor>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
@@ -196,9 +196,10 @@
                     h: 10,
                     i: id,
                     id: id,
-                    kind: "widgets",
+                    kind: "charts",
                     items: [],
                     title: '',
+                    size: {width: 0, height: 0}
                 });
                 return true;
             },
@@ -209,6 +210,12 @@
                 this.update_redo_undo();
                 if (sel) {
                     this.selected = this.layout.find(item => item.id === sel.id);
+                }
+            },
+            on_redraw: function() {
+                if(this.selected && this.selected.size) {
+                    let s = this.selected.size;
+                    this.selected.size = JSON.parse(JSON.stringify(s));
                 }
             },
             on_init_data: function () {
@@ -277,6 +284,8 @@
                 });
                 if (doc && doc.content) {
                     this.load_content(doc.content);
+                } else {
+                    this.on_action('d_new_widgets');
                 }
                 this.redo_undo.reset(this.get_content());
             },

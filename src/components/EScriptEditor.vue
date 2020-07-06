@@ -47,7 +47,7 @@
                 setTimeout(() => {
                     self.editor.layout();
                     return;
-                }, 400);
+                }, 200);
             }
         },
     }

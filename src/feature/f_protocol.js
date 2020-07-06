@@ -248,7 +248,7 @@ class Segments {
         // draw_items.splice(draw_idx+1, 0, ...segs);
     }
     update_name_arrlen(name, memo, arrlen){
-        console.log(name, memo, arrlen)
+        // console.log(name, memo, arrlen)
         this.data.name = name || '';
         this.data.memo = memo || '';
         this.data.arrlen = arrlen;
