@@ -65,8 +65,8 @@
             }
         },
         methods: {
-            on_change: function () {
-                this.$emit('change');
+            on_change: function (reason) {
+                this.$emit('change', reason);
 
             },
             on_action: function (ac, opt) {
@@ -79,7 +79,7 @@
                 } catch (error) {
                     this.$store.commit('setMsgError', error.message);
                 }
-                this.$emit('change');
+                this.$emit('change', 'script changed');
             }
         }
     }

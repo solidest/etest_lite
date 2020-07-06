@@ -41,8 +41,8 @@
 
         },
         methods: {
-            on_change: function () {
-                this.$emit('change');
+            on_change: function (reason) {
+                this.$emit('change', reason);
                 if(this.widcharts.kind === 'charts') {
                     let self = this;
                     this.$nextTick(() => {
@@ -74,11 +74,11 @@
                         console.log('action', idx, ac, opt);
                         break;
                 }
-                this.on_change();
+                this.on_change('action' + ac);
             },
             on_new: function(type) {
                 this.new_item(-1, type, true);
-                this.on_change();
+                this.on_change('on_new');
                 if(this.widcharts.kind === 'charts') {
                     let self = this;
                     this.$nextTick(() => {

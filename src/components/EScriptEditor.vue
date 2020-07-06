@@ -34,12 +34,17 @@
             script: function(v) {
                 if(this.script_ !== v) {
                     this.model.setValue(v);
+                    this.is_update = true;
                 }
             }
         },
         methods: {
             on_change: function (value) {
                 this.script_ = value;
+                if(this.is_update) {
+                    this.is_update = false;
+                    return;
+                }
                 this.$emit('change', value);
             },
             layout: function() {

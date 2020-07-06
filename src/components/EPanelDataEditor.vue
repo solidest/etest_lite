@@ -47,7 +47,7 @@
                 this.emit_update();
             },
             emit_update_: function () {
-                this.$emit('change');
+                this.$emit('change', 'script changed');
             },
             initial_data: function () {
                 this.$emit('init_data');

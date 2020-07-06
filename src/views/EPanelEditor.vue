@@ -90,6 +90,7 @@
                 memo: '',
                 show_line: true,
                 panel_data: new PanelData(),
+                count_: 0,
             }
         },
         watch: {
@@ -203,9 +204,9 @@
                 });
                 return true;
             },
-            on_changed: function () {
+            on_changed: function (reason) {
                 let sel = this.selected;
-                this.save_doc();
+                this.save_doc(reason);
                 this.redo_undo.pushChange(this.get_content());
                 this.update_redo_undo();
                 if (sel) {
@@ -270,7 +271,7 @@
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
-                    this.save_doc();
+                    this.save_doc(ac);
                     if (!(ac === 'redo' || ac === 'undo')) {
                         this.redo_undo.pushChange(this.get_content());
                     }
@@ -289,7 +290,11 @@
                 }
                 this.redo_undo.reset(this.get_content());
             },
-            save_doc: async function () {
+            save_doc: async function (reason) {
+                //console.log('saved' + this.count_++, reason)
+                if(!reason) {
+                    console.log('unknow reason emit save_doc');
+                }
                 let doc = {
                     id: this.doc_id,
                     proj_id: this.proj_id,

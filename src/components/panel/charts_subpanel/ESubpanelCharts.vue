@@ -114,10 +114,11 @@
                         },
                         left: 20,
                         top: 20,
+                        show: true,
                     };
                 } else {
                     cfg.title = {
-                        text: ''
+                        show: false
                     };
                 }
                 if(!this.is_gauge) {
