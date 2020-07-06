@@ -293,7 +293,7 @@
             save_doc: async function (reason) {
                 //console.log('saved' + this.count_++, reason)
                 if(!reason) {
-                    console.log('unknow reason emit save_doc');
+                    //console.log('unknow reason emit save_doc');
                 }
                 let doc = {
                     id: this.doc_id,

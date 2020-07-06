@@ -65,8 +65,8 @@
             }
         },
         methods: {
-            on_change: function (reason) {
-                this.$emit('change', reason);
+            on_change: function () {
+                this.$emit('change', 'config');
 
             },
             on_action: function (ac, opt) {
