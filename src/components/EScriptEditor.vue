@@ -51,6 +51,10 @@
                 let self = this;
                 setTimeout(() => {
                     self.editor.layout();
+                    setTimeout(() => {
+                        self.editor.layout();
+                        return;
+                    }, 200);
                     return;
                 }, 200);
             }
