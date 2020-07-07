@@ -1,2 +1,3 @@
 /worker/helper/segParser.js
 /worker/helper/expParser.js
+/language/script_lua.js

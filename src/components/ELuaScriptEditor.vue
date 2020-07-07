@@ -1,5 +1,5 @@
 <template>
-    <v-sheet id="main_monaco_id" width="100%" height="100%" @keydown.stop class="pa-1 ma-0" v-resize="layout">
+    <v-sheet id="main_monaco_id" width="100%" height="100%" @keydown.stop class="pa-0 ma-0" v-resize="layout">
     </v-sheet>
 </template>
 
@@ -21,9 +21,9 @@
             let self = this;
             this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
                 value: this.script || '',
-                language: 'lua',
+                language: 'etlua',
                 automaticLayout: true,
-                fontSize: "18px",
+                fontSize: "16px",
                 theme: 'vs-dark',
                 minimap: {
                     enabled: true,
@@ -42,9 +42,9 @@
         watch: {
             script: function (v) {
                 if (this.script_ !== v) {
+                    this.is_update = true;
                     this.model.setValue(v);
                     this.reset_version();
-                    this.is_update = true;
                 }
             }
         },
@@ -107,6 +107,25 @@
                     redo: function () {
                         self.editor.trigger('a', 'redo', 'a');
                         self.editor.focus();
+                    },
+                    copy: function() {
+                        self.editor.trigger('a', 'editor.action.clipboardCopyAction', 'a');
+                        self.editor.focus();
+                    },
+                    paste: function() {
+                        self.editor.focus();
+                        document.execCommand('paste')
+                    },
+                    cut: function() {
+                        self.editor.trigger('a', 'editor.action.clipboardCutAction', 'a');
+                        self.editor.focus();
+                    },
+                    comment: function() {
+                        self.editor.trigger('a', 'editor.action.commentLine', 'a');
+                        self.editor.focus();
+                    },
+                    find: function() {
+                        self.editor.trigger('', 'actions.find');
                     }
                 }
             }

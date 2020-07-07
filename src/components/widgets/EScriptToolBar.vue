@@ -5,7 +5,8 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
             <template v-slot:activator="{ on }">
-                <v-btn v-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
+                <v-divider v-if="!item.value" vertical class="mx-2" inset> </v-divider>
+                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="disabled(item)">

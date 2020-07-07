@@ -1,14 +1,18 @@
 <template>
-    <v-container class="pa-0 fill-height" fluid>
+    <v-container class="pa-0 ma-0 fill-height" fluid>
         <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3">
-            <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" :editor="editor">
+            <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" :editor="editor">
             </e-editor-bar>
-                <div :style="{height: `calc(100vh - ${90+out_height}px)`}">
-                <e-editor :script="content.script" @change="save_doc" ref="editor"> </e-editor>
+            <div :style="{height: `calc(100vh - ${80+out_height}px)`}" class="pa-0 ma-0">
+                <e-editor :script="content.script" @change="save_script" ref="editor"> </e-editor>
             </div>
-            <v-sheet style="position:absolute; left:0px; bottom:0px; z-index:100" color="primary"
+            <v-sheet style="position:absolute; left:0px; bottom:1px; z-index:100" class="ma-0 pa-0" color="primary"
                 width="100%" :height="out_height" tile>
-                Hello, world! I'm a simple v-sheet
+                <v-row class="pa-0 ma-0">
+                    <v-col cols="4" class="pl-1 pt-1 pb-0 pr-0 ma-0">
+                        <span>静态检查通过</span>
+                    </v-col>
+                </v-row>
             </v-sheet>
         </v-card>
     </v-container>
@@ -84,6 +88,10 @@
                 let content = doc ? (doc.content || {}) : {};
                 this.content.script = content.script || '';
                 this.content.memo = content.memo || '';
+            },
+            save_script: function(script) {
+                this.content.script = script;
+                this.save_doc();
             },
             save_doc: async function () {
                 let doc = {

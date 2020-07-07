@@ -36,8 +36,8 @@
                     return;
                 }
                 if(this.script_ !== v) {
-                    this.model.setValue(v);
                     this.is_update = true;
+                    this.model.setValue(v);
                 }
             }
         },
