@@ -6226,6 +6226,11 @@ ml-matrix@^6.5.0:
   dependencies:
     ml-array-rescale "^1.3.1"
 
+monaco-editor-locales-plugin@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.npm.taobao.org/monaco-editor-locales-plugin/download/monaco-editor-locales-plugin-0.0.3.tgz#cf30090ddf894400789f9f43683c02b08e075a32"
+  integrity sha1-zzAJDd+JRAB4n59DaDwCsI4HWjI=
+
 monaco-editor-webpack-plugin@^1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.9.0.tgz#5b547281b9f404057dc5d8c5722390df9ac90be6"

@@ -1,15 +1,13 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3">
-            <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1}"
-                :kind="cfg.kind" @action="on_action">
+            <e-editor-bar :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" :editor="editor">
             </e-editor-bar>
-                <div :style="{height: `calc(100vh - ${82+out_height}px)`}">
-
-                <e-editor :script="content.script" @change="save_doc"> </e-editor>
+                <div :style="{height: `calc(100vh - ${90+out_height}px)`}">
+                <e-editor :script="content.script" @change="save_doc" ref="editor"> </e-editor>
             </div>
             <v-sheet style="position:absolute; left:0px; bottom:0px; z-index:100" color="primary"
-                width="100%" :height="out_height">
+                width="100%" :height="out_height" tile>
                 Hello, world! I'm a simple v-sheet
             </v-sheet>
         </v-card>
@@ -19,7 +17,7 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_lua';
-    import EEditorBar from '../components/EEditorBar';
+    import EEditorBar from '../components/widgets/EScriptToolBar';
     import EEditor from '../components/ELuaScriptEditor';
 
     export default {
@@ -35,6 +33,7 @@
             }
             this.bar_items = this.cfg.bar_items;
             this.load_doc();
+            this.editor = this.$refs.editor.get_action_handler();
         },
 
         data() {
@@ -48,6 +47,7 @@
                     memo: ''
                 },
                 out_height: 30,
+                editor: {},
             }
         },
         computed: {
@@ -82,7 +82,7 @@
                     id: this.doc_id
                 });
                 let content = doc ? (doc.content || {}) : {};
-                this.content.script = content.script || [];
+                this.content.script = content.script || '';
                 this.content.memo = content.memo || '';
             },
             save_doc: async function () {

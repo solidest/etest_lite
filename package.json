@@ -20,6 +20,7 @@
     "js-yaml": "^3.14.0",
     "lokijs": "^1.5.8",
     "monaco-editor": "^0.20.0",
+    "monaco-editor-locales-plugin": "^0.0.3",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "shortid": "^2.2.15",
     "throttle-debounce": "^2.2.1",

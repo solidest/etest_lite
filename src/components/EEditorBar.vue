@@ -14,14 +14,14 @@
                         <slot name="new_sheet" :new_data="new_data"></slot>
                     </template>
                 </v-edit-dialog>
+                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
+                    <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
+                </v-btn>
                 <v-btn v-else-if="item.value==='undo'||item.value==='redo'" icon small v-on="on" class="mx-1"
                     @click="emit(item)" :disabled="!allow_do(item.value)">
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else-if="item.value==='paste'" icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!allow_paste">
-                    <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
-                </v-btn>
-                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="!has_selected">

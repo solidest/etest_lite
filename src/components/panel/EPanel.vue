@@ -38,11 +38,10 @@
         methods: {
             resizedEvent: function (i, newH, newW, newHPx, newWPx) {
                 let item = this.layout.find(it => it.i === i);
-                if (!item || item.kind !== 'charts') {
-                    return;
-                }
-                item.size = {width: newWPx-2, height: newHPx-2};
                 this.$emit("change");
+                if (item || item.kind === 'charts') {
+                    item.size = {width: newWPx-2, height: newHPx-2};
+                }
             },
             containerResizedEvent: function (i, newH, newW, newHPx, newWPx) {
                 let item = this.layout.find(it => it.i === i);

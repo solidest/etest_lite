@@ -11,7 +11,7 @@ const kinds = ['program', 'panel', 'protocol', 'device', 'topology', 'simu', 'do
 let _db
 
 function setup(is_dev) {
-    let df = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_lite/db' : 'C:/Users/solidest/Desktop/etest_lite/db';
+    let df = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_dev/db' : 'C:/Users/solidest/Desktop/etest_dev/db';
     let exe_path = is_dev ? df : path.dirname(app.getPath('exe'));
     let f = path.resolve(exe_path, '../etest_dev_db/db.json');
     let p = path.resolve(exe_path, '../etest_dev_db/');
