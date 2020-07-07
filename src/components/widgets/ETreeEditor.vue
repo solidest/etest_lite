@@ -46,7 +46,7 @@
         },
 
         methods: {
-            new_item: async function (its, name, kind, children) {
+            new_item: async function(its, name, kind, children) {
                 let it = {
                     id: shortid.generate(),
                     name: name,
@@ -57,6 +57,12 @@
                 await this.save_all();
                 this.expand_sele();
                 this.active = [it];
+            },
+            on_new_item: async function (name, type) {
+                let its = this.current_items();
+                if (this.valid_name(its, name)) {
+                    await this.new_item(its, name.trim(), type, type==='dir'?[]: undefined );
+                }
             },
             valid_name: function (items, n) {
                 let res = helper.valid_name(items, n);
@@ -93,17 +99,20 @@
                     }
                 });
             },
-            action: function (ac, v) {
+            action: function (ac, v, t) {
                 switch (ac) {
-                    case 'new_dir':
-                        this.new_dir(v);
+                    case 'new_file': 
+                        this.on_new_item(v, t);
                         break;
-                    case 'new_model':
-                        this.new_model(v);
-                        break;
-                    case 'new_actions':
-                        this.new_actions(v);
-                        break;
+                    // case 'new_dir':
+                    //     this.new_dir(v);
+                    //     break;
+                    // case 'new_model':
+                    //     this.new_model(v);
+                    //     break;
+                    // case 'new_actions':
+                    //     this.new_actions(v);
+                    //     break;
                     case 're_name':
                         this.re_name(v);
                         break;
@@ -116,24 +125,19 @@
                         break;
                 }
             },
-            new_dir: async function (n) {
-                let its = this.current_items();
-                if (this.valid_name(its, n)) {
-                    await this.new_item(its, n.trim(), 'dir', [] );
-                }
-            },
-            new_model: async function (n) {
-                let its = this.current_items();
-                if (this.valid_name(its, n)) {
-                    await this.new_item(its, n.trim(),'model' );
-                }
-            },
-            new_actions: async function (n) {
-                let its = this.current_items();
-                if (this.valid_name(its, n)) {
-                    await this.new_item(its, n.trim(), 'actions' );
-                }
-            },
+
+            // new_model: async function (n) {
+            //     let its = this.current_items();
+            //     if (this.valid_name(its, n)) {
+            //         await this.new_item(its, n.trim(),'model' );
+            //     }
+            // },
+            // new_actions: async function (n) {
+            //     let its = this.current_items();
+            //     if (this.valid_name(its, n)) {
+            //         await this.new_item(its, n.trim(), 'actions' );
+            //     }
+            // },
             re_name: async function (n) {
                 if(this.active.length===0) {
                     return;

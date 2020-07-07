@@ -192,9 +192,9 @@
                     });
                 }
             },
-            onMiniBar: function (action, value) {
+            onMiniBar: function (action, value, type) {
                 if (this.page.type === 'tree') {
-                    this.$refs.tree_editor.action(action, value);
+                    this.$refs.tree_editor.action(action, value, type);
                 } else if (this.page.type === 'list') {
                     this.$refs.list_editor.action(action, value);
                 }
