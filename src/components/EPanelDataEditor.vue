@@ -27,7 +27,7 @@
     </v-sheet>
 </template>
 <script>
-    import EScriptEditor from './EScriptEditor';
+    import EScriptEditor from './EMiniScriptEditor';
     import yaml from 'js-yaml'
     import {
         debounce

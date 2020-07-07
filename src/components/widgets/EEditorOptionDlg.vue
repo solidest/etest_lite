@@ -11,7 +11,7 @@
 </template>
 
 <script>
-    import EScriptEditor from '../EScriptEditor';
+    import EScriptEditor from '../EMiniScriptEditor';
 
     export default {
         props: ['option_code', 'xsmall_btn_icon'],

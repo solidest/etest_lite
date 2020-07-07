@@ -15,8 +15,8 @@
                             </e-topo-draw>
                         </div>
                     </v-col>
-                    <v-col cols=4 class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 300px; max-width: 380px;">
-                        <div style="height: calc(100vh - 90px);  overflow-y:auto">
+                    <v-col cols=4 class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 300px; max-width: 380px; ">
+                        <div style="height: calc(100vh - 90px);  overflow-y:auto; border-left: 2px solid grey">
                             <e-device-mapping v-if="step==='dev'" :items="main.mapping" :devs="main.devs"
                                 @save="save_mapping"> </e-device-mapping>
                             <e-device-linking v-if="step==='link'" :doc_id="doc_id" :items="main.linking"

@@ -32,6 +32,9 @@
         },
         watch: {
             script: function(v) {
+                if(!this.model) {
+                    return;
+                }
                 if(this.script_ !== v) {
                     this.model.setValue(v);
                     this.is_update = true;

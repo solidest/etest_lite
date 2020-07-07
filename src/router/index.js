@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import EEmpty from '../components/EEmpty.vue'
+import ELuaEditor from '../views/ELuaEditor'
 
 Vue.use(VueRouter)
 
@@ -44,6 +45,10 @@ const routes = [{
     path: '/panel',
     name: 'Panel',
     component: () => import( /* webpackChunkName: "e_editor_panel" */ '../views/EPanelEditor'),
+  }, {
+    path: '/lua',
+    name: 'Lua',
+    component: ELuaEditor,
   },
 ]
 

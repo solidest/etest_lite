@@ -27,7 +27,7 @@
                 </v-col>
                 <v-col v-if="show_cfg" cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
                     style="min-width: 300px; max-width: 480px; ">
-                    <div style="height: calc(100vh - 90px); width:100%;  overflow-y:auto;">
+                    <div style="height: calc(100vh - 90px); width:100%; overflow-y:auto; border-left: 2px solid grey">
                         <v-expansion-panels accordion flat>
                             <v-expansion-panel>
                                 <v-expansion-panel-header>界面配置</v-expansion-panel-header>

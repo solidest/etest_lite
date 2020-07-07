@@ -83,8 +83,12 @@
           case 'panel':
             res.route_name = 'Panel';
             break;
+          case 'lua':
+            res.route_name = 'Lua';
+            break;
+            
           default:
-            console.log('TODO', ed);
+            console.log('TODO editor:', ed.kind);
             return null;
         }
         return res;

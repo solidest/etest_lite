@@ -1,5 +1,5 @@
 <template>
-    <v-navigation-drawer permanent :width="width" app clipped>
+    <v-navigation-drawer permanent :width="width" app clipped  >
         <v-row class="fill-height" no-gutters>
             <v-navigation-drawer mini-variant mini-variant-width="80" permanent>
                 <v-list dense nav>
@@ -52,7 +52,7 @@
                 </v-list-item>
             </v-navigation-drawer>
             <div v-if="page && width-80>10">
-                <v-card :width="width-80" height="100%" tile>
+                <v-card :width="width-80" height="100%" tile color="grey darken-3">
                     <e-mini-bar :items="bar_items" :title="page.title" @edit_item="onMiniBar" />
                     <div style="height: calc(100vh - 90px);  overflow-y:auto">
                         <e-tree-editor v-if="page.type==='tree'" ref="tree_editor" :catalog="page.catalog"
