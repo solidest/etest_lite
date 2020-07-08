@@ -5,14 +5,14 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
             <template v-slot:activator="{ on }">
-                <v-divider v-if="!item.value" vertical class="mx-2" inset> </v-divider>
+                <v-spacer v-if="!item.value"> </v-spacer>
                 <v-edit-dialog v-else-if="item.widgets" large save-text="确定" cancel-text="取消"
                      @open="onOpen" @save="emit(item, option_data)">
                     <v-btn icon small v-on="on" class="mx-1">
                         <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                     </v-btn>
                     <template v-slot:input>
-                        <e-config-sheet width="600" :data="option_data" :widgets="item.widgets" :title="item.text" :hide_name="true">
+                        <e-config-sheet width="500" :data="option_data" :widgets="item.widgets" :title="item.text" :hide_name="true">
                         </e-config-sheet>
                     </template>
                 </v-edit-dialog>

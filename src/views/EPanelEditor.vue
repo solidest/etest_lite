@@ -221,6 +221,7 @@
             },
             on_init_data: function () {
                 this.panel_data.init_data(this.layout);
+                this.save_doc('init data');
             },
             undo: function () {
                 let ct = this.redo_undo.popUndo();

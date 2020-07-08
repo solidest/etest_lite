@@ -6,6 +6,7 @@ const cfg = {
             type: 'normal',
             rt_cycle: 1000,
             topology: '',
+            panel: '',
         }
     },
     bar_items: [{
@@ -29,15 +30,23 @@ const cfg = {
             {
                 name: 'topology',
                 type: 'select',
-                cols: 4,
+                cols: 6,
                 items: [],
                 label: '拓扑连接',
                 visual: (data) => !data.lib,
             },
             {
+                name: 'panel',
+                type: 'select',
+                cols: 6,
+                items: [],
+                label: '监控面板',
+                visual: (data) => !data.lib,
+            },
+            {
                 name: 'type',
                 type: 'select',
-                cols: 4,
+                cols: 6,
                 items: [{
                         text: '普通',
                         value: 'normal'
@@ -59,7 +68,7 @@ const cfg = {
             {
                 name: 'rt_cycle',
                 type: 'select',
-                cols: 4,
+                cols: 6,
                 label: '实时调度周期(us)',
                 items: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
                 visual: (data) => (!data.lib && (['rt_auto', 'rt_cpu', 'rt_memory'].includes(data.type)))
@@ -68,7 +77,7 @@ const cfg = {
                 name: 'vars',
                 type: 'editor',
                 cols: 12,
-                label: '执行输入参数:',
+                label: '输入参数:',
                 visual: (data) => !data.lib,
             }
         ],

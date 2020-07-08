@@ -23,7 +23,7 @@
                 </v-checkbox>
                 <div v-else-if="wed.type==='editor' && (!wed.visual || wed.visual(data)) ">
                     <span>{{wed.label}}</span>
-                    <div style="width: 100%; height: 400px;">
+                    <div style="width: 100%; height: 350px;">
                     <e-mini-editor :script="data[wed.name]" type="yaml" @change="(v) => data[wed.name]=v">
                     </e-mini-editor>
                     </div>

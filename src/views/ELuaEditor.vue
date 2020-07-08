@@ -1,7 +1,7 @@
 <template>
     <v-container class="pa-0 ma-0 fill-height" fluid>
         <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3">
-            <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" 
+            <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action"
                 :editor="editor" :option="content.option">
             </e-editor-bar>
             <div :style="{height: `calc(100vh - ${80+out_height}px)`}" class="pa-0 ma-0">
@@ -38,11 +38,6 @@
             if (!this.doc_id) {
                 return;
             }
-            this.env = new Env();
-            this.env.open(this.proj_id).then(() => {
-                complition.set_env(this.env.get_dev_list(), this.env.get_proto_list());
-                cfg.bar_items.find(it => it.value === 'setting').widgets[1].items = this.env.get_topo_list();
-            });
             this.bar_items = this.cfg.bar_items;
             this.load_doc();
             this.editor = this.$refs.editor.get_action_handler();
@@ -84,7 +79,7 @@
             }
         },
         methods: {
-            setting: function(data) {
+            setting: function (data) {
                 this.content.option = data;
                 this.save_doc();
             },
@@ -102,8 +97,22 @@
                 this.content.script = content.script || '';
                 this.content.memo = content.memo || '';
                 this.content.option = content.option || cfg.default_option();
+                this.load_env();
             },
-            save_script: function(script) {
+            load_env: function () {
+                let self = this;
+                setTimeout(() => {
+                    self.env = new Env();
+                    self.env.open(self.proj_id, self.content.option.topology, self.content.option.panel)
+                        .then(() => {
+                            complition.set_env(self.env.get_dev_list(), self.env.get_proto_list(), self.env.records);
+                            let sett = cfg.bar_items.find(it => it.value === 'setting');
+                            sett.widgets[1].items = self.env.get_topo_list();
+                            sett.widgets[2].items = self.env.get_panel_list();
+                        });
+                }, 380);
+            },
+            save_script: function (script) {
                 this.content.script = script;
                 this.save_doc();
             },

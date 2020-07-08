@@ -98,6 +98,7 @@ const sub_api = {
 }
 let protocol = [];
 let device = {};
+let record = {};
 
 function get_text_suggestions(keys, result) {
     if (keys.length === 1) {
@@ -161,6 +162,25 @@ function get_protocol_suggestions(result) {
     })
 }
 
+function get_record_suggestions(keys, result) {
+    let o = record;
+    for(let i=1; i<keys.length; i++) {
+        o = o[keys[i]];
+        if(typeof o !== 'object') {
+            return;
+        }
+    }
+    for(let k in o) {
+        result.push({
+            label: k,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: k,
+            detail: JSON.stringify(o[k]),
+        });
+    }
+}
+
+
 function get_sub_suggestions(keys, result) {
     let len = keys.length;
     if (len === 0) {
@@ -171,6 +191,9 @@ function get_sub_suggestions(keys, result) {
         len--;
     }
     let k = keys[0];
+    if(k === 'record') {
+        return get_record_suggestions(keys, result);
+    }
 
     if (len === 2) {
         if (k !== 'device') {
@@ -202,9 +225,10 @@ function get_sub_suggestions(keys, result) {
     });
 }
 
-function set_env(devs, prots) {
+function set_env(devs, prots, rcd) {
     device = devs;
     protocol = prots;
+    record = rcd;
 } 
 
 const provider = {
