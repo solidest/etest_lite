@@ -5927,6 +5927,11 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
+luaparse@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npm.taobao.org/luaparse/download/luaparse-0.3.0.tgz#80f8d2161a636dea1fdd39e77996277337df18a1"
+  integrity sha1-gPjSFhpjbeof3TnneZYnczffGKE=
+
 make-dir@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/make-dir/download/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"

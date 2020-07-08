@@ -99,6 +99,7 @@ const sub_api = {
 let protocol = [];
 let device = {};
 let record = {};
+let vars = {};
 
 function get_text_suggestions(keys, result) {
     if (keys.length === 1) {
@@ -162,8 +163,7 @@ function get_protocol_suggestions(result) {
     })
 }
 
-function get_record_suggestions(keys, result) {
-    let o = record;
+function get_obj_suggestions(o, keys, result) {
     for(let i=1; i<keys.length; i++) {
         o = o[keys[i]];
         if(typeof o !== 'object') {
@@ -192,7 +192,10 @@ function get_sub_suggestions(keys, result) {
     }
     let k = keys[0];
     if(k === 'record') {
-        return get_record_suggestions(keys, result);
+        return get_obj_suggestions(record, keys, result);
+    }
+    if(k === 'vars') {
+        return get_obj_suggestions(vars, keys, result);
     }
 
     if (len === 2) {
@@ -225,10 +228,11 @@ function get_sub_suggestions(keys, result) {
     });
 }
 
-function set_env(devs, prots, rcd) {
+function set_env(devs, prots, rcd, vs) {
     device = devs;
     protocol = prots;
     record = rcd;
+    vars = vs;
 } 
 
 const provider = {

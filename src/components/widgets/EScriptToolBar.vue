@@ -7,7 +7,7 @@
             <template v-slot:activator="{ on }">
                 <v-spacer v-if="!item.value"> </v-spacer>
                 <v-edit-dialog v-else-if="item.widgets" large save-text="确定" cancel-text="取消"
-                     @open="onOpen" @save="emit(item, option_data)">
+                     @open="on_open" @save="on_save(item, option_data)">
                     <v-btn icon small v-on="on" class="mx-1">
                         <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                     </v-btn>
@@ -27,6 +27,7 @@
 
 <script>
     import EConfigSheed from './EEditorSheet';
+    import yaml from 'js-yaml';
 
     export default {
         props: ['title', 'items', 'icon', 'editor', 'option'],
@@ -54,9 +55,19 @@
                     return fn();
                 }
             },
-            onOpen: function() {
+            on_open: function() {
                 this.option_data = JSON.parse(JSON.stringify(this.option));
             },
+            on_save: function(item, value) {
+                try {
+                    if(value.vars && value.vars.trim()) {
+                        value.vars_obj = yaml.safeLoad(value.vars, 'utf8');                      
+                    }
+                } catch (error) {
+                    this.$store.commit('setMsgError', error.message);
+                }
+                this.emit(item, value);
+            }
         }
     }
 </script>

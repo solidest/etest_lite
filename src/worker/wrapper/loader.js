@@ -4,7 +4,8 @@ import Project from './Project';
 import Device from './Device';
 import Topology from './Topology';
 import Protocol from './Protocol';
-
+import Lua from './Lua';
+import t_man from '../../helper/tree_man';
 
 const kinds = [ {
         kind: 'device',
@@ -16,7 +17,8 @@ const kinds = [ {
         kind: 'protocol',
         cls: Protocol,
     }
-]
+];
+
 //['program', 'panel', 'protocol', 'device', 'topology', 'simu', 'doc']
 
 async function load_proj(proj_data, stopper) {
@@ -43,6 +45,30 @@ async function load_proj(proj_data, stopper) {
                 let k_obj = new k.cls(doc, proj);
                 proj.addKind(k.kind, k_obj);
             }
+        }
+    }
+
+    let pg_doc = await ipc.load({
+        id: proj.id,
+        kind: 'program'
+    });
+    let items = pg_doc.items || [];
+    let leafs = [];
+    items.forEach(it => {
+        t_man.getLeafs(it, leafs);
+    });
+
+    let luas = leafs.filter(l => l.kind === 'lua');
+    for(let lua of luas) {
+        let doc = await ipc.load({
+            kind: 'doc',
+            id: lua.id,
+        });
+        if(stopper && stopper(proj.id, proj.version)) {
+            return null;
+        }
+        if(doc) {
+            proj.addKind('lua', new Lua(doc, proj));
         }
     }
     

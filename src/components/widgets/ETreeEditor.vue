@@ -6,7 +6,7 @@
             <v-icon v-if="item.kind==='dir'" color="grey lighten-2">
                 {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
             </v-icon>
-            <v-icon v-else color="grey lighten-2">
+            <v-icon v-else :color="`${error_obj[item.id]?'red':'grey'} lighten-2`" >
                 {{ icons[item.kind] }}
             </v-icon>
         </template>
@@ -22,7 +22,7 @@
     import shortid from 'shortid';
 
     export default {
-        props: ['catalog', 'icons'],
+        props: ['catalog', 'icons', 'errors'],
 
         mounted: function () {
             this.load(this.catalog);
@@ -38,6 +38,12 @@
             proj: function () {
                 return this.$store.state.proj;
             },
+            error_obj: function() {
+                if(this.errors) {
+                    return this.errors;
+                }
+                return {};
+            }
         },
         watch: {
             proj: function () {

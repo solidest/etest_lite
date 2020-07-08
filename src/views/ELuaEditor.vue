@@ -7,13 +7,30 @@
             <div :style="{height: `calc(100vh - ${80+out_height}px)`}" class="pa-0 ma-0">
                 <e-editor :script="content.script" @change="save_script" ref="editor"> </e-editor>
             </div>
-            <v-sheet style="position:absolute; left:0px; bottom:1px; z-index:100" class="ma-0 pa-0" color="primary"
-                width="100%" :height="out_height" tile>
-                <v-row class="pa-0 ma-0">
-                    <v-col cols="4" class="pl-1 pt-1 pb-0 pr-0 ma-0">
-                        <span>静态检查通过</span>
+            <v-sheet :style="{position:'absolute', left:'0px', bottom: `${show_out?300+1:2}px`}" class="ma-0 pa-0"
+                :color="is_error ? 'error' : 'primary'" width="100%" :height="out_height" tile>
+                <v-row class="px-3 py-1 ma-0">
+                    <v-col class="pa-0 ma-0" cols=4>
+                        <span style="cursor: pointer" @click="goto_line(check_result.line)">{{check_result.tip}}</span>
+                    </v-col>
+                    <v-col class="pa-0 ma-0" cols=2>
+                        <span>{{x_state}}</span>
+                    </v-col>
+                    <v-col class="pa-0 ma-0" cols=5>
+                        <span>{{show_out ? '':run_out}}</span>
+                    </v-col>
+                    <v-col class="pa-0 ma-0" cols=1>
+                        <v-row class="pa-0 ma-0">
+                            <v-spacer />
+                            <v-icon small class="pt-1 ma-0" style="cursor: pointer" @click="show_out=!show_out">
+                                {{show_out ? 'mdi-chevron-triple-down':'mdi-chevron-triple-up'}}
+                            </v-icon>
+                        </v-row>
                     </v-col>
                 </v-row>
+            </v-sheet>
+            <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px'}" class="ma-0 pa-0"
+                color="grey darken-3" width="100%" height="300" tile>
             </v-sheet>
         </v-card>
     </v-container>
@@ -42,7 +59,6 @@
             this.load_doc();
             this.editor = this.$refs.editor.get_action_handler();
         },
-
         data() {
             return {
                 doc_id: null,
@@ -56,9 +72,13 @@
                 },
                 out_height: 30,
                 editor: {},
+                show_out: false,
             }
         },
         computed: {
+            is_error: function () {
+                return this.check_result.line > 0;
+            },
             title: function () {
                 let ed = this.$store.state.edit_doc;
                 return ed ? ed.doc.name : '';
@@ -71,17 +91,64 @@
                 if (!res) {
                     return {}
                 }
-                res = res[cfg.kind];
+                res = res.program;
                 if (!res) {
                     return {}
                 }
                 return res[this.doc_id] || {};
+            },
+            check_result: function () {
+                let err = this.error_obj;
+                if (!err || !err.$count) {
+                    this.set_err(-1);
+                    return {
+                        line: -1,
+                        tip: '代码检查通过'
+                    };
+                }
+                for (let key in err) {
+                    if (isNaN(key)) {
+                        continue;
+                    }
+                    let line = Number.parseInt(key);
+                    let msg = err[key][0].msg;
+                    this.set_err(line, msg);
+                    return {
+                        line: line,
+                        tip: msg
+                    };
+                }
+                this.set_err(-1);
+                return {
+                    line: -1,
+                    tip: '代码检查通过'
+                };
+            },
+            x_state: function () {
+                return '执行器空闲';
+            },
+            run_out: function () {
+                return '<无输出>';
             }
         },
         methods: {
+            set_err: function(line, msg) {
+                if(!this.editor || !this.editor.set_err) {
+                    return;
+                }
+                this.editor.set_err(line, msg);
+            },
+            goto_line: function(line) {
+                if(line<0 || !this.editor) {
+                    return;
+                }
+                this.editor.goto_line(line);
+            },
             setting: function (data) {
                 this.content.option = data;
                 this.save_doc();
+                complition.set_env(this.env.get_dev_list(), this.env.get_proto_list(),
+                    this.env.records, data.vars_obj);
             },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
@@ -105,7 +172,8 @@
                     self.env = new Env();
                     self.env.open(self.proj_id, self.content.option.topology, self.content.option.panel)
                         .then(() => {
-                            complition.set_env(self.env.get_dev_list(), self.env.get_proto_list(), self.env.records);
+                            complition.set_env(self.env.get_dev_list(), self.env.get_proto_list(),
+                                self.env.records, this.content.option.vars_obj);
                             let sett = cfg.bar_items.find(it => it.value === 'setting');
                             sett.widgets[1].items = self.env.get_topo_list();
                             sett.widgets[2].items = self.env.get_panel_list();

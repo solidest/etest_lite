@@ -3,7 +3,7 @@
         <v-list-item-group color="primary" v-model="selected">
             <v-list-item v-for="(item, i) in items" :key="i">
                 <v-list-item-icon>
-                    <v-icon :color="`${error_obj[item.id]?'red':'gerey'} lighten-2`" v-text="icon"></v-icon>
+                    <v-icon :color="`${error_obj[item.id]?'red':'grey'} lighten-2`" v-text="icon"></v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title v-text="item.name" :class="`body-1 ${error_obj[item.id]?'red':'gerey'}--text text--lighten-2`"></v-list-item-title>

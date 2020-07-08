@@ -27,6 +27,9 @@ class Project {
         if(this.protocol) {
             this.protocol.forEach(topo => topo.check());
         }
+        if(this.lua) {
+            this.lua.forEach(lua => lua.check());
+        }
         return this.check_res;
     }
    

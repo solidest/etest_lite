@@ -7,6 +7,8 @@ const cfg = {
             rt_cycle: 1000,
             topology: '',
             panel: '',
+            vars: '',
+            vars_obj: {}
         }
     },
     bar_items: [{

@@ -28,7 +28,7 @@
 </template>
 <script>
     import EScriptEditor from './EMiniScriptEditor';
-    import yaml from 'js-yaml'
+    import yaml from 'js-yaml';
     import {
         debounce
     } from 'throttle-debounce';

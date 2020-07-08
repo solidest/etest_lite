@@ -189,6 +189,20 @@
                     },
                     find: function () {
                         self.editor.trigger('', 'actions.find');
+                    },
+                    goto_line: function(line) {
+                        self.editor.revealLine(line);
+                        self.editor.focus();
+                    },
+                    set_err: function(line, msg) {
+                        monaco.editor.setModelMarkers(self.model, 'eslint', line>0?[
+                            {
+                                startLineNumber: line,
+                                endLineNumber: line,
+                                message: msg,
+                            }
+                        ]:[]);
+                        self.err = true;
                     }
                 }
             }
