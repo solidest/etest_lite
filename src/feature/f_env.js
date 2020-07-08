@@ -26,6 +26,14 @@ class Env {
                 prot.frm = fp.load_frm(content.items);
             }
         }
+        this.topos = await ipc.list({proj_id: proj_id, kind: 'topology'});
+        for(let topo of this.topos) {
+            let doc = await ipc.load({
+                kind: 'doc',
+                id: topo.id
+            });
+            topo.content = doc ? (doc.content || {}) : {};
+        }
     }
 
     get_dev_list() {
@@ -46,7 +54,9 @@ class Env {
         return this.prots.map(p => p.name);
     }
 
-
+    get_topo_list() {
+        return this.topos.map(t => {return {text: t.name, value: t.id}});
+    }
 }
 
 

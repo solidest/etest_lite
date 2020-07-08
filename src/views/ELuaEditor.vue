@@ -1,7 +1,8 @@
 <template>
     <v-container class="pa-0 ma-0 fill-height" fluid>
         <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3">
-            <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" :editor="editor">
+            <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action" 
+                :editor="editor" :option="content.option">
             </e-editor-bar>
             <div :style="{height: `calc(100vh - ${80+out_height}px)`}" class="pa-0 ma-0">
                 <e-editor :script="content.script" @change="save_script" ref="editor"> </e-editor>
@@ -21,6 +22,8 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_lua';
+    import Env from '../feature/f_env';
+    import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
     import EEditor from '../components/ELuaScriptEditor';
 
@@ -35,6 +38,11 @@
             if (!this.doc_id) {
                 return;
             }
+            this.env = new Env();
+            this.env.open(this.proj_id).then(() => {
+                complition.set_env(this.env.get_dev_list(), this.env.get_proto_list());
+                cfg.bar_items.find(it => it.value === 'setting').widgets[1].items = this.env.get_topo_list();
+            });
             this.bar_items = this.cfg.bar_items;
             this.load_doc();
             this.editor = this.$refs.editor.get_action_handler();
@@ -48,7 +56,8 @@
                 bar_items: [],
                 content: {
                     script: '',
-                    memo: ''
+                    memo: '',
+                    option: {},
                 },
                 out_height: 30,
                 editor: {},
@@ -75,6 +84,10 @@
             }
         },
         methods: {
+            setting: function(data) {
+                this.content.option = data;
+                this.save_doc();
+            },
             on_action: function (ac, data) {
                 if (this[ac](data)) {
                     this.save_doc();
@@ -88,6 +101,7 @@
                 let content = doc ? (doc.content || {}) : {};
                 this.content.script = content.script || '';
                 this.content.memo = content.memo || '';
+                this.content.option = content.option || cfg.default_option();
             },
             save_script: function(script) {
                 this.content.script = script;

@@ -15,11 +15,36 @@
 
 <script>
     import * as monaco from 'monaco-editor';
-    import Env from '../feature/f_env';
-    import complition from '../language/complition';
 
     export default {
         props: ['script'],
+        mounted: function () {
+            if (!this.proj_id) {
+                return;
+            }
+            let self = this;
+            
+            this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
+                value: this.script || '',
+                language: 'etlua',
+                automaticLayout: true,
+                fontSize: "16px",
+                theme: 'vs-dark',
+                contextmenu: false,
+                minimap: {
+                    enabled: true,
+                    scale: 2,
+                    showSlider: 'always',
+                    side: 'right'
+                },
+            });
+            this.model = this.editor.getModel();
+            this.model.onDidChangeContent(function () {
+                self.update_version();
+                self.on_change(self.model.getValue());
+            });
+            this.reset_version();
+        },
         data: () => {
             return {
                 initialVersion: 0,
@@ -59,39 +84,11 @@
         },
         computed: {
             proj_id: function () {
-                return this.$store.state.proj.id;
+                if(this.$store.state.proj) {
+                    return this.$store.state.proj.id;
+                }
+                return null;
             }
-        },
-        mounted: function () {
-            if (!this.proj_id) {
-                return;
-            }
-            let self = this;
-            this.env = new Env();
-            this.env.open(this.proj_id).then(() => {
-                complition.set_env(this.env.get_dev_list(), this.env.get_proto_list());
-
-            });
-            this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
-                value: this.script || '',
-                language: 'etlua',
-                automaticLayout: true,
-                fontSize: "16px",
-                theme: 'vs-dark',
-                contextmenu: false,
-                minimap: {
-                    enabled: true,
-                    scale: 2,
-                    showSlider: 'always',
-                    side: 'right'
-                },
-            });
-            this.model = this.editor.getModel();
-            this.model.onDidChangeContent(function () {
-                self.update_version();
-                self.on_change(self.model.getValue());
-            });
-            this.reset_version();
         },
         watch: {
             script: function (v) {

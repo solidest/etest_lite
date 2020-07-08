@@ -21,7 +21,7 @@
     </v-card>
 </template>
 <script>
-    import EConfigSheet from './widgets/EConfigSheet';
+    import EConfigSheet from './widgets/EPanelConfigSheet';
     import cfg from '../helper/cfg_panel';
     import yaml from 'js-yaml';
 
