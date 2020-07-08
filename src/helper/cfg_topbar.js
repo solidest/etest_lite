@@ -135,23 +135,9 @@ const cfg = {
                 {
                     text: 'AutoTCG模型',
                     value: 'model',
-                }, {
-                    text: '动作序列',
-                    value: 'actions',
                 }
             ]
         },
-        // {
-        //     text: '新建模型',
-        //     value: 'new_model',
-        //     disabled: false,
-        //     icon: 'mdi-vector-polyline-plus'
-        // }, {
-        //     text: '新建动作序列',
-        //     value: 'new_actions',
-        //     disabled: false,
-        //     icon: 'mdi-playlist-plus'
-        // }, 
         {
             text: '修改名称',
             value: 're_name',

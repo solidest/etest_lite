@@ -37,6 +37,6 @@ const cfg = {
         value: 'redo',
         icon: 'mdi-redo',
     },],
-    icon: 'mdi-script-outline',
+    icon: 'mdi-script-text-outline',
 }
 export default cfg

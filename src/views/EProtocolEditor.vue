@@ -197,7 +197,7 @@
             },
             restore_from_obj: function (obj) {
                 this.content.memo = obj.memo || '',
-                    this.content.bitalign = obj.bitalign || 'bitlr';
+                this.content.bitalign = obj.bitalign || 'bitlr';
                 this.content.frm = h.load_frm(obj.items);
             },
             update_redo_undo: function () {

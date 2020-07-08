@@ -80,7 +80,7 @@ const language = {
     // The main tokenizer for our languages
     tokenizer: {
         root: [
-            [/\b(entry|print|exit|assert|verify|delay|now|error|message|pack|unpack|send|recv|ioctl|write|read|nameof|ask|insert|async|log|string|math|table|utf8)\b/, 'type.identifier'],
+            [/\b(protocol|device|record|entry|print|exit|assert|verify|delay|now|error|message|pack|unpack|send|recv|ioctl|write|read|nameof|ask|insert|async|log|string|math|table|utf8)\b/, 'type.identifier'],
             [/\b(require|return|goto|break|function|if|then|else|elseif|return|end|for|repeat|in|do|until|while|continue)\b/, 'regexp'],
             [/\b(and|or|not)\b/, 'operators'],
             [/\b^[a-zA-Z_$][a-zA-Z0-9_]*(?=[;(])/, 'number.binary'],
