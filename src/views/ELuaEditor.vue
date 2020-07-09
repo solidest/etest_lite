@@ -146,7 +146,7 @@
                 return res;
             },
             x_state: function () {
-                return '执行器就绪';
+                return '<执行器状态>';
             },
             run_out: function () {
                 return '<无输出>';

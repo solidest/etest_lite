@@ -55,23 +55,6 @@ const cfg = {
             value: 'iconlib',
             id: 'tool_iconlib'
         },
-        //  {
-        //     name: '状态机代码生成',
-        //     value: 'iconlib',
-        //     id: 'tool_iconlib'
-        // }, {
-        //     name: '(调试助手)',
-        //     value: 'assistant',
-        //     id: 'tool_assistant'
-        // }, {
-        //     name: '(历史记录)',
-        //     value: 'history',
-        //     id: 'tool_history'
-        // }, {
-        //     name: '(执行报告)',
-        //     value: 'report',
-        //     id: 'tool_report'
-        // }, 
     ]
     }, {
         icon: 'mdi-cog-outline',
