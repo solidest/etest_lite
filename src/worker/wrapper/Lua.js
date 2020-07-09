@@ -1,5 +1,6 @@
 
 import parser from 'luaparse';
+import yaml from 'js-yaml';
 
 const KIND = 'program';
 
@@ -15,6 +16,25 @@ class Lua {
 
     get name() {
         return this.data.name;
+    }
+
+    _option_check() {
+
+        if(!this.data.content || !this.data.content.option) {
+            return;
+        }
+        let opt = this.data.content.option;
+        if(opt.vars) {
+            try {
+                yaml.safeLoad(opt.vars, 'utf8');
+            } catch (error) {
+                this.proj.pushError('输入参数设置错误', KIND, this.id, -1);
+            }
+        }
+
+        // if(!opt.topology) {
+        //     this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
+        // }
     }
 
     _entry_check(ast) {
@@ -37,13 +57,14 @@ class Lua {
     _parser_check(script) {
 
         try {
-            let ast = parser.parse(script);
+            let ast = parser.parse(script, {luaVersion: '5.3'});
             if(!ast) {
                 this.proj.pushError('语法错误', KIND, this.id, -1);
             } else {
                 this._entry_check(ast);
             }
         } catch (error) {
+            console.log(error.message)
             this.proj.pushError(error.message, KIND, this.id, error.line);
         }
     }
@@ -57,6 +78,7 @@ class Lua {
             return;
         }
         this._parser_check(script);
+        this._option_check();
     }
 }
 

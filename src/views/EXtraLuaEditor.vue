@@ -89,39 +89,39 @@
                 return res[this.kind] || {};
             },
             check_result: function () {
-                let err = this.error_obj;
-                if (!err || !err.$count) {
-                    this.set_err_tip(-1);
-                    return {
+                let res = {
                         line: -100,
                         tip: '代码检查通过'
                     };
+                let err = this.error_obj;
+                if (!err || !err.$count) {
+                    this.set_err_tip(-1);
+                    return res;
                 }
+                let msgs = [];
                 for (let key in err) {
                     if (key.startsWith('$')) {
                         continue;
                     }
-                    let msgs = [];
                     let ls = err[key];
                     ls.forEach(l => {
                         if (l.type === 'error') {
                             msgs.push(l.msg);
+                            let line = Number.parseInt(key);
+                            if(res.line === -100) {
+                                res.line = line;
+                                this.set_err_tip(line, l.msg);
+                            }
                         }
                     });
-                    let line = Number.parseInt(key);
-                    let msg = msgs.join(';');
-                    this.set_err_tip(line, msg);
-                    //console.log('line', line)
-                    return {
-                        line: line,
-                        tip: msg
-                    };
                 }
-                this.set_err_tip(-1);
-                return {
-                    line: -100,
-                    tip: '代码检查通过'
-                };
+                if(msgs.length >0 ){
+                    res.tip = msgs.join('; ');                
+                }
+                if(res.line === -100) {
+                    this.set_err_tip(-1);
+                }
+                return res;
             },
         },
         methods: {

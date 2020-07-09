@@ -1,7 +1,7 @@
 
 import ipc from './r_ipc';
 import fp from './f_protocol';
-import yaml from 'js-yaml'
+import yaml from 'js-yaml';
 
 
 class Env {
