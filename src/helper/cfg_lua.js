@@ -11,6 +11,17 @@ const cfg = {
             vars_obj: {}
         }
     },
+    default_script: function () {
+        return [
+            '',
+            '-- entry: ETestDev执行用例入口函数 ',
+            '-- @vars: 输入参数, @option: 自定义选项',
+            'function entry(vars, option)',
+            '\t',
+            '\t',
+            'end',
+        ].join('\n');
+    },
     bar_items: [{
         text: '执行',
         value: 'a_play',

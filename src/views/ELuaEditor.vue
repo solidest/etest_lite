@@ -8,24 +8,28 @@
                 <e-editor :script="content.script" @change="save_script" ref="editor"> </e-editor>
             </div>
             <v-sheet :style="{position:'absolute', left:'0px', bottom: `${show_out?300+1:2}px`}" class="ma-0 pa-0"
-                :color="is_error ? 'error' : 'primary'" width="100%" :height="out_height" tile>
+                color="primary" width="100%" :height="out_height" tile>
                 <v-row class="px-3 py-1 ma-0">
-                    <v-col class="pa-0 ma-0" cols=4>
-                        <span style="cursor: pointer" @click="goto_line(check_result.line)">{{check_result.tip}}</span>
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 26px; max-width: 26px;" cols=1 >
+                        <v-icon small class="pa-0 ma-0" style="cursor: pointer;"
+                            @click="goto_line(check_result.line)">
+                            {{is_check_error ? 'mdi-close-circle':'mdi-check'}}
+                        </v-icon>
                     </v-col>
-                    <v-col class="pa-0 ma-0" cols=2>
-                        <span>{{x_state}}</span>
+                    <v-col class="pa-0 ma-0 pr-3 flex-grow-1 flex-shrink-0"  style="min-width: 200px; max-width: 800px;" cols=4>
+                        <span style="cursor: pointer;" class="text-shenglue"
+                            @click="goto_line(check_result.line)">{{check_result.tip}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0" cols=5>
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 100px; max-width: 100px;" cols=2>
+                         <span>{{x_state}}</span>
+                    </v-col>
+                    <v-col class="pa-0 ma-0 pl-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;" cols=4>
                         <span>{{show_out ? '':run_out}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0" cols=1>
-                        <v-row class="pa-0 ma-0">
-                            <v-spacer />
-                            <v-icon small class="pt-1 ma-0" style="cursor: pointer" @click="show_out=!show_out">
-                                {{show_out ? 'mdi-chevron-triple-down':'mdi-chevron-triple-up'}}
-                            </v-icon>
-                        </v-row>
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 26px; max-width: 26px;" cols=1>
+                        <v-icon small class="pa-0 ma-0" style="cursor: pointer" @click="show_out=!show_out">
+                            {{show_out ? 'mdi-chevron-triple-down':'mdi-chevron-triple-up'}}
+                        </v-icon>
                     </v-col>
                 </v-row>
             </v-sheet>
@@ -35,7 +39,16 @@
         </v-card>
     </v-container>
 </template>
-
+<style scoped>
+    .text-shenglue {
+        display: block;
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-text-overflow: ellipsis;
+    }
+</style>
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_lua';
@@ -76,8 +89,8 @@
             }
         },
         computed: {
-            is_error: function () {
-                return this.check_result.line > 0;
+            is_check_error: function () {
+                return this.check_result.line >= -1;
             },
             title: function () {
                 let ed = this.$store.state.edit_doc;
@@ -100,46 +113,54 @@
             check_result: function () {
                 let err = this.error_obj;
                 if (!err || !err.$count) {
-                    this.set_err(-1);
+                    this.set_err_tip(-1);
                     return {
-                        line: -1,
+                        line: -100,
                         tip: '代码检查通过'
                     };
                 }
                 for (let key in err) {
-                    if (isNaN(key)) {
+                    if (key.startsWith('$')) {
                         continue;
                     }
+                    let msgs = [];
+                    let ls = err[key];
+                    ls.forEach(l => {
+                        if (l.type === 'error') {
+                            msgs.push(l.msg);
+                        }
+                    });
                     let line = Number.parseInt(key);
-                    let msg = err[key][0].msg;
-                    this.set_err(line, msg);
+                    let msg = msgs.join(';');
+                    this.set_err_tip(line, msg);
+                    //console.log('line', line)
                     return {
                         line: line,
                         tip: msg
                     };
                 }
-                this.set_err(-1);
+                this.set_err_tip(-1);
                 return {
-                    line: -1,
+                    line: -100,
                     tip: '代码检查通过'
                 };
             },
             x_state: function () {
-                return '执行器空闲';
+                return '执行器就绪';
             },
             run_out: function () {
                 return '<无输出>';
             }
         },
         methods: {
-            set_err: function(line, msg) {
-                if(!this.editor || !this.editor.set_err) {
+            set_err_tip: function (line, msg) {
+                if (!this.editor || !this.editor.set_err) {
                     return;
                 }
                 this.editor.set_err(line, msg);
             },
-            goto_line: function(line) {
-                if(line<0 || !this.editor) {
+            goto_line: function (line) {
+                if (line < 0 || !this.editor) {
                     return;
                 }
                 this.editor.goto_line(line);
@@ -161,7 +182,7 @@
                     id: this.doc_id
                 });
                 let content = doc ? (doc.content || {}) : {};
-                this.content.script = content.script || '';
+                this.content.script = content.script || cfg.default_script();
                 this.content.memo = content.memo || '';
                 this.content.option = content.option || cfg.default_option();
                 this.load_env();
