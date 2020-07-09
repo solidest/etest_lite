@@ -5,6 +5,7 @@ import Device from './Device';
 import Topology from './Topology';
 import Protocol from './Protocol';
 import Lua from './Lua';
+import XtraLua from './XtraLua';
 import t_man from '../../helper/tree_man';
 
 const kinds = [ {
@@ -20,6 +21,39 @@ const kinds = [ {
 ];
 
 //['program', 'panel', 'protocol', 'device', 'topology', 'simu', 'doc']
+
+async function load_program(proj, stopper) {
+    let pg_doc = await ipc.load({
+        id: proj.id,
+        kind: 'program'
+    });
+    let items = pg_doc.items || [];
+    let leafs = [];
+    items.forEach(it => {
+        t_man.getLeafs(it, leafs);
+    });
+
+    let luas = leafs.filter(l => l.kind === 'lua');
+    for(let lua of luas) {
+        let doc = await ipc.load({
+            kind: 'doc',
+            id: lua.id,
+        });
+        if(stopper && stopper(proj.id, proj.version)) {
+            return null;
+        }
+        if(doc) {
+            proj.addKind('lua', new Lua(doc, proj));
+        }
+    }
+}
+
+function load_xtra(proj, proj_data) {
+    proj.addKind('project', new XtraLua('pack', proj_data.xtra.pack, proj));
+    proj.addKind('project', new XtraLua('unpack', proj_data.xtra.unpack, proj));
+    proj.addKind('project', new XtraLua('recvfilter', proj_data.xtra.recvfilter, proj));
+    proj.addKind('project', new XtraLua('check', proj_data.xtra.check, proj));
+}
 
 async function load_proj(proj_data, stopper) {
 
@@ -48,29 +82,8 @@ async function load_proj(proj_data, stopper) {
         }
     }
 
-    let pg_doc = await ipc.load({
-        id: proj.id,
-        kind: 'program'
-    });
-    let items = pg_doc.items || [];
-    let leafs = [];
-    items.forEach(it => {
-        t_man.getLeafs(it, leafs);
-    });
-
-    let luas = leafs.filter(l => l.kind === 'lua');
-    for(let lua of luas) {
-        let doc = await ipc.load({
-            kind: 'doc',
-            id: lua.id,
-        });
-        if(stopper && stopper(proj.id, proj.version)) {
-            return null;
-        }
-        if(doc) {
-            proj.addKind('lua', new Lua(doc, proj));
-        }
-    }
+    load_program(proj, stopper);
+    load_xtra(proj, proj_data);
     
     return proj;
 }

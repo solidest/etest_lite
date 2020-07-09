@@ -26,6 +26,7 @@
             } else {
                 this.load(this.catalog);
             }
+            console.log(this.errors, this.lists)
         },
         data: () => {
             return {
@@ -82,7 +83,6 @@
                     case 'del_item':
                         this.del_item();
                         break;
-                
                     default:
                         console.log(ac, v)
                         break;

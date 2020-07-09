@@ -30,6 +30,9 @@ class Project {
         if(this.lua) {
             this.lua.forEach(lua => lua.check());
         }
+        if(this.project) {
+            this.project.forEach(xt => xt.check());
+        }
         return this.check_res;
     }
    

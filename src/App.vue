@@ -86,6 +86,9 @@
           case 'lua':
             res.route_name = 'Lua';
             break;
+          case 'project':
+            res.route_name = ed.doc.value;
+            break;
             
           default:
             console.log('TODO editor:', ed.kind);

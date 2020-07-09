@@ -49,7 +49,11 @@ const routes = [{
     path: '/lua',
     name: 'Lua',
     component: ELuaEditor,
-  },
+  }, {
+    path: '/xtra',
+    name: 'Xtra',
+    component: () => import( /* webpackChunkName: "e_editor_xtra" */ '../views/EXtraLuaEditor'),
+  }
 ]
 
 const router = new VueRouter({

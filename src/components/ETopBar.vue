@@ -59,7 +59,7 @@
                             :icons="page.icons"> </e-tree-editor>
                         <e-list-editor v-else-if="page.type==='list'" ref="list_editor" :catalog="page.catalog" :errors="check_result[page.catalog]"
                             :icon="page.file_icon"> </e-list-editor>
-                        <e-list-editor v-else-if="page.type==='items'" :catalog="page.catalog" :icon="page.file_icon" 
+                        <e-list-editor v-else-if="page.type==='items'" :catalog="page.catalog" :icon="page.file_icon" :errors="check_result[page.catalog]"
                             :lists="page.items"> </e-list-editor>
                     </div>
                 </v-card>

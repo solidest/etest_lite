@@ -54,23 +54,25 @@ const cfg = {
             name: '图标库',
             value: 'iconlib',
             id: 'tool_iconlib'
-        }, {
-            name: '状态机代码生成',
-            value: 'iconlib',
-            id: 'tool_iconlib'
-        }, {
-            name: '(调试助手)',
-            value: 'assistant',
-            id: 'tool_assistant'
-        }, {
-            name: '(历史记录)',
-            value: 'history',
-            id: 'tool_history'
-        }, {
-            name: '(执行报告)',
-            value: 'report',
-            id: 'tool_report'
-        }, ]
+        },
+        //  {
+        //     name: '状态机代码生成',
+        //     value: 'iconlib',
+        //     id: 'tool_iconlib'
+        // }, {
+        //     name: '(调试助手)',
+        //     value: 'assistant',
+        //     id: 'tool_assistant'
+        // }, {
+        //     name: '(历史记录)',
+        //     value: 'history',
+        //     id: 'tool_history'
+        // }, {
+        //     name: '(执行报告)',
+        //     value: 'report',
+        //     id: 'tool_report'
+        // }, 
+    ]
     }, {
         icon: 'mdi-cog-outline',
         title: '项目设置',
@@ -79,24 +81,24 @@ const cfg = {
         file_icon: 'mdi-cogs',
         items: [{
             name: '执行器设置',
-            value: 'etestx',
-            id: 'cfg_etestx'
+            value: 'ProjSetting',
+            id: 'etestx'
         }, {
             name: '自定义校验函数',
-            value: 'check',
-            id: 'cfg_check'
+            value: 'Xtra',
+            id: 'check'
         }, {
             name: '自定义打包函数',
-            value: 'pack',
-            id: 'cfg_pack'
+            value: 'Xtra',
+            id: 'pack'
         }, {
             name: '自定义解包函数',
-            value: 'unpack',
-            id: 'cfg_unpack'
+            value: 'Xtra',
+            id: 'unpack'
         }, {
             name: '接收过滤器',
-            value: 'recvfilter',
-            id: 'cfg_recvfilter'
+            value: 'Xtra',
+            id: 'recvfilter'
         }]
     }],
 
