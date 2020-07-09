@@ -3,7 +3,7 @@
         <v-row align="center" justify="center">
             <div>
                 <v-row class="mb-6" justify="center">
-                    <v-card width="500px" class="ma-4 pa-6" tile color="grey darken-4">
+                    <v-card width="600px" class="ma-4 pa-6" tile color="grey darken-4">
                         <v-card-title>
                             {{'项目: ' + proj.name}}
                         </v-card-title>
