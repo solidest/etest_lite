@@ -27,6 +27,9 @@ async function load_program(proj, stopper) {
         id: proj.id,
         kind: 'program'
     });
+    if(!pg_doc) {
+        return;
+    }
     let items = pg_doc.items || [];
     let leafs = [];
     items.forEach(it => {
@@ -50,6 +53,9 @@ async function load_program(proj, stopper) {
 }
 
 function load_xtra(proj, proj_data) {
+    if(!proj_data.xtra) {
+        return;
+    }
     proj.addKind('project', new XtraLua('pack', proj_data.xtra.pack, proj));
     proj.addKind('project', new XtraLua('unpack', proj_data.xtra.unpack, proj));
     proj.addKind('project', new XtraLua('recvfilter', proj_data.xtra.recvfilter, proj));

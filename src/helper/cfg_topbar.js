@@ -80,9 +80,9 @@ const cfg = {
         type: 'items',
         file_icon: 'mdi-cogs',
         items: [{
-            name: '执行器设置',
-            value: 'ProjSetting',
-            id: 'etestx'
+            name: '基本设置',
+            value: 'Setting',
+            id: 'setting'
         }, {
             name: '自定义校验函数',
             value: 'Xtra',

@@ -26,7 +26,6 @@
             } else {
                 this.load(this.catalog);
             }
-            console.log(this.errors, this.lists)
         },
         data: () => {
             return {

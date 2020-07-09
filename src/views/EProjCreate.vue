@@ -170,8 +170,6 @@
                     let doc = {
                         id: shortid.generate(),
                         name: this.input_text.trim(),
-                        xtra: {},
-                        setting: {},
                         created: t,
                         updated: t
                     };

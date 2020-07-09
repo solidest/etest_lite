@@ -54,6 +54,9 @@
                 return;
             }
             this.editor = this.$refs.editor.get_action_handler();
+            if(!this.proj.xtra) {
+                this.proj.xtra = {}
+            }
             this.script = this.proj.xtra[this.kind] || cfg['default_'+this.kind]();
             complition.set_env([], [], {}, {});
         },

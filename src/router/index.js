@@ -53,6 +53,10 @@ const routes = [{
     path: '/xtra',
     name: 'Xtra',
     component: () => import( /* webpackChunkName: "e_editor_xtra" */ '../views/EXtraLuaEditor'),
+  }, {
+    path: '/setting',
+    name: 'Setting',
+    component: () => import( /* webpackChunkName: "e_editor_setting" */ '../views/EProjSetting'),
   }
 ]
 
