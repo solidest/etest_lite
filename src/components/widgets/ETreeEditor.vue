@@ -1,17 +1,21 @@
 <template>
     <v-treeview dense :items="items" :active.sync="active" activatable item-key="id" hoverable
         @update:active="selected" :open.sync="open" return-object selection-type="independent"
-        v-click-outside="onClickOutside">
+        v-click-outside="onClickOutside" @drop.native="on_drop">
         <template v-slot:prepend="{ item, open }">
-            <v-icon v-if="item.kind==='dir'" color="grey lighten-2">
+            <v-icon draggable v-if="item.kind==='dir'" color="grey lighten-2" 
+                @drop.native="(ev) => on_drop(ev, item)" @dragover.native="(ev) => on_dragover(ev, item)" 
+                @dragstart.native="(ev) => on_dragstart(ev, item)" @dragend="by_drag=null" >
                 {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
             </v-icon>
-            <v-icon v-else :color="`${error_obj[item.id]?'red':'grey'} lighten-2`" >
+            <v-icon draggable v-else :color="`${error_obj[item.id]?'red':'grey'} lighten-2`" 
+                @drop.native="(ev) => on_drop(ev, item)" @dragover.native="(ev) => on_dragover(ev, item)" 
+                @dragstart.native="(ev) => on_dragstart(ev, item)"  @dragend="by_drag=null" >
                 {{ icons[item.kind] }}
             </v-icon>
         </template>
         <template v-slot:label="{ item }">
-            <span style="cursor:pointer;" class="body-1 grey--text text--lighten-2"> {{item.name}}</span>
+            <span style="cursor:pointer;" class="body-1 grey--text text--lighten-2" > {{item.name}}</span>
         </template>
     </v-treeview>
 </template>
@@ -32,6 +36,7 @@
                 items: [],
                 active: [],
                 open: [],
+                by_drag: null,
             }
         },
         computed: {
@@ -52,6 +57,31 @@
         },
 
         methods: {
+            on_dragstart: function(ev, item) {
+                this.by_drag = item;
+                ev.dataTransfer.setData("Text", item.id);
+                ev.dataTransfer.effectAllowed = 'move';
+            },
+            on_dragover: function(ev, item) {
+                ev.preventDefault();
+                if(!this.by_drag) {
+                    return;
+                }
+                let root = {id: 'root', children: this.items};
+                if(tman.allowMove(root, this.by_drag.id, item)) {
+                    ev.dataTransfer.dropEffect = 'move';
+                } else {
+                    ev.dataTransfer.dropEffect = 'none';
+                }
+            },
+            on_drop: function(ev, item) {
+                this.by_drag = null;
+                let from_id = ev.dataTransfer.getData("Text");
+                let root = {id: 'root', children: this.items};
+                if(tman.moveItem(root, from_id, item)) {
+                    this.save_all();
+                }
+            },
             new_item: async function(its, name, kind, children) {
                 let it = {
                     id: shortid.generate(),
@@ -110,15 +140,6 @@
                     case 'new_file': 
                         this.on_new_item(v, t);
                         break;
-                    // case 'new_dir':
-                    //     this.new_dir(v);
-                    //     break;
-                    // case 'new_model':
-                    //     this.new_model(v);
-                    //     break;
-                    // case 'new_actions':
-                    //     this.new_actions(v);
-                    //     break;
                     case 're_name':
                         this.re_name(v);
                         break;
@@ -131,19 +152,6 @@
                         break;
                 }
             },
-
-            // new_model: async function (n) {
-            //     let its = this.current_items();
-            //     if (this.valid_name(its, n)) {
-            //         await this.new_item(its, n.trim(),'model' );
-            //     }
-            // },
-            // new_actions: async function (n) {
-            //     let its = this.current_items();
-            //     if (this.valid_name(its, n)) {
-            //         await this.new_item(its, n.trim(), 'actions' );
-            //     }
-            // },
             re_name: async function (n) {
                 if(this.active.length===0) {
                     return;
@@ -152,7 +160,7 @@
                 if(n && n.trim()===it.name) {
                     return;
                 }
-                let its = tman.findParent(this.items, it.id);
+                let its = tman.findParentChildren(this.items, it.id);
                 if(this.valid_name(its, n)) {
                     tman.rename(this.items, it.id, n.trim())
                     await this.save_all();
@@ -213,7 +221,7 @@
                     if (it.kind === 'dir') {
                         return it.children;
                     } else {
-                        let res = tman.findParent(this.items, it.id);
+                        let res = tman.findParentChildren(this.items, it.id);
                         return res;
                     }
                 }

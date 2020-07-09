@@ -1,19 +1,18 @@
-
 //查找父级数组
-function findParent(items, id) {
-    if(!items) {
+function findParentChildren(items, id) {
+    if (!items) {
         return null;
     }
-    for(let it of items) {
-        if(it.id===id) {
+    for (let it of items) {
+        if (it.id === id) {
             return items;
         }
     }
 
-    for(let it of items) {
-        if(it.kind === 'dir') {
-            let res = findParent(it.children, id);
-            if(res) {
+    for (let it of items) {
+        if (it.kind === 'dir') {
+            let res = findParentChildren(it.children, id);
+            if (res) {
                 return res;
             }
         }
@@ -23,7 +22,7 @@ function findParent(items, id) {
 }
 
 // //查找父节点
-// function findParentItem(parent, id) {
+// function findParentChildrenItem(parent, id) {
 //     if(!parent || !parent.children) {
 //         return null;
 //     }
@@ -35,7 +34,7 @@ function findParent(items, id) {
 
 //     for(let it of parent.children) {
 //         if(it.is_dir) {
-//             let res = findParentItem(it, id);
+//             let res = findParentChildrenItem(it, id);
 //             if(res) {
 //                 return res;
 //             }
@@ -47,16 +46,16 @@ function findParent(items, id) {
 
 function findPos(items, is_dir, name) {
     let idx = 0;
-    if(is_dir) {
-        for(let it of items) {
-            if((it.kind!=='dir') ||((it.kind==='dir') && it.name>name)){
+    if (is_dir) {
+        for (let it of items) {
+            if ((it.kind !== 'dir') || ((it.kind === 'dir') && it.name > name)) {
                 return idx;
             }
             idx++;
-        }        
+        }
     } else {
-        for(let it of items) {
-            if((it.kind!=='dir') && it.name>name) {
+        for (let it of items) {
+            if ((it.kind !== 'dir') && it.name > name) {
                 return idx;
             }
             idx++;
@@ -66,28 +65,28 @@ function findPos(items, is_dir, name) {
 }
 
 function insert(items, item) {
-    let pos = findPos(items, item.kind==='dir', item.name);
+    let pos = findPos(items, item.kind === 'dir', item.name);
     items.splice(pos, 0, item);
 }
 
 function remove(items, id) {
-    let children = findParent(items, id);
-    let idx = children.findIndex(it=>it.id===id);
+    let children = findParentChildren(items, id);
+    let idx = children.findIndex(it => it.id === id);
     children.splice(idx, 1);
 }
 
 function findItem(items, id) {
-    if(!items) {
+    if (!items) {
         return null;
     }
 
-    for(let it of items) {
-        if(it.id===id) {
+    for (let it of items) {
+        if (it.id === id) {
             return it;
         }
-        if(it.kind === 'dir') {
+        if (it.kind === 'dir') {
             let f = findItem(it.children, id);
-            if(f) {
+            if (f) {
                 return f;
             }
         }
@@ -95,8 +94,8 @@ function findItem(items, id) {
 }
 
 function rename(items, item_id, name) {
-    let children = findParent(items, item_id);
-    let idx = children.findIndex(it=>it.id===item_id);
+    let children = findParentChildren(items, item_id);
+    let idx = children.findIndex(it => it.id === item_id);
     let item = children[idx];
     children.splice(idx, 1);
     item.name = name;
@@ -108,7 +107,7 @@ function rename(items, item_id, name) {
 //     if(!name) {
 //         return '名称无效';
 //     }
-    
+
 //     for(let it of children) {
 //         if(it.id===exclude_id) {
 //             continue;
@@ -122,8 +121,8 @@ function rename(items, item_id, name) {
 // }
 
 function getLeafs(item, results) {
-    if(item.kind==='dir') {
-        for(let it of item.children) {
+    if (item.kind === 'dir') {
+        for (let it of item.children) {
             getLeafs(it, results);
         }
     } else {
@@ -184,4 +183,78 @@ function getLeafs(item, results) {
 //     }
 // }
 
-export default { findItem, findParent, insert, rename, remove, getLeafs }
+
+//查找父级数组
+function findParent(parent, id) {
+    if (!parent || !parent.children) {
+        console.log('null')
+        return null;
+    }
+    for (let ch of parent.children) {
+        if (ch.id === id) {
+            return parent;
+        }
+        if (ch.kind === 'dir') {
+            let res = findParent(ch, id);
+            if (res) {
+                return res;
+            }
+        }
+    }
+    return null;
+}
+
+function allowMove(root, from_id, to) {
+    let from = findItem(root.children, from_id);
+    if (from === to || !from || !to) {
+        return false;
+    }
+    let to_dir = (to.kind === 'dir' ? to : findParent(root, to.id));
+    let from_dir = findParent(root, from.id);
+    if (from_dir === to_dir || from === to_dir) {
+        return false;
+    }
+    if (from.kind === 'dir') {
+        let find = findItem(from.children, to_dir.id);
+        if (find) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function moveItem(root, from_id, to) {
+    let from = findItem(root.children, from_id);
+    if (from === to || !from || !to) {
+        return false;
+    }
+    let to_dir = (to.kind === 'dir' ? to : findParent(root, to.id));
+    let from_dir = findParent(root, from.id);
+    if (from_dir === to_dir || from === to_dir) {
+        return false;
+    }
+    if (from.kind === 'dir') {
+        let find = findItem(from.children, to_dir.id);
+        if (find) {
+            return false;
+        }
+    }
+    remove(root.children, from_id);
+    insert(to_dir.children, from);
+    return true;
+}
+
+
+
+
+export default {
+    findItem,
+    findParent,
+    allowMove,
+    moveItem,
+    findParentChildren,
+    insert,
+    rename,
+    remove,
+    getLeafs
+}
