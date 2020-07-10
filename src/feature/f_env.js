@@ -109,7 +109,7 @@ class Env {
 
     get_panel_list() {
         let res = this.panels.map(p => {return {text: p.name, value: p.id}});
-        res.push({text: '无', value: ''});
+        res.push({text: '<无>', value: ''});
         return res;
     }
 }

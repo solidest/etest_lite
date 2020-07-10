@@ -14,6 +14,9 @@ import {
 import ipc from './feature/m_ipc';
 import db from './feature/m_db';
 import wins from './feature/m_wins';
+let player = null;
+let worker = null;
+let player_show = true;
 
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -42,7 +45,19 @@ function quit() {
   }, 300)
 }
 
-let worker = null;
+function try_close_all() {
+  if(wins.size() === 0 && !player_show) {
+    if(worker) {
+      worker.close();
+      worker = null;
+    }
+    if(player) {
+      player.close();
+      player = null;
+    }
+  }
+}
+
 function createWorker() {
   worker = new BrowserWindow({
     show: isDevelopment,
@@ -58,6 +73,27 @@ function createWorker() {
   }
   worker.on('closed', () => {
     worker = null;
+    try_close_all();
+  });
+}
+
+function createPlayer() {
+  player = new BrowserWindow({
+    show: player_show,
+    webPreferences: { nodeIntegration: true }
+  });
+  //ipc.setup(player);
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html')
+    if (!process.env.IS_TEST) player.webContents.openDevTools()
+  } else {
+    createProtocol('app')
+    player.loadURL('app://./player.html')
+  }
+  player.on('closed', () => {
+    player = null;
+    player_show = false;
+    try_close_all();
   })
 }
 
@@ -108,11 +144,7 @@ function createWindow(proj_id) {
 
   win.on('closed', () => {
     wins.del(win);
-    if(wins.size() === 0) {
-      if(worker) {
-        worker.close();
-      }
-    }
+    try_close_all();
   });
 
   win.on('focus', () => {
@@ -131,11 +163,15 @@ app.on('activate', () => {
   if(!worker) {
     createWorker();
   }
+  if(!player) {
+    createPlayer();
+  }
 })
 
 app.on('ready', async () => {
   createWindow(null);
   createWorker();
+  createPlayer();
 })
 
 if (isDevelopment) {
