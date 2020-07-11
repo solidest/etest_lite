@@ -4,7 +4,7 @@
         <v-spacer></v-spacer>
         <div style="display: inline-block" v-for="(item, idx) in items" :key="idx">
         <v-edit-dialog v-if="is_newaction(item.value)" @save="on_edit_finish" >
-            <v-tooltip bottomopen-delay="1500">
+            <v-tooltip bottomopen-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-btn icon small v-on="on" class="mx-1"
                         @click="edit_action=item; edit_text=''; edit_type=edit_type||(item.items?item.items[0].value : null)">
@@ -21,7 +21,7 @@
             </template>
         </v-edit-dialog> 
         <v-edit-dialog v-else-if="item.value==='re_name'" @save="on_edit_finish" >
-            <v-tooltip bottomopen-delay="1500">
+            <v-tooltip bottomopen-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-btn v-if="item.value==='re_name'" icon small v-on="on" class="mx-1" 
                         @click="(e)=>{selected?on_rename(item):e.stopPropagation()}">
@@ -35,7 +35,7 @@
                 </v-text-field>
             </template>
         </v-edit-dialog> 
-        <v-tooltip v-else-if="item.value === 'del_item'" bottomopen-delay="1500">
+        <v-tooltip v-else-if="item.value === 'del_item'" bottomopen-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-btn icon small v-on="on" class="mx-1" @click.stop="emit(item)">
                         <v-icon :color="selected ? 'grey lighten-1' : 'grey darken-1'">{{item.icon}}</v-icon>
@@ -46,7 +46,7 @@
         </div>
 
         <!-- <v-edit-dialog @save="on_edit_finish">
-            <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
+            <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-btn v-if="is_newaction(item.value)" icon small v-on="on" class="mx-1"
                         @click="edit_action=item; edit_text='';">

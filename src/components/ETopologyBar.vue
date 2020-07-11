@@ -4,7 +4,7 @@
         <span v-if="title" class="text--secondary">{{title}}</span>
         <v-spacer></v-spacer>
         <v-btn-toggle v-model="step" borderless dense mandatory tile rounded>
-            <v-tooltip bottom v-for="item in items" :key="item.value" open-delay="1500">
+            <v-tooltip bottom v-for="item in items" :key="item.value" open-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-btn icon v-on="on" :value="item.value">
                         <v-icon color="grey lighten-1">{{item.icon}}</v-icon>

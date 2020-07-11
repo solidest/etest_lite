@@ -5,7 +5,7 @@
                 <v-list dense nav>
                     <v-list-item v-for="item in pages" :key="item.catalog" @click="changePage(item)" :disabled="!proj">
                         <v-list-item-action>
-                            <v-tooltip right open-delay="1500">
+                            <v-tooltip right open-delay="300">
                                 <template v-slot:activator="{ on }">
                                     <v-badge :content="check_result[item.catalog]?check_result[item.catalog].$count:''"
                                         :value="!!check_result[item.catalog]" color="red" overlap bottom offset-y="20" offset-x="20">
@@ -24,7 +24,7 @@
                 </v-list>
                 <v-list-item style="position: absolute; left: 6px; bottom: 80px;" @click="listPublic()">
                     <v-list-item-action>
-                        <v-tooltip right open-delay="1500">
+                        <v-tooltip right open-delay="300">
                             <template v-slot:activator="{ on }">
                                 <v-icon large v-on="on" :color="isListPublic ? 'white':'grey'">
                                     mdi-view-dashboard-outline</v-icon>
@@ -38,7 +38,7 @@
                 </v-list-item>
                 <v-list-item style="position: absolute; left: 6px; bottom: 10px;" @click="listProj()">
                     <v-list-item-action>
-                        <v-tooltip right open-delay="1500">
+                        <v-tooltip right open-delay="300">
                             <template v-slot:activator="{ on }">
                                 <v-icon large v-on="on" :color="isListProj ? 'white':'grey'">mdi-view-sequential
                                 </v-icon>

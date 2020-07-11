@@ -41,7 +41,7 @@
                   </template>
                 </v-edit-dialog>
                 <v-spacer />
-                <v-tooltip bottom open-delay="1500">
+                <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
                         <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
@@ -49,7 +49,7 @@
                     </template>
                     <span>在新窗口打开</span>
                 </v-tooltip>
-                <v-tooltip bottom open-delay="1500">
+                <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
                         <v-icon color="grey">mdi-export</v-icon>
@@ -57,7 +57,7 @@
                     </template>
                     <span>导出项目</span>
                 </v-tooltip>
-                <v-tooltip bottom open-delay="1500">
+                <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
                         <v-icon color="grey">mdi-delete-outline</v-icon>

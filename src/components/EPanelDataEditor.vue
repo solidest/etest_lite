@@ -1,7 +1,7 @@
 <template>
     <v-sheet width="100%" height="calc(100vh - 205px)" class="pa-0 ma-0" style="position:relative">
         <div style="position:absolute; left:-28px; top:-2px; z-index:100">
-            <v-tooltip left open-delay="1500">
+            <v-tooltip left open-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-icon small v-on="on" color="grey lighten-1" class="pa-0 ma-1" style="cursor:pointer"
                         @click="on_sync">
@@ -12,7 +12,7 @@
             </v-tooltip>
         </div>
         <div style="position:absolute; left:-28px; top:25px; z-index:100">
-            <v-tooltip left open-delay="1500">
+            <v-tooltip left open-delay="300">
                 <template v-slot:activator="{ on }">
                     <v-icon small v-on="on" color="grey lighten-1" class="pa-0 ma-1" style="cursor:pointer"
                         @click="on_reset">

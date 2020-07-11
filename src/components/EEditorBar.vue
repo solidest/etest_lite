@@ -3,7 +3,7 @@
         <v-icon color="grey lighten-1" class="ml-3 mr-2">{{icon}}</v-icon>
         <span v-if="title" class="text--secondary">{{title}}</span>
         <v-spacer></v-spacer>
-        <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
+        <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="300">
             <template v-slot:activator="{ on }">
                 <v-edit-dialog v-if="item.value.startsWith('new_')" @save="on_new_finish">
                     <v-btn icon small v-on="on" class="mx-1" 

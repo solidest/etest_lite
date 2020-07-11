@@ -3,7 +3,7 @@
         <v-icon color="grey lighten-1" class="ml-3 mr-2">{{icon}}</v-icon>
         <span v-if="title" class="text--secondary">{{title}}</span>
         <v-spacer></v-spacer>
-        <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="1500">
+        <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="300">
             <template v-slot:activator="{ on }">
                 <v-spacer v-if="!item.value"> </v-spacer>
                 <v-edit-dialog v-else-if="item.widgets" large save-text="确定" cancel-text="取消"
