@@ -25,7 +25,7 @@
                                 <v-btn small @click="tcpsrv_test_" outlined>连接测试</v-btn>
                             </v-col>
                             <v-col cols="8">
-                                <v-card-text :class="((!test_result || test_result==='ok')? 'success--text':'error--text') + ' pa-0 pt-1 pb-0'">{{test_text}}</v-card-text>
+                                <v-card-text :class="get_conn_color() + '--text pa-0 pt-1 pb-0'">{{test_text}}</v-card-text>
                             </v-col>
                         </v-row>
                     </v-card>
@@ -39,9 +39,9 @@
 <script>
     import ipc from '../feature/r_ipc';
     import tcp_test from '../helper/tcp_test';
-        import {
-        debounce
-    } from 'throttle-debounce';
+    //     import {
+    //     debounce
+    // } from 'throttle-debounce';
 
 
     export default {
@@ -55,8 +55,8 @@
             } else {
                 this.setting = this.proj.setting;
             }
-            this.tcpsrv_test = debounce(600, this.tcpsrv_test_);
-            this.tcpsrv_test();
+            // this.tcpsrv_test = debounce(600, this.tcpsrv_test_);
+            // this.tcpsrv_test();
         },
         data: () => {
             return {
@@ -74,9 +74,11 @@
             },
             test_text: function() {
                 if(!this.test_result) {
-                    return '正在连接执行器......'
+                    return ''
                 }
                 switch (this.test_result) {
+                    case 'trying':
+                        return '正在连接执行器......';
                     case 'error':
                     case 'timeout':
                         return '连接执行器失败';
@@ -89,17 +91,26 @@
         },
         methods: {
             save_doc: async function () {
-                this.tcpsrv_test();
+                // this.tcpsrv_test();
                 this.proj.setting = this.setting;
                 ipc.update_proj(this.proj);
             },
             tcpsrv_test_() {
-                this.test_result = '';
+                this.test_result = 'trying';
                 let self = this;
                 tcp_test(this.setting.etestd_ip, this.setting.etestd_port, (res) => {
                     self.test_result = res;
                 })
             },
+            get_conn_color() {
+                if(this.test_result === 'trying') {
+                    return 'grey';
+                }
+                if(this.test_result === 'ok') {
+                    return 'success';
+                }
+                return 'error';
+            }
         }
     }
 </script>

@@ -6,20 +6,22 @@
         <v-toolbar class="mb-1">
           <v-text-field class="mx-2" v-model="search" clearable flat solo-inverted hide-details
             prepend-inner-icon="mdi-folder-search-outline" label="搜索"></v-text-field>
-            <v-select class="mx-2" v-model="sortBy" flat solo-inverted hide-details :items="sortKeys" prepend-inner-icon="mdi-sort"
-              label="排序"></v-select>
-            <v-btn-toggle class="mx-2" v-model="sortDesc" mandatory>
-              <v-btn depressed :value="false">
-                <v-icon>mdi-arrow-up</v-icon>
-              </v-btn>
-              <v-btn depressed :value="true">
-                <v-icon>mdi-arrow-down</v-icon>
-              </v-btn>
-            </v-btn-toggle>
-            <v-spacer></v-spacer>
-            <v-btn large color='grey darken-3' :to="{ name:'NewProj'}">
-              <v-icon left >mdi-plus-thick</v-icon>新建
+          <v-select class="mx-2" v-model="sortBy" flat solo-inverted hide-details :items="sortKeys"
+            prepend-inner-icon="mdi-sort" label="排序"></v-select>
+          <v-btn-toggle class="mx-2" v-model="sortDesc" mandatory>
+            <v-btn depressed :value="false">
+              <v-icon>mdi-arrow-up</v-icon>
             </v-btn>
+            <v-btn depressed :value="true">
+              <v-icon>mdi-arrow-down</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <v-spacer></v-spacer>
+          <span class="grey--text">{{`版本: ${version}`}}</span>
+          <v-spacer></v-spacer>
+          <v-btn large color='grey darken-3' :to="{ name:'NewProj'}">
+            <v-icon left>mdi-plus-thick</v-icon>新建
+          </v-btn>
         </v-toolbar>
       </template>
 
@@ -28,43 +30,48 @@
           <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
             <v-card :loading="item===doing_item">
               <v-card-title class="subheading font-weight-bold blue--text">
-                <v-edit-dialog @save="save_name">
-                  <span style="cursor: pointer" @click.stop="open(item)">
-                    {{item.name}}
-                  </span>
-                  <v-btn small icon class="mx-1" @click="editing_proj=item; editing_name=item.name;">
-                    <v-icon small color="grey">mdi-pencil-outline</v-icon>
-                  </v-btn>
-                  <template v-slot:input>
-                    <v-text-field v-model="editing_name" label="修改项目名称" single-line>
-                    </v-text-field>
-                  </template>
-                </v-edit-dialog>
-                <v-spacer />
-                <v-tooltip bottom open-delay="300">
+                <v-row>
+                  <v-col cols="8" class="py-0 px-2 ma-0 flex-grow-1 flex-shrink-0"  style="min-width: 60px; max-width: 100%;">
+                  <v-edit-dialog @save="save_name">
+                    <span style="cursor: pointer;" @click.stop="open(item)">
+                      {{item.name}}
+                    </span>
+                    <v-btn small icon class="mx-1" @click="editing_proj=item; editing_name=item.name;">
+                      <v-icon small color="grey">mdi-pencil-outline</v-icon>
+                    </v-btn>
+                    <template v-slot:input>
+                      <v-text-field v-model="editing_name" label="修改项目名称" single-line>
+                      </v-text-field>
+                    </template>
+                  </v-edit-dialog>
+                  </v-col>
+                  <v-col cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 138px; max-width: 138px;">
+                  <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
                         <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
                       </v-btn>
                     </template>
                     <span>在新窗口打开</span>
-                </v-tooltip>
-                <v-tooltip bottom open-delay="300">
+                  </v-tooltip>
+                  <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
                         <v-icon color="grey">mdi-export</v-icon>
                       </v-btn>
                     </template>
                     <span>导出项目</span>
-                </v-tooltip>
-                <v-tooltip bottom open-delay="300">
+                  </v-tooltip>
+                  <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
                       <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
                         <v-icon color="grey">mdi-delete-outline</v-icon>
                       </v-btn>
                     </template>
                     <span>删除项目</span>
-                </v-tooltip>
+                  </v-tooltip>
+                  </v-col>
+                </v-row>
               </v-card-title>
               <v-divider></v-divider>
               <v-list dense>
@@ -90,7 +97,8 @@
   import ipc from '../feature/r_ipc';
   import helper from '../helper/helper';
   import h from '../feature/f_project'
-
+  import cfg from '../../package.json'
+  
   export default {
     components: {
       'confirm-dlg': () => import( /* webpackChunkName: "confirmdlg" */ '../dialog/ConfirmDlg'),
@@ -107,6 +115,7 @@
         remove_proj: null,
         dlg: null,
         doing_item: null,
+        version: cfg.version,
         headers: [{
             text: '创建时间',
             value: 'screated'
@@ -166,9 +175,9 @@
           let p = {}
           p.name = d.name;
           p.created = d.created;
-          p.created = d.updated;
-          p.created = d.count;
-          p.created = d.result;
+          p.updated = d.updated;
+          p.count = d.count;
+          p.result = d.result;
           p.screated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.created));
           p.supdated = helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated));
           p.scount = d.count || 0;
@@ -182,14 +191,14 @@
       },
       open: async function (proj) {
         let gp = this.$store.state.proj;
-        if(gp && gp.id === proj.data.id) {
+        if (gp && gp.id === proj.data.id) {
           this.$router.push({
             name: 'TestCase'
           });
           return;
         }
         let res = await ipc.active_proj(proj.data.id);
-        if(!res || !this.$store.state.winid || res === this.$store.state.winid) {
+        if (!res || !this.$store.state.winid || res === this.$store.state.winid) {
           this.$store.commit('setProj', proj.data);
           this.$router.push({
             name: 'TestCase'
@@ -198,15 +207,15 @@
       },
       open_win: async function (proj) {
         let gp = this.$store.state.proj;
-        if(!gp || proj.data.id === gp.id) {
-            return this.open(proj);
+        if (!gp || proj.data.id === gp.id) {
+          return this.open(proj);
         }
         let res = await ipc.active_proj(proj.data.id);
-        if(!res) {
+        if (!res) {
           ipc.open_proj(proj.data.id);
           this.doing_item = proj;
           let self = this;
-          setTimeout(()=>{
+          setTimeout(() => {
             self.doing_item = null;
           }, 2000);
         }
