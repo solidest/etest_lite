@@ -37,11 +37,11 @@ function setup(is_dev) {
     }
 }
 
-function save() {
+function save(cb) {
     if(!_db) {
         return;
     }
-    _db.saveDatabase();
+    _db.saveDatabase(cb);
     _db = null;
 }
 

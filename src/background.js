@@ -16,16 +16,15 @@ import wins from './feature/m_wins';
 
 let player = null;
 let worker = null;
-let player_show = true;
+let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 function quit() {
-  ipc.save_db();
-  setTimeout(() => {
-    // if (process.platform !== 'darwin') {
+  
+  ipc.save_db(() => {
+    console.log('db saved, will exit');
     app.quit()
-    // }
-  }, 300)
+  });
 }
 
 function try_close_all() {
@@ -229,7 +228,7 @@ ipcMain.handle('open-proj', (_, proj_id) => {
 });
 
 ipcMain.on('close-win', (_, wid) => {
-  console.log('close wid', wid)
+  // console.log('close wid', wid)
   let win = BrowserWindow.fromId(Number.parseInt(wid));
   if (!win) {
     console.log('error win from id')

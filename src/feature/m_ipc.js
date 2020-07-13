@@ -62,8 +62,8 @@ function setup_player(win) {
     player = win;
 }
 
-function save_db() {
-    db.save();
+function save_db(cb) {
+    db.save(cb);
 }
 
 export default { setup_worker, setup_player, setup_db, save_db }

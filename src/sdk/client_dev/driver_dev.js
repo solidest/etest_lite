@@ -21,12 +21,12 @@ class SdkApi {
         }
     }
 
-    setup(proj_id, protocols, xtras, topos, libs, callback) {
+    setup(proj_id, prots, xtras, topos, libs, callback) {
         try {
             let env = {
                 proj_id: proj_id,
-                protocols: protocols,
-                xtra: xtras,
+                prots: prots,
+                xtras: xtras,
                 topos: topos,
                 libs: libs
             };
