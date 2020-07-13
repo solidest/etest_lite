@@ -107,7 +107,7 @@ const _store = new Vuex.Store({
 })
 
 //更新执行机状态
-ipcRenderer.on('check_result', (_, proj_id, results) => {
+ipcRenderer.on('check-result', (_, proj_id, results) => {
   _store.commit('setCheckResult', {proj_id: proj_id, results: results});
 });
 

@@ -14,7 +14,7 @@ function need_stop(proj_id, version) {
     return false;
 }
 
-async function check(proj_id) {
+async function check(proj_id, reason, allow_stop) {
     // console.log('begin check', proj_id, reason)
     if(!proj_id) {
         return;
@@ -34,14 +34,20 @@ async function check(proj_id) {
     _task_id = proj_id;
     _task_version = proj.updated;
     
-    let proj_obj = await load_proj(proj, need_stop);
+    let proj_obj = await load_proj(proj, allow_stop ? need_stop:null);
     if(!proj_obj) {
         return;
     }
     _result = proj_obj.check();
-    console.log('check result', _result)
+    // console.log('check result', _result)
     if(_result && _task_id === proj_id && _task_version === proj.updated) {
-        ipc.check_result(_task_id, _task_version, _result);
+        return {
+            proj_id: _task_id,
+            version: _task_version,
+            results: _result,
+        }
+    } else {
+        return null;
     }
 }
 

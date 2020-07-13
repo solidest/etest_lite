@@ -4,8 +4,9 @@ import {
 import db from './m_db';
 
 let worker;
+let player;
 
-function try_check(proj_id, reason) {
+function work_check(proj_id, reason) {
     if(!proj_id || !worker) {
         console.log('empty check')
         return;
@@ -13,8 +14,8 @@ function try_check(proj_id, reason) {
     worker.webContents.send('check', proj_id, reason);
 }
 
-function setup(w) {
-    worker = w;
+function setup_db(is_develop) {
+    db.setup(is_develop);
     ipcMain.handle('list_proj', () => {
         return db.list_proj();
     });
@@ -23,7 +24,7 @@ function setup(w) {
     });
     ipcMain.handle('update_proj', (_, doc) => {
         let res = db.update_proj(doc);
-        try_check(doc.id, 'update_proj');
+        work_check(doc.id, 'update_proj');
         return res;
     });
     ipcMain.handle('remove_proj', (_, doc) => {
@@ -34,17 +35,17 @@ function setup(w) {
     });
     ipcMain.handle('insert', (_, opt) => {
         let res = db.insert(opt.kind, opt.doc);
-        try_check(opt.doc.proj_id, 'insert');
+        work_check(opt.doc.proj_id, 'insert');
         return res;
     });
     ipcMain.handle('update', (_, opt) => {
         let res = db.update(opt.kind, opt.doc);
-        try_check(opt.doc.proj_id, 'update');
+        work_check(opt.doc.proj_id, 'update');
         return res;
     });
     ipcMain.handle('remove', (_, opt) => {
         let res = db.remove(opt.kind, opt.doc);
-        try_check(opt.doc.proj_id, 'remove');
+        work_check(opt.doc.proj_id, 'remove');
         return res;
     });
     ipcMain.handle('load', (_, opt) => {
@@ -52,4 +53,17 @@ function setup(w) {
     });
 }
 
-export default { setup }
+function setup_worker(win) {
+    worker = win;
+    
+}
+
+function setup_player(win) {
+    player = win;
+}
+
+function save_db() {
+    db.save();
+}
+
+export default { setup_worker, setup_player, setup_db, save_db }

@@ -1,0 +1,253 @@
+---
+- devices:
+  - connectors:
+    - config:
+        delayconnect: true
+        ip: 127.0.0.1
+        keepalive: true
+      link: link1
+      name: tcp1
+      target:
+        connector: srva
+        device: server
+      type: tcp_client
+      uri: auto
+    - config:
+        ip: 127.0.0.1
+        port: 8888
+      link: link2
+      name: tcp2
+      targets:
+      - connector: tcp3
+        device: client
+      - connector: srvb
+        device: server
+      - connector: srvc
+        device: server
+      type: tcp_client
+      uri: auto
+    - config:
+        ip: 127.0.0.1
+      link: link2
+      name: tcp3
+      targets:
+      - connector: tcp2
+        device: client
+      - connector: srvb
+        device: server
+      - connector: srvc
+        device: server
+      type: tcp_client
+      uri: auto
+    map: etest
+    name: client
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8080
+      link: link1
+      name: srva
+      target:
+        connector: tcp1
+        device: client
+      type: tcp_server
+      uri: auto
+    - config:
+        ip: 127.0.0.1
+        port: 8088
+      link: link2
+      name: srvb
+      targets:
+      - connector: tcp2
+        device: client
+      - connector: tcp3
+        device: client
+      - connector: srvc
+        device: server
+      type: tcp_server
+      uri: auto
+    - config:
+        ip: 127.0.0.1
+        port: 8088
+      link: link2
+      name: srvc
+      targets:
+      - connector: tcp2
+        device: client
+      - connector: tcp3
+        device: client
+      - connector: srvb
+        device: server
+      type: tcp_server
+      uri: auto
+    map: etest
+    name: server
+  name: topo_main
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board1
+      type: udp
+    map: uut
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8001
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+      uri: auto
+    map: etest
+    name: board1
+  name: topo_board1_main
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board2
+      type: udp
+    map: uut
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8002
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+      uri: auto
+    map: etest
+    name: board2
+  name: topo_board2_main
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board3
+      type: udp
+    map: uut
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8003
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+      uri: auto
+    map: etest
+    name: board3
+  name: topo_board3_main
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board1
+      type: udp
+      uri: auto
+    map: etest
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8001
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+    map: uut
+    name: board1
+  name: topo_main_board1
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board2
+      type: udp
+      uri: auto
+    map: etest
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8002
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+    map: uut
+    name: board2
+  name: topo_main_board2
+- devices:
+  - connectors:
+    - config:
+        before_recv: Before_recv
+        ip: 127.0.0.1
+        port: 8888
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: board3
+      type: udp
+      uri: auto
+    map: etest
+    name: main_ctr
+  - connectors:
+    - config:
+        ip: 127.0.0.1
+        port: 8003
+      link: link1
+      name: conn
+      target:
+        connector: conn
+        device: main_ctr
+      type: udp
+    map: uut
+    name: board3
+  name: topo_main_board3

@@ -107,6 +107,13 @@ class Env {
         return this.topos.map(t => {return {text: t.name, value: t.id}});
     }
 
+    get_only_topo() {
+        if(this.topos.length === 1) {
+            return this.topos[0].id;
+        }
+        return null;
+    }
+
     get_panel_list() {
         let res = this.panels.map(p => {return {text: p.name, value: p.id}});
         res.push({text: '<无>', value: ''});

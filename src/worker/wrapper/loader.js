@@ -46,7 +46,7 @@ async function load_program(proj, stopper) {
             return null;
         }
         if(doc) {
-            console.log(proj)
+            // console.log(proj)
             proj.addKind('lua', new Lua(doc, proj));
         }
     }
@@ -83,7 +83,7 @@ async function load_proj(proj_data, stopper) {
                 if(!doc) {
                     continue;
                 }
-                let k_obj = new k.cls(doc, proj);
+                let k_obj = new k.cls(doc, proj, kd.name);
                 proj.addKind(k.kind, k_obj);
             }
         }

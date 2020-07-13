@@ -12,32 +12,15 @@ import {
   createProtocol,
 } from 'vue-cli-plugin-electron-builder/lib';
 import ipc from './feature/m_ipc';
-import db from './feature/m_db';
 import wins from './feature/m_wins';
+
 let player = null;
 let worker = null;
 let player_show = true;
-
-const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) {
-  console.log('should quit');
-  app.quit();
-}
-
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-db.setup(isDevelopment);
-
-protocol.registerSchemesAsPrivileged([{
-  scheme: 'app',
-  privileges: {
-    secure: true,
-    standard: true
-  }
-}])
-
 function quit() {
-  db.save();
+  ipc.save_db();
   setTimeout(() => {
     // if (process.platform !== 'darwin') {
     app.quit()
@@ -46,12 +29,12 @@ function quit() {
 }
 
 function try_close_all() {
-  if(wins.size() === 0 && !player_show) {
-    if(worker) {
+  if (wins.size() === 0 && !player_show) {
+    if (worker) {
       worker.close();
       worker = null;
     }
-    if(player) {
+    if (player) {
       player.close();
       player = null;
     }
@@ -61,9 +44,11 @@ function try_close_all() {
 function createWorker() {
   worker = new BrowserWindow({
     show: isDevelopment,
-    webPreferences: { nodeIntegration: true }
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
-  ipc.setup(worker);
+  ipc.setup_worker(worker);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
     if (!process.env.IS_TEST) worker.webContents.openDevTools()
@@ -80,9 +65,11 @@ function createWorker() {
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
-    webPreferences: { nodeIntegration: true }
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
-  //ipc.setup(player);
+  ipc.setup_player(player);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html')
     if (!process.env.IS_TEST) player.webContents.openDevTools()
@@ -112,9 +99,10 @@ function createWindow(proj_id) {
     frame: false,
     backgroundColor: '#000000',
   });
+
   wins.add(win, proj_id);
 
-  if(!proj_id) {
+  if (!proj_id) {
     globalShortcut.register('CommandOrControl+Q', () => {
       quit();
     });
@@ -123,7 +111,7 @@ function createWindow(proj_id) {
     });
     globalShortcut.register('CommandOrControl+R', (e) => {
       win.reload();
-    });    
+    });
   }
 
   let open_proj = proj_id ? '#/?proj_id=' + proj_id : '#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false');
@@ -152,18 +140,24 @@ function createWindow(proj_id) {
   });
 }
 
-app.on('window-all-closed', () => {
-  quit();
-})
+function beginCheck(proj_id, reason) {
+  if (worker && proj_id) {
+    worker.webContents.send('check', proj_id, reason);
+  }
+}
+
+
+//////////////////////// app //////////////////////////////
+app.on('window-all-closed', quit)
 
 app.on('activate', () => {
   if (wins.size() === 0) {
     createWindow(null);
   }
-  if(!worker) {
+  if (!worker) {
     createWorker();
   }
-  if(!player) {
+  if (!player) {
     createPlayer();
   }
 })
@@ -188,13 +182,28 @@ if (isDevelopment) {
   }
 }
 
-function beginCheck(proj_id, reason) {
-  if(worker && proj_id) {
-    worker.webContents.send('check', proj_id, reason);
-  }
+
+/////////////////////// main ////////////////////////////////
+
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  console.log('should quit');
+  app.quit();
 }
 
-// ipcMain
+ipc.setup_db(isDevelopment);
+
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
+
+
+
+///////////////////////// ipcMain ///////////////////////////////
 ipcMain.on('bind-proj', (_, wid, proj_id) => {
   let win = BrowserWindow.fromId(Number.parseInt(wid));
   if (!win) {
@@ -204,17 +213,19 @@ ipcMain.on('bind-proj', (_, wid, proj_id) => {
   beginCheck(proj_id, 'bind proj');
 })
 
-ipcMain.handle('open-proj', (_, id) => {
-  let win = wins.find(id);
+ipcMain.handle('open-proj', (_, proj_id) => {
+  let win = wins.find(proj_id);
   if (win) {
     if (win.isMinimized()) {
       win.restore();
     }
     win.show();
     win.focus();
+    beginCheck(proj_id, 'open-proj');
+    return;
   }
-  createWindow(id);
-  beginCheck(id, 'open-proj');
+  createWindow(proj_id);
+  beginCheck(proj_id, 'open-proj');
 });
 
 ipcMain.on('close-win', (_, wid) => {
@@ -240,9 +251,9 @@ ipcMain.handle('active-proj', (_, proj_id) => {
   return 0;
 });
 
-ipcMain.on('check_result', (_, proj_id, version, results) => {
+ipcMain.on('check-result', (_, proj_id, version, results) => {
   let win = wins.find(proj_id);
-  if(win) {
-    win.webContents.send('check_result', proj_id, results);
+  if (win) {
+    win.webContents.send('check-result', proj_id, results);
   }
 })

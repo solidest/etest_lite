@@ -6,22 +6,87 @@ const KIND = 'protocol';
 
 
 class Protocol {
-    constructor(data, proj) {
+    constructor(data, proj, name) {
         this.data = data;
         this.proj = proj;
+        this.name = name;
     }
     get id() {
         return this.data.id;
+    }
+
+    _check_pid(ids) {
+        if (!ids || ids.length < 1 || ids[0] !== 'this') {
+            throw new Error('协议段引用错误');
+        }
+
+        if (!this.$children_names.includes(ids[1])) {
+            throw new Error('协议段引用错误');
+        }
+
+    }
+
+    _check_exp(exp) {
+        if (!exp) {
+            throw new Error('表达式为空');
+        }
+        if (exp.kind === 'pid') {
+            this._check_pid(exp.list);
+            return;
+        }
+        if (exp.left) {
+            this._check_exp(exp.left);
+        }
+        if (exp.right) {
+            this._check_exp(exp.right);
+        }
+    }
+
+    _is_string(str) {
+        try {
+            let res = eval(str);
+            if (typeof res === 'string') {
+                return true;
+            }
+        } catch (error) {
+            return false;
+        }
+        return false;
+    }
+
+    _get_custom_parser(parser) {
+        if (!parser || parser.length === 0) {
+            throw new Error('表达式为空');
+        }
+        let res = {}
+        parser.forEach(prop => {
+            if (prop.kind !== 'prop' || prop.value.kind !== 'pid' || prop.value.list.length !== 1 || !['pack', 'unpack'].includes(prop.name)) {
+                throw new Error('自定义解析设置错误');
+            }
+            if (prop.name === 'pack') {
+                if (res.pack) {
+                    throw new Error('重复设置打包函数');
+                }
+                res.pack = prop.value.list[0];
+            } else if (prop.name === 'unpack') {
+                if (res.unpack) {
+                    throw new Error('重复设置解包函数');
+                }
+                res.unpack = prop.value.list[0];
+            }
+        });
+        res.type = 'string';
+        return res;
     }
 
     _check_get_oneof_names(oneof) {
         let res = [];
         oneof.items.forEach(br => {
             br.items.forEach(it => {
-                if(it.kind === 'oneof') {
+                if (it.kind === 'oneof') {
                     res.push(...this._check_get_oneof_names(it));
                 } else {
-                    if(!res.includes(it.name)) {
+                    if (!res.includes(it.name)) {
                         res.push(it.name);
                     }
                 }
@@ -31,31 +96,32 @@ class Protocol {
     }
 
     _check_oneof_names(oneof) {
-        if(!oneof || !oneof.items) {
+        if (!oneof || !oneof.items) {
             return false;
         }
         let res = true;
         oneof.items.forEach(br => {
-            if(!this._check_names(br.items)) {
+            br.$children_names = this._get_check_names(br.items)
+            if (!br.$children_names) {
                 res = false;
             }
         });
         return res;
     }
 
-    _check_names(items) {
+    _get_check_names(items) {
         // console.log(items)
-        if(!items) {
+        if (!items) {
             return false;
         }
         let res = true;
         let names = [];
-        for(let it of items) {
-            if(it.kind === 'oneof') {
-                if(this._check_oneof_names(it)) {
+        for (let it of items) {
+            if (it.kind === 'oneof') {
+                if (this._check_oneof_names(it)) {
                     let ns = this._check_get_oneof_names(it);
                     ns.forEach(n => {
-                        if(names.includes(n)) {
+                        if (names.includes(n)) {
                             this.proj.pushError(`名称"${n}"重复`, KIND, this.id, it.id);
                             res = false;
                         } else {
@@ -68,73 +134,99 @@ class Protocol {
                 continue;
             }
             let msg = checker.valid_name(names, it.name);
-            if(msg === 'ok') {
+            if (msg === 'ok') {
                 it.name = it.name.trim();
                 names.push(it.name);
             } else {
                 res = false;
                 this.proj.pushError(msg, KIND, this.id, it.id);
             }
-            if(it.kind === 'segments') {
-                if(!this._check_names(it.items)) {
+            if (it.kind === 'segments') {
+                it.$children_names = this._get_check_names(it.items);
+                if (!it.$children_names) {
                     res = false;
                 }
             }
         }
-        return res;
+        return res ? names : null;
     }
 
     _check_autovalue(seg) {
-        let av = '' + (seg.autovalue||'');
-        if(!av || !av.trim()) {
+        let av = '' + (seg.autovalue || '');
+        if (!av || !av.trim()) {
             return;
         }
-        try{
-            expparser.parse(seg.autovalue);
+        try {
+            seg.autovalue = expparser.parse(seg.autovalue);
+            this._check_exp(seg.autovalue);
         } catch (error) {
-            this.proj.pushError('自动赋值设置错误', KIND, this.id, seg.id);
+            this.proj.pushError('自动赋值设置错误: ' + error.message, KIND, this.id, seg.id);
         }
     }
 
     _check_arrlen(seg) {
-        let len = '' + (seg.arrlen||'');
-        if(!len || !len.trim()) {
+        let len = '' + (seg.arrlen || '');
+        if (!len || !len.trim()) {
             return;
         }
-        try{
-            expparser.parse(seg.arrlen);
+        try {
+            seg.arrlen = expparser.parse(seg.arrlen);
+            this._check_exp(seg.arrlen);
         } catch (error) {
-            this.proj.pushError('数组长度设置错误', KIND, this.id, seg.id);
+            this.proj.pushError('数组长度设置错误: ' + error.message, KIND, this.id, seg.id);
         }
     }
 
     check_segment(seg) {
         try {
-            segparser.parse(seg.parser);
-        } catch (error) {
-            this.proj.pushError('解析方式设置错误', KIND, this.id, seg.id);
-        }
-        this._check_autovalue(seg);
-        this._check_arrlen(seg);
-        if(seg.parser && seg.parser.indexOf('string') >= 0) {
-            if(seg.length) {
-                try {
-                    expparser.parse(seg.length);
-                } catch (error) {
-                    this.proj.pushError('字节长度设置错误', KIND, this.id, seg.id);
-                }
+            if (!seg.parser || !seg.parser.trim()) {
+                throw new Error('缺少解析方式');
             }
-            if(seg.endwith) {
+            let p = seg.parser.trim();
+            if (p.startsWith('{')) {
+                seg.parser = expparser.parse(seg.parser);
+                seg.parser = this._get_custom_parser(seg.parser);
+            } else {
+                seg.parser = segparser.parse(seg.parser);
+            }
+        } catch (error) {
+            this.proj.pushError('解析方式设置错误: ' + error.message, KIND, this.id, seg.id);
+        }
+        if (seg.parser && seg.parser.type === 'string') {
+            if (seg.autovalue && seg.autovalue.trim()) {
                 try {
-                    let res = eval(seg.endwith);
-                    if(typeof res !== 'string') {
-                        throw new Error();
+                    seg.autovalue = expparser.parse(seg.autovalue);
+                    if (seg.autovalue.kind !== 'string') {
+                        this.proj.pushError('自动赋值必须设置为字符串', KIND, this.id, seg.id);
                     }
                 } catch (error) {
-                    this.proj.pushError('结尾符设置错误', KIND, this.id, seg.id);
+                    this.proj.pushError('自动赋值设置错误: ' + error.message, KIND, this.id, seg.id);
                 }
             }
-            if(!seg.length && !seg.endwith) {
+        } else {
+            this._check_autovalue(seg);
+        }
+        this._check_arrlen(seg);
+        if (seg.parser.type === 'string' && !seg.parser.pack && !seg.parser.unpack) {
+            if (seg.length) {
+                try {
+                    seg.length = expparser.parse(seg.length);
+                    this._check_exp(seg.length);
+                } catch (error) {
+                    this.proj.pushError('字节长度设置错误: ' + error.message, KIND, this.id, seg.id);
+                }
+            }
+            if (seg.endwith && seg.endwith.trim() && !this._is_string(seg.endwith)) {
+                try {
+                    seg.endwith = expparser.parse(seg.endwith);
+                    if (seg.endwith.kind !== 'string') {
+                        this.proj.pushError('结尾符必须设置为字符串', KIND, this.id, seg.id);
+                    }
+                } catch (error) {
+                    this.proj.pushError('结尾符设置错误: ' + error.message, KIND, this.id, seg.id);
+                }
+            }
+            if (!seg.length && !seg.endwith) {
                 this.proj.pushError('string类型必须设置字节长度或结尾符', KIND, this.id, seg.id);
             }
         }
@@ -143,36 +235,120 @@ class Protocol {
     check_segments(segs) {
         this._check_autovalue(segs);
         this._check_arrlen(segs);
-        if(segs.items) {
+        if (segs.items) {
             segs.items.forEach(seg => this['check_' + seg.kind](seg));
         }
     }
 
     check_oneof(oneof) {
-        if(!oneof.items) {
+        if (!oneof.items) {
             return;
         }
         let idx = 1
         oneof.items.forEach(br => {
-            try{
-                expparser.parse(br.condition);
+            try {
+                br.condition = expparser.parse(br.condition);
+                this._check_exp(br.condition);
                 idx++;
             } catch (error) {
-                this.proj.pushError('分支' + idx +'条件设置错误', KIND, this.id, oneof.id);
+                this.proj.pushError('分支' + idx + '条件设置错误: ' + error.message, KIND, this.id, oneof.id);
             }
-            if(br.items) {
+            if (br.items) {
                 br.items.forEach(seg => this['check_' + seg.kind](seg));
             }
         });
     }
 
+
     check() {
-        if(!this.data || !this.data.content || !this.data.content.items) {
+        if (!this.data || !this.data.content || !this.data.content.items) {
             return;
         }
         let items = this.data.content.items;
-        this._check_names(items);
+        this.$children_names = this._get_check_names(items);
+
         items.forEach(seg => this['check_' + seg.kind](seg));
+    }
+
+    get_run_oneof(oneof) {
+        if (!oneof.items) {
+            return [];
+        }
+        let brs = [];
+        oneof.items.forEach(br => {
+            let segs = this.get_run_segments(br);
+            brs.push({kind: 'oneof', seglist: segs, exp: br.condition});
+        });
+        return brs;
+    }
+
+    get_run_segment(seg) {
+        let res = seg.parser;
+        if(!res || typeof res === 'string') {
+            return {kind: 'nil'}
+        }
+        res.name = seg.name;
+        if (seg.autovalue) {
+            res.autovalue = seg.autovalue;
+        }
+        if (seg.arrlen) {
+            res.repeated = seg.arrlen;
+        }
+        if (seg.length) {
+            res.length = seg.length;
+        }
+        if (seg.endwith) {
+            res.endwith = seg.endwith;
+        }
+        return res;
+    }
+
+    get_run_segments(segs) {
+        let seglist = [];
+        let items =segs.items;
+        if(items) {
+            for(let it of items) {
+                this.get_run_seg(seglist, it);
+            }
+        }
+        
+        let res = {kind: 'seggroup', name: segs.name, seglist: seglist};
+        if (segs.autovalue) {
+            res.autovalue = segs.autovalue;
+        }
+        if (segs.arrlen) {
+            res.repeated = segs.arrlen;
+        }
+        return res;
+    }
+
+    get_run_seg(seglist, seg) {
+        if(seg.kind === 'segment') {
+            seglist.push(this.get_run_segment(seg));
+        } else if(seg.kind === 'segments') {
+            seglist.push(this.get_run_segments(seg));
+        } else if(seg.kind === 'oneof') {
+            if(seglist.length>0 && seglist[seglist.length-1].kind === 'oneof') {
+                seglist.push({kind: 'nil'})
+            }
+            let oneofs = this.get_run_oneof(seg);
+            if(oneofs.length > 0)
+            seglist.push(...oneofs);
+        }
+    }
+
+    get_run_ast() {
+        let seglist = [];
+        let items = this.data.content.items;
+        for(let it of items) {
+            this.get_run_seg(seglist, it);
+        }
+        console.log(this.data)
+        return {
+            kind: 'protocol',
+            name: this.name,
+            seglist: seglist
+        }
     }
 }
 

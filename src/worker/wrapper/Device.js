@@ -4,20 +4,24 @@ import checker from '../helper/checker';
 const KIND = 'device';
 
 class Device {
-    constructor(data, proj) {
+    constructor(data, proj, name) {
         this.data = data;
         this.proj = proj;
+        this.name = name;
     }
 
     get id() {
         return this.data.id;
     }
 
-    get name() {
-        return this.data.name;
+    get items() {
+        if(!this.data.content) {
+            return [];
+        }
+        return this.data.content.items || [];
     }
 
-    get items() {
+    get connectors() {
         if(!this.data.content) {
             return [];
         }

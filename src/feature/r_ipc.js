@@ -50,9 +50,9 @@ function bind_proj(wid, proj_id) {
     return ipcRenderer.send('bind-proj', wid || 1, proj_id)
 }
 
-function check_result(proj_id, version, results) {
-    return ipcRenderer.send('check_result', proj_id, version, results);
-}
+// function check_result(proj_id, version, results) {
+//     return ipcRenderer.send('check-result', proj_id, version, results);
+// }
 
 export default {
     list,
@@ -67,5 +67,5 @@ export default {
     active_proj,
     open_proj,
     bind_proj,
-    check_result
+    // check_result
 }

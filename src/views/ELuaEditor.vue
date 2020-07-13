@@ -198,6 +198,11 @@
                             let sett = cfg.bar_items.find(it => it.value === 'setting');
                             sett.widgets[1].items = self.env.get_topo_list();
                             sett.widgets[2].items = self.env.get_panel_list();
+                            let topo_id = self.env.get_only_topo();
+                            if(topo_id && self.content.option.topology !== topo_id) {
+                                self.content.option.topology = topo_id;
+                                self.save_doc();
+                            }
                         });
                 }, 380);
             },

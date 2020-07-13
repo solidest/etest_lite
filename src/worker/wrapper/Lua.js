@@ -64,7 +64,7 @@ class Lua {
                 this._entry_check(ast);
             }
         } catch (error) {
-            console.log(error.message)
+            // console.log(error.message)
             this.proj.pushError(error.message, KIND, this.id, error.line);
         }
     }
