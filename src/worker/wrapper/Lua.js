@@ -32,9 +32,9 @@ class Lua {
             }
         }
 
-        // if(!opt.topology) {
-        //     this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
-        // }
+        if(!opt.topology) {
+            this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
+        }
     }
 
     _entry_check(ast) {
