@@ -39,10 +39,6 @@
 <script>
     import ipc from '../feature/r_ipc';
     import tcp_test from '../helper/tcp_test';
-    //     import {
-    //     debounce
-    // } from 'throttle-debounce';
-
 
     export default {
         mounted: function () {
@@ -55,8 +51,6 @@
             } else {
                 this.setting = this.proj.setting;
             }
-            // this.tcpsrv_test = debounce(600, this.tcpsrv_test_);
-            // this.tcpsrv_test();
         },
         data: () => {
             return {
@@ -91,7 +85,6 @@
         },
         methods: {
             save_doc: async function () {
-                // this.tcpsrv_test();
                 this.proj.setting = this.setting;
                 ipc.update_proj(this.proj);
             },
