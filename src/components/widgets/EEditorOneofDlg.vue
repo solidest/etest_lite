@@ -1,8 +1,8 @@
 <template>
     <v-edit-dialog large save-text="确定" cancel-text="取消"
-    @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
-        <span :class="cls">{{text}}</span>
-        <span class = "ml-2 grey--text">{{memo}}</span>
+    @cancel="doClear" @close="doClear" @open="onOpen">
+        <span :class="cls" @click="onClick">{{text||' '}}</span>
+        <span class = "ml-2 grey--text" @click="onClick">{{memo}}</span>
         <template v-slot:input>
             <v-sheet width=460>
                 <v-text-field v-for="item of values" :key="item.id" placeholder="分支条件" v-model="item.condition" hide-details>
@@ -58,6 +58,9 @@
             },
             isSel: function(it) {
                 return this.sel_id_=== it.id;
+            },
+            onClick: function() {
+                this.$emit('_click');
             }
         }
 

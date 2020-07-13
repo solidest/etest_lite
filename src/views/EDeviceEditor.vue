@@ -36,14 +36,14 @@
                             </td>
                             <td>
                                 <e-editor-dlg :text="item.name" :memo="item.memo" :data="{name: item.name, memo: item.memo}"
-                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo"
+                                    :id="item.id" :widgets="cfg.name_widgets" @save="on_edited_name_memo" @_click="current_row=item"
                                     :hide_name="true">
                                 </e-editor-dlg>
                             </td>
                             <td>
                                 <e-editor-dlg :text="obj_fmt(item.config)" :data="item.config" :id="item.id"
                                     :widgets="cfg.intf_widgets[item.kind]" :title="`${title}.${item.name}`"
-                                    @save="on_edited_cfg">
+                                    @save="on_edited_cfg" @_click="current_row=item">
                                 </e-editor-dlg>
                             </td>
                         </tr>

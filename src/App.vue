@@ -59,9 +59,9 @@
       touts: function () {
         let t = this.tip_color;
         if (t === 'error') {
-          return 100000;
+          return 5000;
         } else {
-          return 10000;
+          return 3000;
         }
       },
       editor_route: function() {

@@ -47,12 +47,12 @@
                             <td>
                                 <div class="d-flex">
                                 <e-condition-editor v-if="item.kind==='oneof'" text="..." :items="item.conditions()"
-                                    :id="item.id" :cls="`pl-${item.level*4}`" @save="on_edited_conditions">
+                                    :id="item.id" :cls="`pl-${item.level*4}`" @save="on_edited_conditions"  @_click="current_row=item">
                                 </e-condition-editor>
                                 <e-editor-dlg v-else :text="fmt_name_arrlen(item)" :memo="item.memo"
                                     :data="{name: item.name, memo: item.memo, arrlen:item.arrlen}" :id="item.id"
                                     :widgets="cfg.name_widgets" @save="on_edited_name_arrlen" :hide_name="true"
-                                    :cls="`pl-${item.level*4}`">
+                                    :cls="`pl-${item.level*4}`" @_click="current_row=item">
                                 </e-editor-dlg>
                                 <v-tooltip v-if="error_obj[item.id]" right color="red lighten-1">
                                     <template v-slot:activator="{ on }">
@@ -66,25 +66,25 @@
                             <td>
                                 <e-editor-dlg v-if="item.kind==='segments'" :text="'{ }'" cls="grey--text"
                                     :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
-                                    @save="on_edited_autovalue">
+                                    @save="on_edited_autovalue"  @_click="current_row=item">
                                 </e-editor-dlg>
                                 <e-editor-dlg v-else-if="item.kind==='segment'" :text="item.parser"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
-                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config">
+                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config"  @_click="current_row=item">
                                 </e-editor-dlg>
                                 <e-condition-editor v-else-if="item.kind==='oneof'" :text="item.condition" cls="grey--text"	
-                                    :items="item.conditions()" :id="item.id" @save="on_edited_conditions">	
+                                    :items="item.conditions()" :id="item.id" @save="on_edited_conditions"  @_click="current_row=item">	
                                 </e-condition-editor>
                             </td>
                             <!-- 配置 -->
                             <td>
                                 <e-editor-dlg v-if="item.kind==='segments'" :text="item.config"
                                     :data="{autovalue: item.autovalue}" :id="item.id" :widgets="cfg.autovalue_widgets"
-                                    @save="on_edited_autovalue">
+                                    @save="on_edited_autovalue"  @_click="current_row=item">
                                 </e-editor-dlg>
                                 <e-editor-dlg v-else-if="item.kind==='segment'" :text="item.config"
                                     :data="{parser: item.parser, autovalue: item.autovalue, length: item.length, endwith: item.endwith}"
-                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config">
+                                    :id="item.id" :widgets="cfg.config_widgets" @save="on_edited_config"  @_click="current_row=item">
                                 </e-editor-dlg>
                             </td>
                         </tr>
