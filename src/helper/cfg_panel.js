@@ -142,6 +142,10 @@ const cfg = {
         value: 'd_new_chart',
         icon: 'mdi-image-plus'
     }, {
+        text: '剪切',
+        value: 'cut',
+        icon: 'mdi-content-cut'
+    }, {
         text: '复制',
         value: 'copy',
         icon: 'mdi-content-copy'

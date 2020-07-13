@@ -55,6 +55,7 @@
 </template>
 
 <script>
+    import Mousetrap from 'mousetrap';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_device';
     import lman from '../helper/list_man';
@@ -68,6 +69,23 @@
             'e-editor-bar': EEditorBar,
             'e-editor-sheet': EEditorSheet,
             'e-editor-dlg': () => import( /* webpackChunkName: "eeditordlg" */ '../components/EEditorDlg'),
+        },
+        created: function() {
+            let self = this;
+            Mousetrap.bind('ctrl+x', () => self.on_action('cut'));
+            Mousetrap.bind('ctrl+c', () => self.on_action('copy'));
+            Mousetrap.bind('ctrl+v', () => self.on_action('paste'));
+            Mousetrap.bind('ctrl+z', () => self.on_action('undo'));
+            Mousetrap.bind('ctrl+y', () => self.on_action('redo'));
+            Mousetrap.bind('del', () => self.on_action('del_item'));
+        },
+        beforeDestroy: function() {
+            Mousetrap.bind('ctrl+x', ()=>{});
+            Mousetrap.bind('ctrl+c', ()=>{});
+            Mousetrap.bind('ctrl+v', ()=>{});
+            Mousetrap.bind('ctrl+z', ()=>{});
+            Mousetrap.bind('ctrl+y', ()=>{});
+            Mousetrap.bind('del', ()=>{});
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -212,6 +230,10 @@
                 let idx = lman.insertAfter(this.content.items, this.current_row, [obj]);
                 this.current_row = this.content.items[idx];
                 return true;
+            },
+            cut: function() {
+                this.copy();
+                return this.del_item();
             },
             undo: function () {
                 let its = this.redo_undo.popUndo();

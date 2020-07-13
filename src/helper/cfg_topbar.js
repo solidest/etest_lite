@@ -17,11 +17,11 @@ const cfg = {
         type: 'list',
         file_icon: 'mdi-chart-line-variant',
     }, {
-        icon: 'mdi-code-braces',
+        icon: 'mdi-function-variant',
         title: '仿真模型',
         catalog: 'simu',
         type: 'list',
-        file_icon: 'mdi-iframe-braces-outline'
+        file_icon: 'mdi-function'
     }, {
         icon: 'mdi-comment-processing-outline',
         title: '通信协议',

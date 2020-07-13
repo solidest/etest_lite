@@ -120,6 +120,10 @@ const cfg = {
             value: 'move_down',
             icon: 'mdi-arrow-down'
         }, {
+            text: '剪切',
+            value: 'cut',
+            icon: 'mdi-content-cut'
+        }, {
             text: '复制',
             value: 'copy',
             icon: 'mdi-content-copy'

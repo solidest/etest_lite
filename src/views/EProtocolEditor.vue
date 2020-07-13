@@ -96,12 +96,14 @@
 </template>
 
 <script>
+    import Mousetrap from 'mousetrap';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_protocol';
     import h from '../feature/f_protocol';
     import EEditorBar from '../components/EEditorBar';
     import RedoUndo from '../helper/redo_undo';
     import EEditorSheet from '../components/widgets/EEditorSheet';
+    
     export default {
         components: {
             'e-editor-bar': EEditorBar,
@@ -109,6 +111,23 @@
             'e-editor-dlg': () => import( /* webpackChunkName: "eeditordlg" */ '../components/EEditorDlg'),
             'e-condition-editor': () => import( /* webpackChunkName: "econditioneditordlg" */
                 '../components/widgets/EEditorOneofDlg'),
+        },
+        created: function() {
+            let self = this;
+            Mousetrap.bind('ctrl+x', () => self.on_action('cut'));
+            Mousetrap.bind('ctrl+c', () => self.on_action('copy'));
+            Mousetrap.bind('ctrl+v', () => self.on_action('paste'));
+            Mousetrap.bind('ctrl+z', () => self.on_action('undo'));
+            Mousetrap.bind('ctrl+y', () => self.on_action('redo'));
+            Mousetrap.bind('del', () => self.on_action('del_item'));
+        },
+        beforeDestroy: function() {
+            Mousetrap.bind('ctrl+x', ()=>{});
+            Mousetrap.bind('ctrl+c', ()=>{});
+            Mousetrap.bind('ctrl+v', ()=>{});
+            Mousetrap.bind('ctrl+z', ()=>{});
+            Mousetrap.bind('ctrl+y', ()=>{});
+            Mousetrap.bind('del', ()=>{});
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -259,6 +278,10 @@
                 this.current_row = h.paste(this.content.frm, this.current_row, obj);
                 return true;
             },
+            cut: function() {
+                this.copy();
+                return this.del_item();
+            },
             undo: function () {
                 let content = this.redo_undo.popUndo();
                 if (content) {
@@ -286,6 +309,7 @@
                 return true;
             },
             on_action: function (ac, data) {
+                console.log('ac', ac);
                 if (this[ac](data)) {
                     this.save_doc();
                     if (!(ac === 'redo' || ac === 'undo')) {

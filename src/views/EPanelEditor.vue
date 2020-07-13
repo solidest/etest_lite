@@ -52,6 +52,7 @@
 </template>
 
 <script>
+    import Mousetrap from 'mousetrap';
     import shortid from 'shortid';
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_panel';
@@ -68,6 +69,23 @@
             'e-panel': EPanel,
             'e-data-editor': EPanelDataEditor,
             'e-config-editor': EPanelConfigEditor,
+        },
+        created: function() {
+            let self = this;
+            Mousetrap.bind('ctrl+x', () => self.on_action('cut'));
+            Mousetrap.bind('ctrl+c', () => self.on_action('copy'));
+            Mousetrap.bind('ctrl+v', () => self.on_action('paste'));
+            Mousetrap.bind('ctrl+z', () => self.on_action('undo'));
+            Mousetrap.bind('ctrl+y', () => self.on_action('redo'));
+            Mousetrap.bind('del', () => self.on_action('del_item'));
+        },
+        beforeDestroy: function() {
+            Mousetrap.bind('ctrl+x', ()=>{});
+            Mousetrap.bind('ctrl+c', ()=>{});
+            Mousetrap.bind('ctrl+v', ()=>{});
+            Mousetrap.bind('ctrl+z', ()=>{});
+            Mousetrap.bind('ctrl+y', ()=>{});
+            Mousetrap.bind('del', ()=>{});
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -244,6 +262,10 @@
                     }
                     return true;
                 }
+            },
+            cut: function() {
+                this.copy();
+                return this.del_item();
             },
             copy: function () {
                 if (!this.selected) {
