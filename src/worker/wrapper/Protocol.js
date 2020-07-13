@@ -244,12 +244,12 @@ class Protocol {
         if (!oneof.items) {
             return;
         }
-        let idx = 1
+        let idx = 0
         oneof.items.forEach(br => {
             try {
+                idx++;
                 br.condition = expparser.parse(br.condition);
                 this._check_exp(br.condition);
-                idx++;
             } catch (error) {
                 this.proj.pushError('分支' + idx + '条件设置错误: ' + error.message, KIND, this.id, oneof.id);
             }
