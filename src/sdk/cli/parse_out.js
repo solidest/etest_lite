@@ -13,47 +13,48 @@ function parse_out(res, auto_reply) {
 
     for (let r of res) {
         if (r.catalog === 'system') {
+            let msg = r.value.message;
             switch (r.kind) {
                 case 'start':
-                    print.sys_recved(' ', '::start:: ' + r.value);
+                    print.sys_recved(' ', '::start:: ' + msg);
                     break;
 
                 case 'entry':
-                    print.sys_recved(' ', '::entry:: ' + r.value);
+                    print.sys_recved(' ', '::entry:: ' + msg);
                     console.log('')
                     break;
 
                 case 'exit':
                     console.log('')
-                    print.sys_recved(' ', '::exit:: ' + r.value);
+                    print.sys_recved(' ', '::exit:: ' + msg);
                     break;
 
                 case 'stop': {
-                    print.sys_recved(' ', `::stop:: ${r.value} (${Math.round(r.time/1000000000)}s)\n`)
+                    print.sys_recved(' ', `::stop:: ${msg} (${Math.round(r.time/1000000000)}s)\n`)
                     return true;
                 }
 
                 case 'print': {
-                    print.usr_print(r.value);
+                    print.usr_print(msg);
                     break;
                 }
 
-                case 'verifyFail': 
-                    print.sys_error(r.value, ' ');
+                case 'verifyFail':
+                    print.sys_error(`${msg} (${r.value.src}:${r.value.line})`, ' ');
                     break;
 
                 case 'assertFail':
-                    print.sys_error(r.value, ' ');
+                    print.sys_error(`${msg} (${r.value.src}:${r.value.line})`, ' ');
                     return true;
                     
                 case 'error': {
                     //console.log('xxxxxxxxxxxxxxxxx')
-                    print.sys_error(r.value, ' ');
+                    print.sys_error(msg, ' ');
                     break;
                 }
 
                 default:
-                    print.sys_recved('?', typeof r == 'object' ? JSON.stringify(r) : r);
+                    print.sys_recved('?', JSON.stringify(r));
                     break;
             }
         } else if (r.catalog === 'log') {

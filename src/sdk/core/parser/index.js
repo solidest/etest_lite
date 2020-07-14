@@ -133,5 +133,6 @@ function getRunAstList(proj_path, src_path, asts) {
 }
 
 module.exports = {
-  getRunAstList
+  getRunAstList,
+  getSrcAst
 };

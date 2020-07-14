@@ -62,7 +62,7 @@ function send_out(logs) {
                     break;
 
                 case 'error':
-                    send_sys_err(r.value ? r.value : JSON.stringify(r), 'e1');
+                    send_sys_err((r.value && r.value.message) ? r.value.message : JSON.stringify(r), 'e1');
                     break;
 
                 case 'print':
@@ -84,7 +84,7 @@ function send_out(logs) {
         } else if (r.catalog === 'record') {
             rcds.push(r);
         } else if (r.catalog === 'ask') {
-            let info = JSON.parse(r.value);
+            let info = r.value;
             info.kind=r.kind;
             send_ask(info);
         }
@@ -142,6 +142,7 @@ function run(_, run_id, option) {
             run.option[k] = option[k];
         }
     }
+
     if(_isDevelopment) {
         _srv.start(_config, run_id, (err, res)=>{
             if(err) {
@@ -150,7 +151,16 @@ function run(_, run_id, option) {
             _run_uuid = res;
             _last_uuid = res;
             return send_sys_state('running', res);
-        });        
+        });
+    } else {
+        _srv.start_quick(_config, run_id, (err, res)=>{
+            if(err) {
+                return send_sys_err(err.message||err, 'ee4');
+            }
+            _run_uuid = res;
+            _last_uuid = res;
+            return send_sys_state('running', res);
+        });
     }
 }
 

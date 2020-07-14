@@ -25,7 +25,7 @@ function save(run_id, rcds) {
     let coll = _db.getCollection("record");
     for (let r of rcds) {
         if(r.value) {
-            let rv = JSON.parse(r.value);
+            let rv = r.value;
             rv['$time'] = r.time;
             coll.insert(rv);
         }

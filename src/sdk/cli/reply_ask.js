@@ -174,7 +174,7 @@ function _auto_reply(kind, info) {
 //回复问讯
 function reply_ask(ask, auto_reply) {
     
-    let info = JSON.parse(ask.value);
+    let info = ask.value;
     if(auto_reply) {
         return _auto_reply(ask.kind, info);
     }

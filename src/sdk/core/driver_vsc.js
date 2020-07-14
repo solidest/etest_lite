@@ -4,7 +4,7 @@ const RpcTask = require('./rpctask');
 const parser = require("./parser/etxParser")
 const parser_run = require('./parser');
 const protocols = require('./protocols');
-const devices = require('./devices');
+const parseHardEnv = require('./devices');
 const yaml = require('js-yaml');
 
 class SdkApi {
@@ -83,12 +83,23 @@ class SdkApi {
             this._get_etl_files(pf, files);
             let asts = this._parse_etl(files, pf);
 
-            let protos = protocols(asts);
-            let devs = devices(asts);
-            let xtra = cfg.project.xtra;
-            if (xtra) {
-                xtra = this._read_text(xtra, pf);
+            let prots = protocols(asts);
+            let topos = parseHardEnv(asts);
+            let xtras = cfg.project.xtras ? JSON.parse(JSON.stringify(cfg.project.xtras)):{};
+
+            if(xtras.pack) {
+                xtras.pack = this._read_text(xtras.pack, pf);
             }
+            if(xtras.unpack) {
+                xtras.unpack = this._read_text(xtras.unpack, pf);
+            }
+            if(xtras.check) {
+                xtras.check = this._read_text(xtras.check, pf);
+            }
+            if(xtras.recvfilter) {
+                xtras.recvfilter = this._read_text(xtras.recvfilter, pf);
+            }
+
             let libs = cfg.project.lib_path;
             if (libs) {
                 let plibs = path.resolve(pf, libs);
@@ -107,9 +118,9 @@ class SdkApi {
 
             let env = {
                 proj_id: cfg.project.id,
-                protos: protos,
-                proto_xtra: xtra,
-                devices: devs,
+                prots: prots,
+                xtras: xtras,
+                topos: topos,
                 libs: libs
             };
             return this._xfn('makeenv', env, callback);
@@ -121,64 +132,118 @@ class SdkApi {
         }
     }
 
-    //开发模式下执行程序
+    // start_quick(cfg, run_id, callback) {
+    //     try {
+    //         let pf = cfg.project.path;
+    //         pf = path.isAbsolute(pf) ? pf : path.resolve(pf);
+    //         let run = cfg.program[run_id];
+    //         if (!run) {
+    //             throw new Error(`实例"${run_id}"未找到`);
+    //         }
+    //         if (!run.src) {
+    //             throw new Error(`实例"${run_id}"未设置src属性`);
+    //         }
+    //         let src = path.resolve(pf, run.src);
+    //         if (!fs.existsSync(src)) {
+    //             throw new Error(`文件"${src}"未找到`);
+    //         }
+
+    //         let asts = parser_run.getRunAstList(pf, src);
+    //         if (!asts || asts.length === 0) {
+    //             return;
+    //         }
+    //         let option = run.option || {};
+    //         if (run.topology) {
+    //             option.topology = run.topology;
+    //         }
+
+    //         asts[0].option = option;
+    //         if(typeof run.vars === 'object') {
+    //             if(Array.isArray(run.vars)) {
+    //                 let vs = [];
+    //                 for(let f of run.vars) {
+    //                     vs = vs.concat(yaml.safeLoad(fs.readFileSync(f, 'utf8')));
+    //                 }
+    //                 // console.log(vs.length)
+    //                 asts[0].vars = vs;
+    //             } else {
+    //                 asts[0].vars = run.vars;
+    //             }
+    //         } else if(typeof run.vars === 'string'){
+    //             let f = path.resolve(pf, run.vars) 
+    //             asts[0].vars = yaml.safeLoad(fs.readFileSync(f, 'utf8'));
+    //         } else {
+    //             console.log('type of vars is ', typeof run.vars)
+    //         }
+    //         asts[0].proj_id = cfg.project.id;
+
+    //         return this._xfn('start', asts, callback);
+    //     } catch (error) {
+    //         if (callback) {
+    //             callback(error);
+    //         }
+    //     }
+    // }
+
+    start_quick(cfg, run_id, callback) {
+        try {
+            let pf = cfg.project.path;
+            pf = path.isAbsolute(pf) ? pf : path.resolve(pf);
+            let run = cfg.program[run_id];
+            if (!run) {
+                throw new Error(`实例"${run_id}"未找到`);
+            }
+            if (!run.src) {
+                throw new Error(`实例"${run_id}"未设置src属性`);
+            }
+            let src = path.resolve(pf, run.src);
+            if (!fs.existsSync(src)) {
+                throw new Error(`文件"${src}"未找到`);
+            }
+            if (!src.endsWith('.lua')) {
+                throw new Error('无效脚本文件');
+            }
+
+            let ast = parser_run.getSrcAst('lua', pf, src);
+            let option = run.option || {};
+            if (run.topology) {
+                option.topology = run.topology;
+            }
+
+            ast.option = option;
+            if(typeof run.vars === 'object') {
+                if(Array.isArray(run.vars)) {
+                    let vs = [];
+                    for(let f of run.vars) {
+                        vs = vs.concat(yaml.safeLoad(fs.readFileSync(f, 'utf8')));
+                    }
+                    // console.log(vs.length)
+                    ast.vars = vs;
+                } else {
+                    ast.vars = run.vars;
+                }
+            } else if(typeof run.vars === 'string'){
+                let f = path.resolve(pf, run.vars) 
+                ast.vars = yaml.safeLoad(fs.readFileSync(f, 'utf8'));
+            } else {
+                console.log('type of vars is ', typeof run.vars)
+            }
+            ast.proj_id = cfg.project.id;
+            //console.log('ast', ast);
+            return this._xfn('start', ast, callback);
+        } catch (error) {
+            if (callback) {
+                callback(error);
+            }
+        }
+    }
+
     start(cfg, run_id, callback) {
-        //开发模式需要先设置环境
         return this.setup(cfg, (err) => {
             if (err) {
                 return callback(err);
-            } else {
-                try {
-                    let pf = cfg.project.path;
-                    pf = path.isAbsolute(pf) ? pf : path.resolve(pf);
-                    let run = cfg.program[run_id];
-                    if (!run) {
-                        throw new Error(`实例"${run_id}"未找到`);
-                    }
-                    if (!run.src) {
-                        throw new Error(`实例"${run_id}"未设置src属性`);
-                    }
-                    let src = path.resolve(pf, run.src);
-                    if (!fs.existsSync(src)) {
-                        throw new Error(`文件"${src}"未找到`);
-                    }
-
-                    let asts = parser_run.getRunAstList(pf, src);
-                    if (!asts || asts.length === 0) {
-                        return;
-                    }
-                    let option = run.option || {};
-                    if (run.topology) {
-                        option.topology = run.topology;
-                    }
-
-                    asts[0].option = option;
-                    if(typeof run.vars === 'object') {
-                        if(Array.isArray(run.vars)) {
-                            let vs = [];
-                            for(let f of run.vars) {
-                                vs = vs.concat(yaml.safeLoad(fs.readFileSync(f, 'utf8')));
-                            }
-                            // console.log(vs.length)
-                            asts[0].vars = vs;
-                        } else {
-                            asts[0].vars = run.vars;
-                        }
-                    } else if(typeof run.vars === 'string'){
-                        let f = path.resolve(pf, run.vars) 
-                        asts[0].vars = yaml.safeLoad(fs.readFileSync(f, 'utf8'));
-                    } else {
-                        console.log('type of vars is ', typeof run.vars)
-                    }
-                    asts[0].proj_id = cfg.project.id;
-
-                    return this._xfn('start', asts, callback);
-                } catch (error) {
-                    if (callback) {
-                        callback(error);
-                    }
-                }
             }
+            return this.start_quick(cfg, run_id, callback);
         });
     }
 

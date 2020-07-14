@@ -36,8 +36,8 @@ function usr_print(info) {
 }
 
 //USER::LOG UI <- ETL
-function usr_log(type, inlog) {
-    let info = JSON.parse(inlog);
+function usr_log(type, info) {
+    // let info = JSON.parse(inlog);
     let fmt = '';
     switch (type) {
         case "info":
