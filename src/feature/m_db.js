@@ -75,7 +75,7 @@ function insert(kind, doc) {
         return;
     }
     coll.insert(doc);
-    update_proj({id: doc.proj_id});
+    return update_proj({id: doc.proj_id});
 }
 
 function update(kind, doc) {
@@ -93,7 +93,7 @@ function update(kind, doc) {
             olddoc[k] = doc[k];
         }
     }
-    update_proj({id: doc.proj_id});
+    return update_proj({id: doc.proj_id});
 }
 
 function _remove_doc(id) {
@@ -105,18 +105,6 @@ function _remove_doc(id) {
     coll.remove(items[0]);
     console.log('remove doc', id);
 }
-
-// function _remove_docs(proj_id) {
-//     let coll = _db.getCollection('doc');
-//     let items = coll.find({'proj_id': { '$eq' : proj_id }});
-//     if(!items || items.length===0) {
-//         return;
-//     }
-//     for(let it of items) {
-//         coll.remove(it);
-//     }
-//     console.log('remove docs', items.length);
-// }
 
 function _remove_kinds(proj_id) {
     kinds.forEach(k => {
@@ -147,10 +135,19 @@ function remove(kind, doc) {
         _remove_doc(id);
     }
     coll.remove(item);
-    update_proj({id: proj_id});
+    return update_proj({id: proj_id});
 }
 
 //{name: 'xx', last_open: xxxx, created: xxxx}
+function load_proj(id) {
+    let coll = _db.getCollection('project');
+    let res = coll.find({'id': { '$eq' : id }});
+    if(res && res.length===1) {
+        return res[0];
+    }
+    return null;
+}
+
 function list_proj() {
     let coll = _db.getCollection('project');
     if(!coll) {
@@ -166,7 +163,11 @@ function insert_proj(proj) {
         console.log('error proj =', proj);
         return;
     }
+    if(!proj.updated) {
+        proj.updated = Date.now();
+    }
     coll.insert(proj);
+    return proj.updated;
 }
 
 function update_proj(proj) {
@@ -180,6 +181,7 @@ function update_proj(proj) {
     for(let k in proj) {
         doc[k] = proj[k];
     }
+    return proj.updated;
 }
 
 function remove_proj(proj) {
@@ -201,9 +203,7 @@ function recent_proj() {
     return null;
 }
 
-
-
 export default { 
-    setup, save, list, load, insert, update, remove,
+    setup, save, list, load, insert, update, remove, load_proj,
     list_proj, insert_proj, update_proj, remove_proj, recent_proj, 
 }

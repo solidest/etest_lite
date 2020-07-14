@@ -19,14 +19,12 @@ async function check(proj_id, reason, allow_stop) {
     if(!proj_id) {
         return;
     }
-    let projs = await ipc.list_proj();
-    if(!projs) {
-        return;
-    }
-    let proj = projs.find(p => p.id === proj_id);
+    let proj = await ipc.load_proj(proj_id);
     if(!proj) {
+        console.log('NULL')
         return;
     }
+
     if(_task_id === proj_id && _task_version === proj.updated) {
         return;
     }

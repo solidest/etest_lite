@@ -24,11 +24,11 @@ const cfg = {
     },
     bar_items: [{
         text: '执行',
-        value: 'a_play',
+        value: 'play',
         icon: 'mdi-play',
     }, {
         text: '停止',
-        value: 'a_stop',
+        value: 'stop',
         icon: 'mdi-stop',
     }, {
         text: '执行设置',

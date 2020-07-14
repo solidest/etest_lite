@@ -16,6 +16,9 @@ function work_check(proj_id, reason) {
 
 function setup_db(is_develop) {
     db.setup(is_develop);
+    ipcMain.handle('load_proj', (_, id) => {
+        return db.load_proj(id);
+    });
     ipcMain.handle('list_proj', () => {
         return db.list_proj();
     });

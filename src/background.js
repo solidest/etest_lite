@@ -42,7 +42,8 @@ function try_close_all() {
 
 function createWorker() {
   worker = new BrowserWindow({
-    show: isDevelopment,
+    // show: isDevelopment,
+    show: false,
     webPreferences: {
       nodeIntegration: true
     }
@@ -61,20 +62,28 @@ function createWorker() {
   });
 }
 
+
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      enableRemoteModule: true,
+    },
+    simpleFullscreen: false,
+    fullscreen: false,
+    frame: false,
+    backgroundColor: '#000000',
   });
   ipc.setup_player(player);
+  let wid = '#/?winid=' + player.id;
   if (process.env.WEBPACK_DEV_SERVER_URL) {
-    player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html')
+    player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html' + wid)
     if (!process.env.IS_TEST) player.webContents.openDevTools()
   } else {
     createProtocol('app')
-    player.loadURL('app://./player.html')
+    player.loadURL('app://./player.html' + wid)
   }
   player.on('closed', () => {
     player = null;
@@ -228,8 +237,13 @@ ipcMain.handle('open-proj', (_, proj_id) => {
 });
 
 ipcMain.on('close-win', (_, wid) => {
-  // console.log('close wid', wid)
-  let win = BrowserWindow.fromId(Number.parseInt(wid));
+  wid = Number.parseInt(wid);
+  if(wid===player.id) {
+    player.hide();
+    player_show = false;
+    return;
+  }
+  let win = BrowserWindow.fromId(wid);
   if (!win) {
     console.log('error win from id')
   }
@@ -253,6 +267,23 @@ ipcMain.handle('active-proj', (_, proj_id) => {
 ipcMain.on('check-result', (_, proj_id, version, results) => {
   let win = wins.find(proj_id);
   if (win) {
-    win.webContents.send('check-result', proj_id, results);
+    win.webContents.send('check-result', proj_id, results, version);
   }
-})
+});
+
+ipcMain.handle('run-case', (_, info) => {
+  
+  player.webContents.send('run-case', info);
+  player.show();
+  player.focus();
+  player_show = true;
+});
+
+ipcMain.on('stop-run', () => {
+  if(player_show) {
+    player.hide();
+    player_show = false;
+    console.log('TODO STOP');
+    return;
+  }
+});

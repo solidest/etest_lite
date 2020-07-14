@@ -16,6 +16,12 @@ class Project {
         }
         this[kind].push(kind_obj);
     }
+    check_setting() {
+        let setting = this.data.setting;
+        if(!setting || !setting.etestd_ip || !setting.etestd_port) {
+            this.pushError('缺少执行器设置', 'project', 'setting', 0);
+        }
+    }
     check() {
         this.check_res = {};
         if(this.device) {
@@ -33,6 +39,7 @@ class Project {
         if(this.project) {
             this.project.forEach(xt => xt.check());
         }
+        this.check_setting();
         return this.check_res;
     }
    

@@ -22,17 +22,13 @@ const _store = new Vuex.Store({
     proj: null,
     winid: 1,
     copys: { device: '', protocol: '', panel: ''},
-    check_result: null,
+    check_result: {version: 0, proj_id: 0},
   },
   mutations: {
     setMsgInfo: function (state, msg) {
       state.last_tip.tip_msg = msg
       state.last_tip.tip_type = 'info'
       state.last_tip.tip = true
-    },
-    setUser: function (state, user) {
-      state.user = user;
-      state.lock = false;
     },
     setMsgSuccess: function (state, msg) {
       state.last_tip.tip_msg = msg
@@ -107,8 +103,8 @@ const _store = new Vuex.Store({
 })
 
 //更新执行机状态
-ipcRenderer.on('check-result', (_, proj_id, results) => {
-  _store.commit('setCheckResult', {proj_id: proj_id, results: results});
+ipcRenderer.on('check-result', (_, proj_id, results, version) => {
+  _store.commit('setCheckResult', {proj_id: proj_id, results: results, version: version});
 });
 
 export default _store

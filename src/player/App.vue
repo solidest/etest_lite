@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <e-sys-bar header="Player" />
     <v-snackbar top :timeout="touts" :color="tip_color" v-model="tip">
       {{ tip_msg }}
       <template v-slot:action="{ attrs }">
@@ -19,10 +20,16 @@
   }
 </style>
 <script>
-
-
+  import ESysBar from '../components/ESysBar';
   export default {
     name: 'App',
+    components: {
+      'e-sys-bar': ESysBar,
+    },
+    created: function () {
+      let wid = this.$route.query.winid;
+      this.$store.commit('setWinId', wid);
+    },
 
     computed: {
       tip: {

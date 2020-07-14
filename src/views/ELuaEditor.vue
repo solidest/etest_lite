@@ -1,6 +1,6 @@
 <template>
     <v-container class="pa-0 ma-0 fill-height" fluid>
-        <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3">
+        <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3" :loading="ready_run">
             <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action"
                 :editor="editor" :option="content.option">
             </e-editor-bar>
@@ -10,23 +10,25 @@
             <v-sheet :style="{position:'absolute', left:'0px', bottom: `${show_out?300+1:2}px`}" class="ma-0 pa-0"
                 color="primary" width="100%" :height="out_height" tile>
                 <v-row class="px-3 py-1 ma-0">
-                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 26px; max-width: 26px;" cols=1 >
-                        <v-icon small class="pa-0 ma-0" style="cursor: pointer;"
-                            @click="goto_line(check_result.line)">
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 26px; max-width: 26px;" cols=1>
+                        <v-icon small class="pa-0 ma-0" style="cursor: pointer;" @click="goto_line(check_result.line)">
                             {{is_check_error ? 'mdi-close-circle':'mdi-check'}}
                         </v-icon>
                     </v-col>
-                    <v-col class="pa-0 ma-0 pr-3 flex-grow-1 flex-shrink-0"  style="min-width: 200px; max-width: 800px;" cols=4>
+                    <v-col class="pa-0 ma-0 pr-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;"
+                        cols=4>
                         <span style="cursor: pointer;" class="text-shenglue"
                             @click="goto_line(check_result.line)">{{check_result.tip}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 100px; max-width: 100px;" cols=2>
-                         <span>{{x_state}}</span>
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 100px; max-width: 100px;"
+                        cols=2>
+                        <span>{{x_state}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0 pl-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;" cols=4>
+                    <v-col class="pa-0 ma-0 pl-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;"
+                        cols=4>
                         <span>{{show_out ? '':run_out}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 26px; max-width: 26px;" cols=1>
+                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 26px; max-width: 26px;" cols=1>
                         <v-icon small class="pa-0 ma-0" style="cursor: pointer" @click="show_out=!show_out">
                             {{show_out ? 'mdi-chevron-triple-down':'mdi-chevron-triple-up'}}
                         </v-icon>
@@ -52,6 +54,7 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_lua';
+    import run from '../feature/f_run';
     import Env from '../feature/f_env';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
@@ -86,6 +89,9 @@
                 out_height: 30,
                 editor: {},
                 show_out: false,
+                version: 0,
+                ready_run: false,
+                outs: [],
             }
         },
         computed: {
@@ -112,9 +118,9 @@
             },
             check_result: function () {
                 let res = {
-                        line: -100,
-                        tip: '代码检查通过'
-                    };
+                    line: -100,
+                    tip: '代码检查通过'
+                };
                 let err = this.error_obj;
                 if (!err || !err.$count) {
                     this.set_err_tip(-1);
@@ -130,17 +136,17 @@
                         if (l.type === 'error') {
                             msgs.push(l.msg);
                             let line = Number.parseInt(key);
-                            if(res.line === -100) {
+                            if (res.line === -100) {
                                 res.line = line;
                                 this.set_err_tip(line, l.msg);
                             }
                         }
                     });
                 }
-                if(msgs.length >0 ){
-                    res.tip = msgs.join('; ');                
+                if (msgs.length > 0) {
+                    res.tip = msgs.join('; ');
                 }
-                if(res.line === -100) {
+                if (res.line === -100) {
                     this.set_err_tip(-1);
                 }
                 return res;
@@ -150,9 +156,46 @@
             },
             run_out: function () {
                 return '<无输出>';
+            },
+            check_version: function () {
+                let res = this.$store.state.check_result;
+                return res ? res.version : 0;
+            }
+        },
+        watch: {
+            check_version: function (v) {
+                if (this.ready_run && v === this.version) {
+
+                    let check_res = this.$store.getters.check_result;
+                    if (run.has_error(check_res)) {
+                        this.$store.commit('setMsgError', '启动执行失败，因为存在未解决的错误');
+                        return;
+                    }
+                    try {
+                        let self = this;
+                        run.run_script(this.doc_id).then(outs => {
+                            self.outs = outs;
+                            self.ready_run = false;
+                        });
+                        this.$nextTick(() => {
+                            self.show_out = true;
+                        });
+                    } catch (error) {
+                        this.ready_run = false;
+                        this.$store.commit('setMsgError', error.message);
+                    }
+                }
             }
         },
         methods: {
+            play: async function () {
+                await this.save_doc();
+                this.ready_run = true;
+                return false;
+            },
+            stop: function() {
+                run.stop_run();
+            },
             set_err_tip: function (line, msg) {
                 if (!this.editor || !this.editor.set_err) {
                     return;
@@ -199,7 +242,7 @@
                             sett.widgets[1].items = self.env.get_topo_list();
                             sett.widgets[2].items = self.env.get_panel_list();
                             let topo_id = self.env.get_only_topo();
-                            if(topo_id && self.content.option.topology !== topo_id) {
+                            if (topo_id && self.content.option.topology !== topo_id) {
                                 self.content.option.topology = topo_id;
                                 self.save_doc();
                             }
@@ -217,7 +260,7 @@
                     kind: this.kind,
                     content: this.content,
                 };
-                await ipc.update({
+                this.version = await ipc.update({
                     kind: 'doc',
                     doc: doc
                 });

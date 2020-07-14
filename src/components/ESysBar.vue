@@ -2,7 +2,7 @@
   <div v-resize="onResize">
     <v-system-bar window dark id="app_bar" app>
       <v-icon>mdi-ember</v-icon>
-      <span class="nodrag">ETestDev</span>
+      <span class="nodrag">{{header}}</span>
       <v-spacer></v-spacer>
       <span class="nodrag">{{title}}</span>
       <v-spacer></v-spacer>
@@ -25,6 +25,7 @@
 const { ipcRenderer, remote  } = window.require('electron')
 
 export default {
+    props: ['header'],
     data: () => {
         return {
             is_max: false,

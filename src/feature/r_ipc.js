@@ -1,6 +1,10 @@
 const {
     ipcRenderer
-} = window.require('electron')
+} = window.require('electron');
+
+async function load_proj(id) {
+    return await ipcRenderer.invoke('load_proj', id);
+}
 
 async function list_proj() {
     return await ipcRenderer.invoke('list_proj');
@@ -46,13 +50,17 @@ async function open_proj(proj_id) {
     return await ipcRenderer.invoke('open-proj', proj_id);
 }
 
+async function run_case(run_info) {
+    return await ipcRenderer.invoke('run-case', run_info);
+}
+
 function bind_proj(wid, proj_id) {
     return ipcRenderer.send('bind-proj', wid || 1, proj_id)
 }
 
-// function check_result(proj_id, version, results) {
-//     return ipcRenderer.send('check-result', proj_id, version, results);
-// }
+function stop_run() {
+    return ipcRenderer.send('stop-run');
+}
 
 export default {
     list,
@@ -61,11 +69,13 @@ export default {
     update,
     remove,
     list_proj,
+    load_proj,
     insert_proj,
     update_proj,
     remove_proj,
     active_proj,
     open_proj,
     bind_proj,
-    // check_result
+    run_case,
+    stop_run,
 }

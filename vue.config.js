@@ -30,12 +30,12 @@ module.exports = {
     worker: {
       entry: './src/worker/worker.js',
       template: './public/worker.html',
-      title: 'ETestDev Worker',
+      title: 'ETest Worker',
     },
     player: {
       entry: './src/player/player.js',
       template: './public/player.html',
-      title: 'ETestDev Player',
+      title: 'ETest Player',
     }
   }
 }
