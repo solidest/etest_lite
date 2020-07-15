@@ -201,6 +201,10 @@
             },
 
             play: async function () {
+                if(this.content.option.lib) {
+                    this.$store.commit('setMsgError', '已设置为共享库，无法启动执行');
+                    return;
+                }
                 await this.save_doc();
                 this.try_run_times = 0;
                 this.loading = true;

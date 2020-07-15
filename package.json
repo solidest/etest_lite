@@ -24,6 +24,7 @@
     "monaco-editor-locales-plugin": "^0.0.3",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "mousetrap": "^1.6.5",
+    "msgpack-lite": "^0.1.26",
     "shortid": "^2.2.15",
     "throttle-debounce": "^2.2.1",
     "vue": "^2.6.11",

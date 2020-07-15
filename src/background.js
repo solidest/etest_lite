@@ -46,7 +46,7 @@ function try_close_all() {
 function createWorker() {
   worker = new BrowserWindow({
     // show: isDevelopment,
-    show: false,
+    show: true,
     webPreferences: {
       nodeIntegration: true
     }
@@ -314,10 +314,10 @@ ipcMain.on('run-stop', () => {
   }
 });
 
-ipcMain.on('run-reply', run.reply);
-ipcMain.on('run-cmd', run.cmd);
-ipcMain.on('db-find', run_db.find);
-ipcMain.on('db-last', run_db.last);
-ipcMain.on('db-findlist', run_db.findlist);
-ipcMain.on('db-lastlist', run_db.lastlist);
-ipcMain.on('db-merge', run_db.merge);
+// ipcMain.on('run-reply', run.reply);
+// ipcMain.on('run-cmd', run.cmd);
+// ipcMain.on('db-find', run_db.find);
+// ipcMain.on('db-last', run_db.last);
+// ipcMain.on('db-findlist', run_db.findlist);
+// ipcMain.on('db-lastlist', run_db.lastlist);
+// ipcMain.on('db-merge', run_db.merge);

@@ -15,12 +15,12 @@ function deep_copy(obj){
             if(obj instanceof Array){
                 o = [];
                 for(var i = 0, len = obj.length; i < len; i++){
-                    o.push(deepCopy(obj[i]));
+                    o.push(deep_copy(obj[i]));
                 }
             }else{
                 o = {};
                 for(var k in obj){
-                    o[k] = deepCopy(obj[k]);
+                    o[k] = deep_copy(obj[k]);
                 }
             }
         }

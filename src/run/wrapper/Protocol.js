@@ -83,7 +83,7 @@ class Protocol {
         }
     }
 
-    get_run_ast() {
+    make_out() {
         let seglist = [];
         let items = this.data.content.items;
         for(let it of items) {

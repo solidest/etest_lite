@@ -4,7 +4,7 @@ import Project from './Project';
 import Device from './Device';
 import Topology from './Topology';
 import Protocol from './Protocol';
-import Lua from './Lua';
+import CaseLua from './CaseLua';
 import XtraLua from './XtraLua';
 import t_man from '../../helper/tree_man';
 
@@ -47,7 +47,7 @@ async function load_program(proj, stopper) {
         }
         if(doc) {
             // console.log(proj)
-            proj.addKind('lua', new Lua(doc, proj));
+            proj.addKind('lua', new CaseLua(doc, proj, lua.name));
         }
     }
 }

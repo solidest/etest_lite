@@ -6,7 +6,7 @@ import Device from './Device';
 import Topology from './Topology';
 import Protocol from './Protocol';
 import CaseTree from './CaseTree';
-import t_man from '../../helper/tree_man';
+
 
 function append_kind(proj, kind, cls) {
     let list = db.list(kind, proj.id);
@@ -34,7 +34,8 @@ function load_proj(proj_id) {
     append_kind(proj, 'topology', Topology);
     append_kind(proj, 'protocol', Protocol);
     append_program(proj);
-    return proj;
+
+    return proj.make_out();
 }
 
 export default load_proj;

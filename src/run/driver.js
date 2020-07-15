@@ -1,5 +1,5 @@
 
-const RpcTask = require('../core/rpctask');
+const RpcTask = require('../sdk/core/rpctask');
 const yaml = require('js-yaml');
 
 class SdkApi {

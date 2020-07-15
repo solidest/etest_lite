@@ -10,18 +10,37 @@ class Project {
     get version() {
         return this.data.updated;
     }
+
     addKind(kind, kind_obj) {
         if(!this[kind]) {
             this[kind] = [];
         }
         this[kind].push(kind_obj);
     }
+
     check_setting() {
         let setting = this.data.setting;
         if(!setting || !setting.etestd_ip || !setting.etestd_port) {
             this.pushError('缺少执行器设置', 'project', 'setting', 0);
         }
     }
+
+    check_special() {
+        let libs = [];
+        if(this.lua) {
+            for(let l of this.lua) {
+                if(l.is_lib) {
+                    if(libs.includes(l.name)) {
+                        this.pushError('共享库名称重复', 'program', l.id, -1);
+                        console.log('rename lib', l.name);
+                    } else {
+                        libs.push(l.name);
+                    }
+                }
+            }
+        }
+    }
+
     check() {
         this.check_res = {};
         if(this.device) {
@@ -40,6 +59,7 @@ class Project {
             this.project.forEach(xt => xt.check());
         }
         this.check_setting();
+        this.check_special();
         return this.check_res;
     }
    

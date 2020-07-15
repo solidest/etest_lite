@@ -4,18 +4,19 @@ import yaml from 'js-yaml';
 
 const KIND = 'program';
 
-class Lua {
-    constructor(data, proj) {
+class CaseLua {
+    constructor(data, proj, name) {
         this.data = data;
         this.proj = proj;
+        this.name = name;
     }
 
     get id() {
         return this.data.id;
     }
 
-    get name() {
-        return this.data.name;
+    get is_lib() {
+        return (this.data.content && this.data.content.option && this.data.content.option.lib);
     }
 
     _option_check() {
@@ -23,7 +24,7 @@ class Lua {
         if(!this.data.content || !this.data.content.option) {
             return;
         }
-        let opt = this.data.content.option;
+        let opt = this.data.content.option||{};
         if(opt.vars) {
             try {
                 yaml.safeLoad(opt.vars, 'utf8');
@@ -32,7 +33,7 @@ class Lua {
             }
         }
 
-        if(!opt.topology) {
+        if(!opt.topology && !opt.lib) {
             this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
         }
     }
@@ -60,7 +61,7 @@ class Lua {
             let ast = parser.parse(script, {luaVersion: '5.3'});
             if(!ast) {
                 this.proj.pushError('语法错误', KIND, this.id, -1);
-            } else {
+            } else if(this.data.content.option && !this.data.content.option.lib) {
                 this._entry_check(ast);
             }
         } catch (error) {
@@ -82,4 +83,4 @@ class Lua {
     }
 }
 
-export default Lua;
+export default CaseLua;

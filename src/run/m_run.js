@@ -42,7 +42,7 @@ async function run_case(info) {
     }
 }
 
-driver.setup(_post_msg);
+// driver.setup(_post_msg);
 
 export default {
     setup_db,

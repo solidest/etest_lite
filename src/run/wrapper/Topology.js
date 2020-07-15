@@ -91,7 +91,7 @@ class Topology {
         return res;
     }
 
-    get_run_ast() {
+    make_out() {
         let devs = [];
         let mapping = this.topo.mapping;
         if(mapping) {

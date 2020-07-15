@@ -2,13 +2,13 @@
     <v-data-table :headers="headers" :items="items" no-data-text="暂时还没有设备" disable-sort hide-default-footer
         disable-pagination>
         <template v-slot:item.dev_id="{item}">
-            <span :class="item.used==='none'?'grey--text':''"> {{get_dev_name(item.dev_id)}}</span>
+            <span :class="get_text_css1(item)"> {{get_dev_name(item.dev_id)}}</span>
         </template>
         <template v-slot:item.used="{item}">
             <div style="width: 120px">
                 <v-select v-model="item.used" dense :items="usedlist" @change="on_change" hide-details solo flat>
                     <template v-slot:selection="{ item }">
-                        <span :class="`body-2 ${item.value==='none'?'grey--text':''}`">{{item.text}}</span>
+                        <span :class="`body-2 ${get_text_css2(item)}`">{{item.text}}</span>
                     </template>
                 </v-select>
             </div>
@@ -54,6 +54,24 @@
             on_change: function () {
                 this.$emit('save');
             },
+            get_text_css1: function(item) {
+                if(item.used === 'none') {
+                    return 'grey--text text--darken-2';
+                }
+                if(item.used === 'etest') {
+                    return 'blue--text text--lighten-3';
+                }
+                return 'brown--text text--lighten-3';
+            },
+            get_text_css2: function(item) {
+                if(item.value === 'none') {
+                    return 'grey--text text--darken-2';
+                }
+                if(item.value === 'etest') {
+                    return 'blue--text text--lighten-3';
+                }
+                return 'brown--text text--lighten-3';
+            }
         },
     }
 </script>
