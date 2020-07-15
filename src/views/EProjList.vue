@@ -31,45 +31,47 @@
             <v-card :loading="item===doing_item">
               <v-card-title class="subheading font-weight-bold blue--text">
                 <v-row>
-                  <v-col cols="8" class="py-0 px-2 ma-0 flex-grow-1 flex-shrink-0"  style="min-width: 60px; max-width: 100%;">
-                  <v-edit-dialog @save="save_name">
-                    <span style="cursor: pointer;" @click.stop="open(item)">
-                      {{item.name}}
-                    </span>
-                    <v-btn small icon class="mx-1" @click="editing_proj=item; editing_name=item.name;">
-                      <v-icon small color="grey">mdi-pencil-outline</v-icon>
-                    </v-btn>
-                    <template v-slot:input>
-                      <v-text-field v-model="editing_name" label="修改项目名称" single-line>
-                      </v-text-field>
-                    </template>
-                  </v-edit-dialog>
+                  <v-col cols="8" class="py-0 px-2 ma-0 flex-grow-1 flex-shrink-1"
+                    style="min-width: 30px; max-width: 100%;">
+                    <v-edit-dialog @save="save_name">
+                      <span style="cursor: pointer;" @click.stop="open(item)">
+                        {{item.name}}
+                      </span>
+                      <v-btn small icon class="mx-1" @click="editing_proj=item; editing_name=item.name;">
+                        <v-icon small color="grey">mdi-pencil-outline</v-icon>
+                      </v-btn>
+                      <template v-slot:input>
+                        <v-text-field v-model="editing_name" label="修改项目名称" single-line>
+                        </v-text-field>
+                      </template>
+                    </v-edit-dialog>
                   </v-col>
-                  <v-col cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"  style="min-width: 138px; max-width: 138px;">
-                  <v-tooltip bottom open-delay="300">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
-                        <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>在新窗口打开</span>
-                  </v-tooltip>
-                  <v-tooltip bottom open-delay="300">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
-                        <v-icon color="grey">mdi-export</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>导出项目</span>
-                  </v-tooltip>
-                  <v-tooltip bottom open-delay="300">
-                    <template v-slot:activator="{ on }">
-                      <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
-                        <v-icon color="grey">mdi-delete-outline</v-icon>
-                      </v-btn>
-                    </template>
-                    <span>删除项目</span>
-                  </v-tooltip>
+                  <v-col cols="4" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
+                    style="min-width: 138px; max-width: 138px;">
+                    <v-tooltip bottom open-delay="300">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="mx-2" v-on="on" small icon @click="open_win(item)">
+                          <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>在新窗口打开</span>
+                    </v-tooltip>
+                    <v-tooltip bottom open-delay="300">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="mx-2" v-on="on" small icon @click="proj_export(item)">
+                          <v-icon color="grey">mdi-export</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>导出项目</span>
+                    </v-tooltip>
+                    <v-tooltip bottom open-delay="300">
+                      <template v-slot:activator="{ on }">
+                        <v-btn class="mx-2" v-on="on" small icon @click="remove(item)">
+                          <v-icon color="grey">mdi-delete-outline</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>删除项目</span>
+                    </v-tooltip>
                   </v-col>
                 </v-row>
               </v-card-title>
@@ -98,7 +100,7 @@
   import helper from '../helper/helper';
   import h from '../feature/f_project'
   import cfg from '../../package.json'
-  
+
   export default {
     components: {
       'confirm-dlg': () => import( /* webpackChunkName: "confirmdlg" */ '../dialog/ConfirmDlg'),

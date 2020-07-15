@@ -171,7 +171,11 @@
                         id: shortid.generate(),
                         name: this.input_text.trim(),
                         created: t,
-                        updated: t
+                        updated: t,
+                        setting: {
+                            etestd_ip: '127.0.0.1',
+                            etestd_port: 1210,
+                        }
                     };
                     await ipc.insert_proj(doc);
                     this.$store.commit('setProj', doc);

@@ -44,8 +44,6 @@ async function check(proj_id, reason, allow_stop) {
             version: _task_version,
             results: _result,
         }
-    } else {
-        return null;
     }
 }
 

@@ -13,6 +13,9 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib';
 import ipc from './feature/m_ipc';
 import wins from './feature/m_wins';
+import run from './run/m_run';
+import run_db from './run/run_db';
+import fs from 'fs';
 
 let player = null;
 let worker = null;
@@ -66,6 +69,8 @@ function createWorker() {
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
+    width: 1024,
+    height: 768,
     webPreferences: {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
@@ -76,11 +81,10 @@ function createPlayer() {
     frame: false,
     backgroundColor: '#000000',
   });
-  ipc.setup_player(player);
+  run.setup_player(player);
   let wid = '#/?winid=' + player.id;
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
+  if (isDevelopment) {
     player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html' + wid)
-    if (!process.env.IS_TEST) player.webContents.openDevTools()
   } else {
     createProtocol('app')
     player.loadURL('app://./player.html' + wid)
@@ -154,6 +158,22 @@ function beginCheck(proj_id, reason) {
   }
 }
 
+function setup() {
+  let db_path;
+  if(isDevelopment) {
+    db_path = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_dev/etest_dev_db' : 'C:/Users/solidest/Desktop/etest_dev/etest_dev_db';
+  } else {
+    exe_path = path.dirname(app.getPath('exe'));
+    db_path = path.resolve(exe_path, '../etest_dev_db/');  
+  }
+  if(!fs.existsSync(db_path)) {
+    fs.mkdirSync(db_path);
+  }
+  
+  ipc.setup_db(db_path);
+  run.setup_db(db_path);
+}
+
 
 //////////////////////// app //////////////////////////////
 app.on('window-all-closed', quit)
@@ -199,8 +219,6 @@ if (!gotTheLock) {
   app.quit();
 }
 
-ipc.setup_db(isDevelopment);
-
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
   privileges: {
@@ -209,7 +227,7 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-
+setup();
 
 ///////////////////////// ipcMain ///////////////////////////////
 ipcMain.on('bind-proj', (_, wid, proj_id) => {
@@ -272,18 +290,34 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
 });
 
 ipcMain.handle('run-case', (_, info) => {
-  
-  player.webContents.send('run-case', info);
-  player.show();
-  player.focus();
+  if(player_show) {
+    if(player.isMinimized()) {
+      player.restore();
+    }
+  } else {
+    player.show();
+    if(isDevelopment) {
+      player.webContents.openDevTools();
+    }
+  }
   player_show = true;
+  player.focus();
+  run.run_case(info);
 });
 
-ipcMain.on('stop-run', () => {
+ipcMain.on('run-stop', () => {
   if(player_show) {
     player.hide();
     player_show = false;
-    console.log('TODO STOP');
+    run.run_stop();
     return;
   }
 });
+
+ipcMain.on('run-reply', run.reply);
+ipcMain.on('run-cmd', run.cmd);
+ipcMain.on('db-find', run_db.find);
+ipcMain.on('db-last', run_db.last);
+ipcMain.on('db-findlist', run_db.findlist);
+ipcMain.on('db-lastlist', run_db.lastlist);
+ipcMain.on('db-merge', run_db.merge);

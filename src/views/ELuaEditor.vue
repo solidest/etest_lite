@@ -1,6 +1,6 @@
 <template>
     <v-container class="pa-0 ma-0 fill-height" fluid>
-        <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3" :loading="ready_run">
+        <v-card height="100%" width="100%" class="ma-0 pa-0" tile color="grey darken-3" :loading="loading">
             <e-editor-bar class="pa-0 ma-0" :items="cfg.bar_items" :title="title" :icon="cfg.icon" @action="on_action"
                 :editor="editor" :option="content.option">
             </e-editor-bar>
@@ -54,7 +54,7 @@
 <script>
     import ipc from '../feature/r_ipc';
     import cfg from '../helper/cfg_lua';
-    import run from '../feature/f_run';
+    import run from '../run/r_run';
     import Env from '../feature/f_env';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
@@ -90,7 +90,8 @@
                 editor: {},
                 show_out: false,
                 version: 0,
-                ready_run: false,
+                try_run_times: 0,
+                loading: false,
                 outs: [],
             }
         },
@@ -162,35 +163,51 @@
                 return res ? res.version : 0;
             }
         },
-        watch: {
-            check_version: function (v) {
-                if (this.ready_run && v === this.version) {
-
-                    let check_res = this.$store.getters.check_result;
-                    if (run.has_error(check_res)) {
-                        this.$store.commit('setMsgError', '启动执行失败，因为存在未解决的错误');
-                        return;
-                    }
-                    try {
-                        let self = this;
-                        run.run_script(this.doc_id).then(outs => {
-                            self.outs = outs;
-                            self.ready_run = false;
-                        });
-                        this.$nextTick(() => {
-                            self.show_out = true;
-                        });
-                    } catch (error) {
-                        this.ready_run = false;
-                        this.$store.commit('setMsgError', error.message);
-                    }
-                }
-            }
-        },
         methods: {
+            do_play: function() {
+                this.try_run_times++;
+                if(this.try_run_times>10){
+                    this.$store.commit('setMsgError', '启动执行失败');
+                    this.loading = false;
+                    return;
+                }
+                if (this.check_version !== this.version) {
+                    let self = this;
+                    setTimeout(() => {
+                        self.do_play();
+                    }, 300);
+                    return;
+                }
+                let check_res = this.$store.getters.check_result;
+                if (run.has_error(check_res)) {
+                    this.$store.commit('setMsgError', '启动执行失败，因为存在未解决的错误');
+                    this.loading = false;
+                    return;
+                }
+                try {
+                    let self = this;
+                    let info = {id: this.doc_id, proj_id: this.proj_id, kind: 'script', remake: true}
+                    run.run_script(info).then(outs => {
+                        self.outs = outs;
+                        self.loading = false;
+                    });
+                    this.$nextTick(() => {
+                        self.show_out = true;
+                    });
+                } catch (error) {
+                    this.loading = false;
+                    this.$store.commit('setMsgError', error.message);
+                }
+            },
+
             play: async function () {
                 await this.save_doc();
-                this.ready_run = true;
+                this.try_run_times = 0;
+                this.loading = true;
+                let self = this;
+                setTimeout(() => {
+                    self.do_play();
+                }, 300);
                 return false;
             },
             stop: function() {

@@ -50,17 +50,11 @@ async function open_proj(proj_id) {
     return await ipcRenderer.invoke('open-proj', proj_id);
 }
 
-async function run_case(run_info) {
-    return await ipcRenderer.invoke('run-case', run_info);
-}
 
 function bind_proj(wid, proj_id) {
     return ipcRenderer.send('bind-proj', wid || 1, proj_id)
 }
 
-function stop_run() {
-    return ipcRenderer.send('stop-run');
-}
 
 export default {
     list,
@@ -76,6 +70,4 @@ export default {
     active_proj,
     open_proj,
     bind_proj,
-    run_case,
-    stop_run,
 }

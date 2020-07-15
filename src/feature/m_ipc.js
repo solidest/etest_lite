@@ -4,7 +4,6 @@ import {
 import db from './m_db';
 
 let worker;
-let player;
 
 function work_check(proj_id, reason) {
     if(!proj_id || !worker) {
@@ -14,8 +13,9 @@ function work_check(proj_id, reason) {
     worker.webContents.send('check', proj_id, reason);
 }
 
-function setup_db(is_develop) {
-    db.setup(is_develop);
+function setup_db(db_path) {
+    db.setup(db_path);
+    
     ipcMain.handle('load_proj', (_, id) => {
         return db.load_proj(id);
     });
@@ -61,12 +61,8 @@ function setup_worker(win) {
     
 }
 
-function setup_player(win) {
-    player = win;
-}
-
 function save_db(cb) {
     db.save(cb);
 }
 
-export default { setup_worker, setup_player, setup_db, save_db }
+export default { setup_worker, setup_db, save_db }
