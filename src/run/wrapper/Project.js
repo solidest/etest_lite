@@ -12,38 +12,49 @@ class Project {
     get version() {
         return this.data.updated;
     }
-    
+
     addKind(kind, kind_obj) {
-        if(!this[kind]) {
+        if (!this[kind]) {
             this[kind] = [];
         }
         this[kind].push(kind_obj);
     }
 
     make_out() {
-        let res = { proj_id: this.id, topos: [], prots: [], xtras: {}, libs: [], luas: [], case_tree: [] }
-        if(this.topology) {
+        let res = {
+            id: this.id,
+            setting: this.data.setting,
+            topos: [],
+            prots: [],
+            xtras: {},
+            libs: [],
+            luas: [],
+            case_tree: []
+        }
+        if (this.topology) {
             res.topos = this.topology.map(it => it.make_out());
         }
-        if(this.protocol) {
+        if (this.protocol) {
             res.prots = this.protocol.map(it => it.make_out());
         }
-        if(this.data.xtra.pack) {
-            res.xtras.pack = this.data.xtra.pack;
+        if(this.data.xtra) {
+            if (this.data.xtra.pack) {
+                res.xtras.pack = this.data.xtra.pack;
+            }
+            if (this.data.xtra.unpack) {
+                res.xtras.unpack = this.data.xtra.unpack;
+            }
+            if (this.data.xtra.check) {
+                res.xtras.check = this.data.xtra.check;
+            }
+            if (this.data.xtra.recvfilter) {
+                res.xtras.recvfilter = this.data.xtra.recvfilter;
+            }            
         }
-        if(this.data.xtra.unpack) {
-            res.xtras.unpack = this.data.xtra.unpack;
-        }
-        if(this.data.xtra.check) {
-            res.xtras.check = this.data.xtra.check;
-        }
-        if(this.data.xtra.recvfilter) {
-            res.xtras.recvfilter = this.data.xtra.recvfilter;
-        }
-        if(this.tree) {
-            this.case_tree = this.tree.make_out_tree();
-            this.libs = this.tree.make_out_libs();
-            this.luas = this.tree.make_out_luas();
+        if (this.tree) {
+            res.case_tree = this.tree.make_out_tree();
+            res.libs = this.tree.make_out_libs();
+            res.luas = this.tree.make_out_luas();
         }
         return res;
     }

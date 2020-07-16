@@ -12,10 +12,6 @@ class Protocol {
         return this.data.id;
     }
 
-    get name() {
-        return this.name;
-    }
-
     get_run_oneof(oneof) {
         if (!oneof.items) {
             return [];

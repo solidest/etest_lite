@@ -7,15 +7,14 @@ import Topology from './Topology';
 import Protocol from './Protocol';
 import CaseTree from './CaseTree';
 
-
 function append_kind(proj, kind, cls) {
     let list = db.list(kind, proj.id);
     if(!list) {
         return;
     }
     list.forEach(it =>{
-        let doc = db.load(kind, it.id);
-        proj.addKind(kind, new cls(doc), it.name);
+        let doc = db.load('doc', it.id);
+        proj.addKind(kind, new cls(doc, proj, it.name));
     } );
 }
 

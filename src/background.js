@@ -1,5 +1,5 @@
 'use strict'
-
+  
 import {
   app,
   protocol,
@@ -14,22 +14,22 @@ import {
 import ipc from './feature/m_ipc';
 import wins from './feature/m_wins';
 import run from './run/m_run';
-import run_db from './run/run_db';
-import fs from 'fs';
-
-let player = null;
+ 
+let player = null; 
 let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
+  
 function quit() {
   
   ipc.save_db(() => {
-    console.log('db saved, will exit');
-    app.quit()
+    run.save_db(() => {
+      console.log('db saved, will exit');
+      app.quit()
+    });
   });
 }
-
+    
 function try_close_all() {
   if (wins.size() === 0 && !player_show) {
     if (worker) {
@@ -45,8 +45,7 @@ function try_close_all() {
 
 function createWorker() {
   worker = new BrowserWindow({
-    // show: isDevelopment,
-    show: true,
+    show: false, 
     webPreferences: {
       nodeIntegration: true
     }
@@ -159,17 +158,7 @@ function beginCheck(proj_id, reason) {
 }
 
 function setup() {
-  let db_path;
-  if(isDevelopment) {
-    db_path = process.platform === 'darwin' ? '/Users/baiyunxiang/Desktop/etest_dev/etest_dev_db' : 'C:/Users/solidest/Desktop/etest_dev/etest_dev_db';
-  } else {
-    exe_path = path.dirname(app.getPath('exe'));
-    db_path = path.resolve(exe_path, '../etest_dev_db/');  
-  }
-  if(!fs.existsSync(db_path)) {
-    fs.mkdirSync(db_path);
-  }
-  
+  let db_path = app.getPath('userData');
   ipc.setup_db(db_path);
   run.setup_db(db_path);
 }
@@ -238,7 +227,7 @@ ipcMain.on('bind-proj', (_, wid, proj_id) => {
   wins.update(win, proj_id);
   beginCheck(proj_id, 'bind proj');
 })
-
+     
 ipcMain.handle('open-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -259,15 +248,16 @@ ipcMain.on('close-win', (_, wid) => {
   if(wid===player.id) {
     player.hide();
     player_show = false;
+    try_close_all();
     return;
   }
   let win = BrowserWindow.fromId(wid);
   if (!win) {
     console.log('error win from id')
-  }
+  } 
   win.close();
 });
-
+        
 ipcMain.handle('active-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -312,7 +302,7 @@ ipcMain.on('run-stop', () => {
     run.run_stop();
     return;
   }
-});
+}); 
 
 // ipcMain.on('run-reply', run.reply);
 // ipcMain.on('run-cmd', run.cmd);

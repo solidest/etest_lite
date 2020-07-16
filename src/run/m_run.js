@@ -1,55 +1,76 @@
-
 import wins from '../feature/m_wins';
 import load_proj from './wrapper/loader';
 import db from './run_db';
-import driver from './driver';
+import runner from './runner';
 
-let player;
-let db_path;
+let _player;
 
 function setup_db(db_path) {
-    db_path = db_path;
+    db.setup(db_path);
 }
 
 function setup_player(player) {
-    player = player;
+    _player = player;
+    runner.setup(_post_msg);
 }
 
 function _post_msg(catalog, kind, proj_id, case_id, value) {
+    let info = {
+            catalog: catalog,
+            kind: kind,
+            proj_id: proj_id,
+            case_id: case_id,
+            value: value
+        };
     let win = wins.find(proj_id);
-    if(win) {
-        win.webContents.send('run-info', {catalog: catalog, kind: kind, proj_id: proj_id, case_id: case_id, value: value });
+    if (win) {
+        win.webContents.send('run-info', info);
     }
-    player.webContents.send('run-info', {catalog: catalog, kind: kind, proj_id: proj_id, case_id: case_id, value: value });
+    _player.webContents.send('run-info', info);
+    console.log('post msg', info);
 }
 
-function proj_make(proj_id) {
-    let proj = load_proj(proj_id);
-    db.save_proj(db_path, proj);
-    return proj;
-}
 
 async function run_case(info) {
-    try {
-        if(info.remake) {
-            let proj = proj_make(info.proj_id);
-            driver.setup(proj);
+    // try {
+        if (info.remake) {
+            let proj = load_proj(info.proj_id);
+            db.save_proj(proj);
+            runner.set_proj(proj);
+        } else {
+
         }
-        let token = await driver.run_case(info);
-        _post_msg('system', 'run_begin', info.proj_id, info.id, {token: token});
-    } catch (error) {
-        _post_msg('system', 'error', info.proj_id, info.id, {message: error.message} );
-    }
+        runner.run_case(info.id, info.remake);
+            // } catch (error) {
+    //     console.log('error', error.message);
+    //     _post_msg('system', 'error', info.proj_id, info.id, {
+    //         message: error.message
+    //     });
+    // }
 }
 
-// driver.setup(_post_msg);
+async function run_stop() {
+
+}
+
+async function run_reply() {
+
+}
+
+async function run_cmd() {
+
+}
+
+function save_db(cb) {
+    db.save(cb);
+}
 
 export default {
     setup_db,
+    save_db,
     setup_player,
-    proj_make,
     run_case,
-    run_stop: driver.run_stop,
-    run_reply: driver.reply,
-    run_cmd: driver.run_cmd,
+    run_stop,
+    run_reply,
+    run_cmd,
 }

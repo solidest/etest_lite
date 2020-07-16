@@ -1,4 +1,3 @@
-
 import db from '../../feature/m_db';
 import helper from '../../helper/helper';
 import CaseLua from './CaseLua';
@@ -17,10 +16,10 @@ class CaseTree {
         this.luas = [];
         this.libs = [];
         leafs.forEach(it => {
-            if(it.kind === 'lua') {
+            if (it.kind === 'lua') {
                 let doc = db.load('doc', it.id);
                 let cl = new CaseLua(doc, proj, it.name);
-                if(doc.conent && doc.conent.option && doc.conent.option.lib) {
+                if (doc.content && doc.content.option && doc.content.option.lib) {
                     this.libs.push(cl);
                 } else {
                     this.luas.push(cl);
@@ -29,24 +28,41 @@ class CaseTree {
         });
     }
 
-    _make_out_items(items) {
+    _make_clear_items() {
         let res = [];
-        if(!items) {
+        if (!this.items) {
             return res;
         }
-        return res;
+        let root = {
+            children: this.items,
+            id: 'root'
+        };
+        this.libs.forEach(it => {
+            let p = t_man.findParent(root, it.id);
+            let idx = p.children.findIndex(i => i.id === it.id);
+            p.children.splice(idx, 1);
+        });
     }
 
     make_out_tree() {
-        return this._make_out_items(this.items);
+        this._make_clear_items();
+        return this.items;
     }
 
     make_out_luas() {
-        return this.luas.map(it => it.make_out());
+        return this.luas.map(it => {
+            return it.make_out()
+        });
     }
 
     make_out_libs() {
-        return this.libs.map(it => it.make_out());
+        return this.libs.map(it => {
+            let res = it.make_out();
+            return {
+                file: res.name,
+                code: res.script,
+            }
+        });
     }
 }
 

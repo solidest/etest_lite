@@ -186,7 +186,7 @@
                 }
                 try {
                     let self = this;
-                    let info = {id: this.doc_id, proj_id: this.proj_id, kind: 'script', remake: true}
+                    let info = {id: this.doc_id, proj_id: this.proj_id, remake: true}
                     run.run_script(info).then(outs => {
                         self.outs = outs;
                         self.loading = false;

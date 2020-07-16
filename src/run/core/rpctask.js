@@ -104,13 +104,13 @@ class Frame {
 
 //网络传输
 class NetWork {
-    constructor(ip, port, delay, recver) {
+    constructor(ip, port, delay, recver, cb) {
         this._ip = ip;
         this._port = port;
         this._frm = new Frame();
         this._recver = recver;
         if(!delay) {
-            this._setupSocket();
+            this._setupSocket(cb);
         }
     }
 
@@ -135,10 +135,10 @@ class NetWork {
     }
 
     //设置socket
-    _setupSocket() {
+    _setupSocket(cb) {
 
         let self = this;
-        let socket = net.connect(this._port, this._ip);
+        let socket = net.connect(this._port, this._ip, cb);
         self._socket = socket;
         self._closed = false;
 
@@ -156,25 +156,37 @@ class NetWork {
         });
 
         socket.on('error', function (err) {
-            console.error('on_error', err);
+            if(cb) {
+                cb(err);
+            } else {
+                console.error('on_error', err);
+            }
         });
 
         socket.on('end', function () {
-            console.error('on_end');
+            if(cb) {
+                cb({message: 'ETestD异常退出'});
+            } else {
+                console.error('on_end');
+            }
         });
 
         socket.on('timeout', function () {
-            console.error('on_timeout');
+            if(cb) {
+                cb({message: 'on_timeout'});
+            } else {
+                console.error('on_timeout');
+            }
         });
     }
 }
 
 //rpc任务调度
 class RpcTask {
-    constructor(ip, port, delay) {
+    constructor(ip, port, delay, cb) {
         this._tasks = [];
         this._nextid = 0;
-        this._net = new NetWork(ip, port, delay, this);
+        this._net = new NetWork(ip, port, delay, this, cb);
     }
 
     //发送一个任务
