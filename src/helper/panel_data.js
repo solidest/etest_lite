@@ -63,29 +63,19 @@ class PanelData {
                 panel.items.forEach(wed => {
                     if (wed.config) {
                         this.init_data_(this.commander, wed.config.command_key);
-                        this.init_data_(this.recorder, wed.config.record_key);
+
+                        ['record_key', 'x_record_key', 'y_record_key'].forEach(key => {
+                            if(wed.config[key]) {
+                                this.init_data_(this.recorder, wed.config[key]);
+                            }
+                        })
                     }
                 });
             }
         });
         this.script = this.save_yaml();
     }
-    // udpate_obj(to, from) {
-    //     if(!from) {
-    //         return;
-    //     }
-    //     for(let f in from) {
-    //         if(from[f] !== null && typeof from[f] === 'object') {
-    //             console.log(from[f], to[f])
-    //             if(!to[f]) {
-    //                 to[f] = {}
-    //             }
-    //             this.udpate_obj(to[f], from[f]);
-    //             continue;
-    //         }
-    //         to[f] = from[f];
-    //     }
-    // }
+
     update(doc) {
         // this.udpate_obj(this.recorder, doc.record);
         // this.recorder = JSON.parse(JSON.stringify(this.recorder));

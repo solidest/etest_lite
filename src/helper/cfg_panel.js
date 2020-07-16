@@ -733,7 +733,7 @@ const cfg = {
                 name: 'y_record_key',
                 type: 'text',
                 cols: 6,
-                label: 'Y轴命令key'
+                label: 'Y轴记录key'
             },
         ],
         'e-scatter': [{
@@ -752,7 +752,7 @@ const cfg = {
                 name: 'y_record_key',
                 type: 'text',
                 cols: 6,
-                label: 'Y轴命令key'
+                label: 'Y轴记录key'
             },
         ]
     }
