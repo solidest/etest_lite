@@ -4,33 +4,8 @@
  * 提取etl中的协议描述
  * 返回的解析结果为协议对象数组
  */
-// const path = require("path");
-// const fs = require("fs");
-// const parser = require("./parser/etxParser")
+
 const segparser = require("./parser/segParser")
-
-// //获取目录下所有的etl文件
-// function getEtlFiles(pf, results) {
-//     if(!fs.existsSync(pf)) {
-//         return;
-//     }
-
-//     let st = fs.statSync(pf);
-//     if(st.isFile()) {
-//         if(path.extname(pf)!=='.etl') {
-//             return;
-//         }
-//         results.push(pf);
-//         return;
-//     }
-
-//     if(st.isDirectory()) {
-//         let dir = fs.readdirSync(pf);
-//         for(let p of dir) {
-//             getEtlFiles(path.join(pf, p), results);
-//         }        
-//     }
-// }
 
 //分析解析器字符串
 function getSegTypeFromStr(seg, pser, vp, file) {

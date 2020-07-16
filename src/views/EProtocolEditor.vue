@@ -151,7 +151,7 @@
                 headers: [],
                 content: {
                     memo: '',
-                    bitalign: 'bitlr',
+                    bitalign: 'lr',
                     frm: null,
                 },
                 current_row: null,
@@ -216,7 +216,7 @@
             },
             restore_from_obj: function (obj) {
                 this.content.memo = obj.memo || '',
-                this.content.bitalign = obj.bitalign || 'bitlr';
+                this.content.bitalign = obj.bitalign || 'lr';
                 this.content.frm = h.load_frm(obj.items);
             },
             update_redo_undo: function () {

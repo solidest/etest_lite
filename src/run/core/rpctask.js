@@ -114,6 +114,10 @@ class NetWork {
         }
     }
 
+    setup(on_error) {
+        this.on_error = on_error;
+    }
+
     //发送
     send(body) {
         if(!this._socket) {
@@ -159,6 +163,9 @@ class NetWork {
             if(cb) {
                 cb(err);
             } else {
+                if(self.on_error) {
+                    return self.on_error(err.message);
+                }
                 console.error('on_error', err);
             }
         });
@@ -167,7 +174,10 @@ class NetWork {
             if(cb) {
                 cb({message: 'ETestD异常退出'});
             } else {
-                console.error('on_end');
+                if(self.on_error) {
+                    return self.on_error('ETestD退出');
+                }
+                console.error('ETestD退出');
             }
         });
 
@@ -175,6 +185,9 @@ class NetWork {
             if(cb) {
                 cb({message: 'on_timeout'});
             } else {
+                if(self.on_error) {
+                    return self.on_error('连接执行器超时');
+                }
                 console.error('on_timeout');
             }
         });
@@ -187,6 +200,11 @@ class RpcTask {
         this._tasks = [];
         this._nextid = 0;
         this._net = new NetWork(ip, port, delay, this, cb);
+    }
+
+    setup(on_error) {
+        this.on_error = on_error;
+        this._net.setup(on_error);
     }
 
     //发送一个任务

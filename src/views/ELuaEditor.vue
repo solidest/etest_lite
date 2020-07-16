@@ -53,8 +53,9 @@
 </style>
 <script>
     import ipc from '../feature/r_ipc';
+    import hrun from '../run/helper';
     import cfg from '../helper/cfg_lua';
-    import run from '../run/r_run';
+    import run from '../run/run_r';
     import Env from '../feature/f_env';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
@@ -179,7 +180,7 @@
                     return;
                 }
                 let check_res = this.$store.getters.check_result;
-                if (run.has_error(check_res)) {
+                if (hrun.has_error(check_res)) {
                     this.$store.commit('setMsgError', '启动执行失败，因为存在未解决的错误');
                     this.loading = false;
                     return;

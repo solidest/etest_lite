@@ -14,7 +14,9 @@ function append_kind(proj, kind, cls) {
     }
     list.forEach(it =>{
         let doc = db.load('doc', it.id);
-        proj.addKind(kind, new cls(doc, proj, it.name));
+        if(doc) {
+            proj.addKind(kind, new cls(doc, proj, it.name));
+        }
     } );
 }
 

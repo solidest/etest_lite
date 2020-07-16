@@ -4,8 +4,6 @@ const {
     ipcRenderer
 } = window.require('electron');
 
-import helper from './helper';
-
 let outs, run_id;
 
 async function run_script(info) {
@@ -21,7 +19,6 @@ function stop_run() {
 
 export default {
     run_id,
-    has_error: helper.has_error,
     run_script,
     stop_run,
 }

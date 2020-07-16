@@ -245,7 +245,7 @@ const provider = {
             endLineNumber: position.lineNumber,
             endColumn: position.column
         });
-        let match = textUntilPosition.match(/(\S+)$/);
+        let match = textUntilPosition.match(/([a-zA-Z\\d_\\.]+)$/);
         if (!match) return [];
         let keys = match[0].split('.');
         let suggestions = [];

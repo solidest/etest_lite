@@ -2,13 +2,17 @@ const RpcTask = require('./core/rpctask');
 
 let _post_msg;
 let _proj;
+let _run_uuid;
+let _case_id;
 let _srv;
+let _timer;
 
 class SdkApi {
     constructor(ip, port, cb) {
         this.ip = ip;
         this.port = port;
         this._srv = new RpcTask(ip, port, false, cb);
+        this._srv.setup(_on_error);
     }
 
     //执行服务器api
@@ -55,25 +59,25 @@ class SdkApi {
         }
     }
 
-    run_case(id, script, vars, option) {
+    run_case(proj_id, case_id, name, script, vars, option) {
         try {
             let info = {
-                id: id,
+                proj_id: proj_id,
                 script: script,
                 vars: vars,
                 option: option,
+                rpath_src: './'+name+'.lua',
             }
-            console.log('run info', info)
+
             return this._xfn('start', info, (error, uuid)=>{
                 if(error) {
                     _post_msg('system', 'error', _proj.id, 0, {
                         message: error.message
                     });
                 } else {
-                    _post_msg('system', 'start', _proj.id, 0, {
-                        message: '执行加载完毕',
-                        run_uuid: uuid
-                    });
+                    _run_uuid = uuid;
+                    _case_id = case_id;
+                    _start_readout();
                 }
             });
         } catch (error) {
@@ -83,53 +87,46 @@ class SdkApi {
         }
     }
 
+    run_stop() {
+        try {
+            return this._xfn('stop', {
+                key: _run_uuid
+            }, (error)=>{
+                if(error) {
+                    _post_msg('system', 'error', _proj.id, 0, {
+                        message: error.message
+                    });
+                } else {
+                    _post_msg('system', 'info', _proj.id, 0, {
+                        message: '已发送停止指令',
+                    });
+                }
+            });
+        } catch (error) {
+            if (callback) {
+                _post_msg('system', 'error', _proj.id, 0, {
+                    message: error.message
+                });
+            }
+        }
+    }
 
-    // start(id, script, vars, option, callback) {
-    //     try {
-    //         let run = {
-    //             id: id,
-    //             script: script,
-    //             vars: vars,
-    //             option: option,
-    //         }
-    //         return this._xfn('start', run, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
-
-    // //读取执行输出
-    // readout(run_id, callback) {
-    //     try {
-    //         return this._xfn('readout', {
-    //             key: run_id
-    //         }, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
+    run_out(run_id, callback) {
+        try {
+            return this._xfn('readout', {
+                key: run_id
+            }, callback);
+        } catch (error) {
+            if (callback) {
+                callback(error);
+            }
+        }
+    }
 
     // //查询执行状态
     // state(callback) {
     //     try {
     //         return this._xfn('state', null, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
-
-    // //停止执行
-    // stop(run_id, callback) {
-    //     try {
-    //         return this._xfn('stop', {
-    //             key: run_id
-    //         }, callback);
     //     } catch (error) {
     //         if (callback) {
     //             callback(error);
@@ -166,7 +163,57 @@ class SdkApi {
 
 }
 
-function get_srv(cb) {
+function _on_runout(msglist) {
+    let exit = false;
+    for(let msg of msglist) {
+        _post_msg(msg.catalog, msg.kind, _proj.id, _case_id, msg.value);
+        if(msg.catalog === 'system' && msg.kind === 'stop') {
+            exit = true;
+        }
+    }
+
+    //TODO save to db
+
+    if(exit) {
+        //TODO save to disk
+        clearInterval(_timer);
+        _run_uuid = null;
+        _case_id = null;
+    }
+}
+
+function _start_readout() {
+    if(_timer) {
+        clearInterval(_timer);
+    }
+    _timer = setInterval(() => {
+        if(_srv && _run_uuid) {
+            _srv.run_out(_run_uuid, (err, msgs)=> {
+                if(err) {
+                    _post_msg('system', 'error', _proj.id, 0, {
+                        message: err
+                    });
+                } 
+                if(msgs && msgs.length>0) {
+                    _on_runout(msgs);
+                }
+            })
+        } 
+    }, 40);
+}
+
+function _on_error(err_msg) {
+    _post_msg('system', 'error', _proj.id, 0, {
+        message: err_msg
+    });
+    if(_timer) {
+        clearInterval(_timer);
+        _run_uuid = null;
+        _case_id = null;
+    }
+}
+
+function _get_srv(cb) {
     let ip = _proj.setting.etestd_ip;
     let port = _proj.setting.etestd_port;
     if (_srv && _srv.ip === ip && _srv.port === port) {
@@ -175,7 +222,7 @@ function get_srv(cb) {
 
     _srv = new SdkApi(ip, port, (err) => {
         if (err) {
-            let msg = `连接执行器失败(${err.message})`;
+            let msg = `连接执行器失败,${err.message}`;
             _post_msg('system', 'error', _proj.id, 0, {
                 message: msg
             });
@@ -198,17 +245,24 @@ function get_proj() {
     return _proj;
 }
 
-function run_case(id, make_env) {
+function run_case(id, remake) {
     let item = _proj.luas.find(it => it.id===id);
-    get_srv(srv => {
-        if(make_env) {
+    _get_srv(srv => {
+        if(remake) {
             srv.make_env(() => {
-                srv.run_case(id, item.script, item.vars, item.option);
+                srv.run_case(_proj.id, id, item.name, item.script, item.vars, item.option);
             })
         } else {
-            srv.run_case(id, item.script, item.vars, item.option);
+            srv.run_case(_proj.id, id, item.script, item.vars, item.option);
         }
-    })
+    });
+}
+
+function run_stop() {
+    if(!_srv || !_run_uuid) {
+        return;
+    }
+    _srv.run_stop();
 }
 
 export default {
@@ -216,4 +270,5 @@ export default {
     set_proj,
     get_proj,
     run_case,
+    run_stop,
 }

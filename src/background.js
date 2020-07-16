@@ -13,13 +13,13 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib';
 import ipc from './feature/m_ipc';
 import wins from './feature/m_wins';
-import run from './run/m_run';
- 
+import run from './run/run_m';
+    
 let player = null; 
 let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
-  
+   
 function quit() {
   
   ipc.save_db(() => {
@@ -41,15 +41,15 @@ function try_close_all() {
       player = null;
     }
   }
-}
-
+} 
+   
 function createWorker() {
   worker = new BrowserWindow({
-    show: true, 
+    show: false,
     webPreferences: {
       nodeIntegration: true
     }
-  });
+  }); 
   ipc.setup_worker(worker);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
@@ -198,7 +198,7 @@ if (isDevelopment) {
     })
   }
 }
-
+  
 
 /////////////////////// main ////////////////////////////////
 
@@ -206,7 +206,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   console.log('should quit');
   app.quit();
-}
+} 
 
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
@@ -271,7 +271,7 @@ ipcMain.handle('active-proj', (_, proj_id) => {
   }
   return 0;
 });
-
+   
 ipcMain.on('check-result', (_, proj_id, version, results) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -288,22 +288,21 @@ ipcMain.handle('run-case', (_, info) => {
     player.show();
     if(isDevelopment) {
       player.webContents.openDevTools();
-    }
+    } 
   }
   player_show = true;
   player.focus();
   run.run_case(info);
-});
+}); 
 
 ipcMain.on('run-stop', () => {
   if(player_show) {
     player.hide();
     player_show = false;
-    run.run_stop();
-    return;
   }
-}); 
-
+  run.run_stop();
+});   
+     
 // ipcMain.on('run-reply', run.reply);
 // ipcMain.on('run-cmd', run.cmd);
 // ipcMain.on('db-find', run_db.find);

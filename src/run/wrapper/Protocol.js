@@ -1,5 +1,7 @@
 
 import helper from '../../helper/helper';
+import segparser from '../../worker/helper/segParser';
+import expparser from '../../worker/helper/expParser';
 
 class Protocol {
     constructor(data, proj, name) {
@@ -10,6 +12,83 @@ class Protocol {
 
     get id() {
         return this.data.id;
+    }
+
+    _get_custom_parser(parser) {
+        let res = {}
+        parser.forEach(prop => {
+            res[prop.name] = prop.value.list[0];
+        });
+        res.kind = 'string';
+        return res;
+    }
+
+    _make_autovalue(seg) {
+        let av = '' + (seg.autovalue || '');
+        if (!av || !av.trim()) {
+            return;
+        }
+        seg.autovalue = expparser.parse(seg.autovalue);
+    }
+
+    _make_arrlen(seg) {
+        let len = '' + (seg.arrlen || '');
+        if (!len || !len.trim()) {
+            return;
+        }
+        seg.arrlen = expparser.parse(seg.arrlen);
+    }
+
+    make_segment(seg) {
+   
+        let p = seg.parser.trim();
+        if (p.startsWith('{')) {
+            seg.parser = expparser.parse(seg.parser);
+            seg.parser = this._get_custom_parser(seg.parser);
+        } else {
+            seg.parser = segparser.parse(seg.parser);
+        }
+   
+        this._make_autovalue(seg);
+        this._make_arrlen(seg);
+
+        if (seg.parser.type === 'string' && !seg.parser.pack && !seg.parser.unpack) {
+            if (seg.length) {
+                seg.length = expparser.parse(seg.length);
+            }
+            if (seg.endwith && seg.endwith.trim()) {
+                seg.endwith = expparser.parse(seg.endwith);
+            }
+        }
+    }
+
+    make_segments(segs) {
+        this._make_autovalue(segs);
+        this._make_arrlen(segs);
+        if (segs.items) {
+            segs.items.forEach(seg => this['make_' + seg.kind](seg));
+        }
+    }
+
+    make_oneof(oneof) {
+        if (!oneof.items) {
+            return;
+        }
+        oneof.items.forEach(br => {
+            br.condition = expparser.parse(br.condition);
+            if (br.items) {
+                br.items.forEach(seg => this['make_' + seg.kind](seg));
+            }
+        });
+    }
+
+
+    make() {
+        if (!this.data || !this.data.content || !this.data.content.items) {
+            return;
+        }
+        let items = this.data.content.items;
+        items.forEach(seg => this['make_' + seg.kind](seg));
     }
 
     get_run_oneof(oneof) {
@@ -29,6 +108,8 @@ class Protocol {
         if(!res || typeof res === 'string') {
             return {kind: 'nil'}
         }
+        res.kind = res.type;
+        delete res.type;
         res.name = seg.name;
         if (seg.autovalue) {
             res.autovalue = seg.autovalue;
@@ -80,16 +161,18 @@ class Protocol {
     }
 
     make_out() {
+        this.make();
+
         let seglist = [];
         let items = this.data.content.items;
         for(let it of items) {
             this.get_run_seg(seglist, it);
         }
-        console.log(this.data)
         return {
             kind: 'protocol',
             name: this.name,
-            seglist: seglist
+            seglist: seglist,
+            bittype: this.data.content.bitalign,
         }
     }
 }

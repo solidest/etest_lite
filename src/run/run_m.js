@@ -16,48 +16,45 @@ function setup_player(player) {
 
 function _post_msg(catalog, kind, proj_id, case_id, value) {
     let info = {
-            catalog: catalog,
-            kind: kind,
-            proj_id: proj_id,
-            case_id: case_id,
-            value: value
-        };
+        catalog: catalog,
+        kind: kind,
+        proj_id: proj_id,
+        case_id: case_id,
+        value: value
+    };
     let win = wins.find(proj_id);
     if (win) {
         win.webContents.send('run-info', info);
     }
     _player.webContents.send('run-info', info);
-    console.log('post msg', info);
+    console.log(catalog, kind, value.message || '' );
 }
 
 
-async function run_case(info) {
-    // try {
+function run_case(info) {
+    try {
         if (info.remake) {
             let proj = load_proj(info.proj_id);
             db.save_proj(proj);
             runner.set_proj(proj);
-        } else {
-
         }
         runner.run_case(info.id, info.remake);
-            // } catch (error) {
-    //     console.log('error', error.message);
-    //     _post_msg('system', 'error', info.proj_id, info.id, {
-    //         message: error.message
-    //     });
-    // }
+    } catch (error) {
+        _post_msg('system', 'error', info.proj_id, info.id, {
+            message: error.message
+        });
+    }
 }
 
-async function run_stop() {
+function run_stop() {
+    runner.run_stop();
+}
+
+function run_reply() {
 
 }
 
-async function run_reply() {
-
-}
-
-async function run_cmd() {
+function run_cmd() {
 
 }
 
