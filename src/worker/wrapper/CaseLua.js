@@ -33,8 +33,22 @@ class CaseLua {
             }
         }
 
-        if(!opt.topology && !opt.lib) {
-            this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
+        if(!opt.lib) {
+            if(!opt.topology) {
+                this.proj.pushError('未设置连接拓扑', KIND, this.id, -1);
+            } else {
+                let tops = this.proj.topology;
+                if(!tops || !tops.find(it=>it.id===opt.topology)) {
+                    this.proj.pushError('连接拓扑为空', KIND, this.id, -1);
+                }
+            }
+
+            if(opt.panel) {
+                let panels = this.proj.panel;
+                if(!panels || !panels.find(it=>it.id===opt.panel)) {
+                    this.proj.pushError('监控面板为空', KIND, this.id, -1);
+                }
+            }
         }
     }
 

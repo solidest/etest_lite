@@ -45,7 +45,7 @@ function try_close_all() {
 
 function createWorker() {
   worker = new BrowserWindow({
-    show: false, 
+    show: true, 
     webPreferences: {
       nodeIntegration: true
     }

@@ -4,6 +4,7 @@ import Project from './Project';
 import Device from './Device';
 import Topology from './Topology';
 import Protocol from './Protocol';
+import Panel from './Panel';
 import CaseLua from './CaseLua';
 import XtraLua from './XtraLua';
 import t_man from '../../helper/tree_man';
@@ -17,6 +18,9 @@ const kinds = [ {
     }, {
         kind: 'protocol',
         cls: Protocol,
+    }, {
+        kind: 'panel',
+        cls: Panel,
     }
 ];
 
