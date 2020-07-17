@@ -17,6 +17,7 @@
         data: () => {
             return {
                 value: {},
+                values: {},
             }
         },
         computed: {
@@ -52,6 +53,7 @@
             },
             recorder: function (v) {
                 this.load_data(v);
+                this.load_datas();
                 this.redraw_data();
             },
         },
@@ -69,6 +71,9 @@
                         }
                     });
                 }
+            },
+            load_datas: function() {
+                console.log('TODO');
             },
             get_value_: function (obj, keys) {
                 let o = obj;
@@ -160,6 +165,23 @@
                 });
             },
 
+            get_run_data_: function(opt) {
+                opt.series.forEach(se => {
+                    if (se.type === 'gauge') {
+                        if(this.value[se] !== undefined) {
+                            se.data = [{
+                                value: this.value[se],
+                                name: se.name,
+                            }];
+                        } else if(!se.data) {
+                            se.data = [{value: 0, name: se.name}]
+                        }
+                    } else {
+                        //TODO
+                    }
+                });
+            },
+
             redraw: function () {
                 if (!this.chart) {
                     return;
@@ -178,7 +200,6 @@
                     this.get_run_data_(option);
                 }
 
-                // console.log('draw', option);
                 this.chart.setOption(option);
             },
 

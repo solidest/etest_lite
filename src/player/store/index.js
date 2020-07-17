@@ -19,7 +19,7 @@ const _store = new Vuex.Store({
     },
     play_ids: {},
     panel: null,
-    winid: 0,
+    winid: -1,
   },
   mutations: {
     setMsgInfo: function (state, msg) {

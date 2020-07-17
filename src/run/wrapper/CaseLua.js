@@ -1,5 +1,6 @@
 import helper from '../../helper/helper';
 import db from '../../feature/m_db';
+import yaml from 'js-yaml';
 
 class CaseLua {
     constructor(data, proj, name) {
@@ -28,7 +29,18 @@ class CaseLua {
         let panel = null;
         if(this.option.panel) {
             let doc = db.load('doc', this.option.panel);
-            panel = doc.content;
+            panel = helper.deep_copy(doc.content);
+
+            try {
+                let pdata = yaml.safeLoad(panel.data_yaml, 'utf8')||{};
+                if (pdata) {
+                    panel.commander = pdata.command || {};
+                    panel.recorder = pdata.record || {};
+                }
+            } catch (error) {
+                panel.commander = {};
+                panel.recorder = {};
+            }
         }
         return {
             id: this.id,
