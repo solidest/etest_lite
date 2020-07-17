@@ -51,13 +51,18 @@
         computed: {
             outs__: function() {
                 let res = [];
-                this.outs.forEach(item => {
+                let idx = this.outs.length - 500;
+                if(idx<0) {
+                    idx = 0;
+                }
+                for(;idx<this.outs.length; idx++) {
+                    let item = this.outs[idx];
                     if (item.catalog === 'log') {
                         res.push(item);
                     } else if(item.catalog === 'system' && ['error','assertFail','verifyFail','print'].includes(item.kind)) {
                         res.push(item);
                     }
-                });
+                }
                 return res;
             },
             outs_: function () {
@@ -66,7 +71,12 @@
                 }
                 let res = [];
                 let rcds = [];
-                this.outs.forEach(item => {
+                let idx = this.outs.length - 500;
+                if(idx<0) {
+                    idx = 0;
+                }
+                for(;idx<this.outs.length; idx++) {
+                    let item = this.outs[idx];
                     if (item.catalog !== 'record') {
                         if (rcds.length > 0) {
                             this.push_rcds(res, rcds);
@@ -76,7 +86,7 @@
                     } else {
                         rcds.push(item);
                     }
-                });
+                }
                 if (rcds.length > 0) {
                     this.push_rcds(res, rcds);
                 }

@@ -129,7 +129,7 @@ class Topology {
                 break;
         
             default:
-                console.log('TODO', o1);
+                console.log('TODO o1', o1);
                 break;
         }
     }

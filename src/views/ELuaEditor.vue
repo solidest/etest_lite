@@ -11,7 +11,7 @@
                 color="primary" width="100%" :height="out_height" tile>
                 <v-row class="px-3 py-1 ma-0">
                     <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 26px; max-width: 26px;" cols=1>
-                        <v-icon small class="pa-0 ma-0" style="cursor: pointer;" @click="goto_line(check_result.line)">
+                        <v-icon small class="pa-0 pb-1 ma-0" style="cursor: pointer;" @click="goto_line(check_result.line)">
                             {{is_check_error ? 'mdi-close-circle':'mdi-check'}}
                         </v-icon>
                     </v-col>
@@ -29,7 +29,7 @@
                         <span>{{show_out ? '':run_out}}</span>
                     </v-col>
                     <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 26px; max-width: 26px;" cols=1>
-                        <v-icon small class="pa-0 ma-0" style="cursor: pointer" @click="show_out=!show_out">
+                        <v-icon small class="pa-0 pb-1 ma-0" style="cursor: pointer" @click="show_out=!show_out">
                             {{show_out ? 'mdi-chevron-triple-down':'mdi-chevron-triple-up'}}
                         </v-icon>
                     </v-col>

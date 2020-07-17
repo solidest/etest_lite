@@ -73,7 +73,7 @@
                 }
             },
             load_datas: function() {
-                console.log('TODO');
+                console.log('TODO load datas');
             },
             get_value_: function (obj, keys) {
                 let o = obj;

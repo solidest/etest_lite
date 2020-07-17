@@ -136,7 +136,7 @@ class Device {
             }
             let fn = '_check_config_' + it.kind;
             if(!this[fn]) {
-                console.log('TODO ', fn);
+                console.log('TODO fn', fn);
             } else {
                 this[fn](it);
             }
