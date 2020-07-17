@@ -205,7 +205,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   console.log('should quit');
   app.quit();
-} 
+}
 
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
@@ -252,11 +252,12 @@ ipcMain.on('close-win', (_, wid) => {
   }
   let win = BrowserWindow.fromId(wid);
   if (!win) {
-    console.log('error win from id')
-  } 
+    console.log('error win from id');
+    return;
+  }  
   win.close();
 });
-        
+
 ipcMain.handle('active-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -283,24 +284,24 @@ ipcMain.handle('run-case', async (_, info) => {
     if(player.isMinimized()) {
       player.restore();
     }
-  } else {
+  } else {  
     player.show();
     if(isDevelopment) {
       player.webContents.openDevTools();
-    } 
+    }
   }
   player_show = true;
   player.focus();
   return await run.run_case(info);
-});  
-  
+}); 
+ 
 ipcMain.handle('run-stop', async () => {
   if(player_show) {
     player.hide();
     player_show = false;
   }
   return await run.run_stop();
-});   
+}); 
      
 // ipcMain.on('run-reply', run.reply);
 // ipcMain.on('run-cmd', run.cmd);

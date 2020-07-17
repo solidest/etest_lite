@@ -23,6 +23,7 @@ class Project {
     make_out() {
         let res = {
             id: this.id,
+            name: this.data.name,
             setting: this.data.setting,
             topos: [],
             prots: [],

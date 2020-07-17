@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <e-sys-bar header="Player" />
+    <e-sys-bar header="ETestPlayer" />
     <v-snackbar top :timeout="touts" :color="tip_color" v-model="tip">
       {{ tip_msg }}
       <template v-slot:action="{ attrs }">
@@ -32,6 +32,9 @@
     },
 
     computed: {
+      play_ids: function(){
+        return this.$store.state.play_ids;
+      },
       tip: {
         get: function () {
           return this.$store.state.last_tip.tip;
@@ -54,11 +57,27 @@
       touts: function () {
         let t = this.tip_color;
         if (t === 'error') {
-          return 100000;
+          return 4000;
         } else {
-          return 10000;
+          return 2000;
         }
       },
     },
+
+    watch: {
+      play_ids: function() {
+        if(this.$route.name !== 'Home') {
+          this.$router.push({name: 'Home'})
+        }
+        let self = this;
+        this.$nextTick(() =>{
+          if(self.$store.state.panel) {
+            self.$router.push({name: 'Panel'})
+          } else {
+            self.$router.push({name: 'Outs'})
+          }
+        });
+      }
+    }
   };
 </script>

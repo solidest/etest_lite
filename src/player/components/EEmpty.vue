@@ -3,7 +3,7 @@
         <v-row align="center" justify="center">
             <div>
                 <v-row class="mb-6" justify="center">
-                    <img alt="ETestDev" src="../../assets/logo.svg" style="display: block;">
+                    <img alt="ETestDev" src="../../assets/logo_player.svg" style="display: block;">
                 </v-row>
             </div>
         </v-row>

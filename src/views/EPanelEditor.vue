@@ -314,8 +314,6 @@
                 this.redo_undo.reset(this.get_content());
             },
             save_doc: async function (reason) {
-                //console.log('saved' + this.count_++, reason)
-                console.log('SAVED');
                 if(!reason) {
                     //console.log('unknow reason emit save_doc');
                 }

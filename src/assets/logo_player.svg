@@ -1,0 +1,18 @@
+<svg width="153" height="48" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="svg_7" x1="0" y1="0" x2="0" y2="1">
+   <stop stop-color="#0033ff" offset="0"/>
+   <stop stop-color="#3745ad" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="50" width="157" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect stroke="#ffffff" fill="url(#svg_7)" stroke-width="0" stroke-opacity="null" x="75" y="13.953126" width="80" height="25.737705" id="svg_3" rx="3"/>
+  <text fill="#888888" stroke-width="0" x="100" y="150" id="svg_1" font-size="24" font-family="Sans-serif" text-anchor="middle" xml:space="preserve" font-weight="bold" transform="matrix(0.9555493616540499,0,0,0.9555493616540499,-53.95734298037265,-107.53095191702312) " stroke="#FFFFFF">ETest</text>
+  <text fill="#EEEEEE" stroke-width="0" x="120" y="157" id="svg_2" font-size="24" font-family="Sans-serif" text-anchor="middle" xml:space="preserve" font-weight="bold" transform="matrix(0.8784110813923559,0,0,0.8784110813923559,9.542591684001492,-103.43447014925768) " stroke="#000000">Player</text>
+ </g>
+</svg>

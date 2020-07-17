@@ -1,5 +1,5 @@
 <template>
-    <div :style="{height: height+'px' , width: '100%', 'overflow-y':'scroll' } " id="out_div">
+    <div :style="{height: '100%' , width: '100%', 'overflow-y':'scroll' } " id="out_div">
         <div v-for="(item, idx) in outs_" :key="idx" style=" width: 100%" class="px-2">
             <v-tooltip v-if="item.tip" right open-delay="500">
                 <template v-slot:activator="{ on }">

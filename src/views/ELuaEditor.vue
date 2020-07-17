@@ -35,9 +35,9 @@
                     </v-col>
                 </v-row>
             </v-sheet>
-            <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px', 'overflow-y':'scroll'}" class="outs ma-0 pa-0"
-                color="grey darken-3" width="100%" tile>
-                <e-outs :outs="outs" :debug="true" height="300" />
+            <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px'}" class="outs ma-0 pa-0"
+                color="grey darken-3" width="100%" height="300px" tile>
+                <e-outs :outs="outs" :debug="true" />
             </v-sheet>
         </v-card>
     </v-container>

@@ -42,6 +42,10 @@ function get_outs(case_id) {
     return res;
 }
 
+function set_outs(outs) {
+    current = outs;
+}
+
 ipcRenderer.on('run-info', (_, msgs) => {
     current.push(...msgs);
 });
@@ -50,13 +54,13 @@ ipcRenderer.on('sys-info', (_, info) => {
     if(info.kind === 'error') {
         _push_result(current, 'system', 'error', info.value);
     } else {
-        console.log(info);
+        console.error(info);
     }
 });
-
 
 export default {
     run_script,
     stop_run,
     get_outs,
+    set_outs,
 }

@@ -36,6 +36,15 @@ async function run_case(info) {
             let proj = load_proj(info.proj_id);
             db.save_proj(proj);
             runner.set_proj(proj);
+            let item = proj.luas.find(it => it.id === info.id);
+            let ctr_info = {
+                proj_id: proj.id,
+                proj_name: proj.name,
+                case_id: item.id,
+                case_name: item.name,
+                panel: item.panel,
+            }
+            _player.webContents.send('ctl-play', ctr_info);
         }
         return await runner.run_case(info.id, info.remake);
     } catch (error) {
