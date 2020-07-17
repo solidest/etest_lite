@@ -45,6 +45,7 @@
 </style>
 <script>
     import f_outs from '../feature/f_outs';
+    
 
     export default {
         props: ['outs', 'height', 'debug'],
@@ -71,7 +72,7 @@
                 }
                 let res = [];
                 let rcds = [];
-                let idx = this.outs.length - 500;
+                let idx = this.outs.length - 200;
                 if(idx<0) {
                     idx = 0;
                 }
@@ -102,6 +103,9 @@
             }
         },
         methods: {
+            update_: function() {
+
+            },
             get_css: function (item) {
                 let res = f_outs.parse_kind(item);
                 if (res.is_debug) {
