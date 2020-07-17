@@ -14,7 +14,7 @@ import {
 import ipc from './feature/m_ipc';
 import wins from './feature/m_wins';
 import run from './run/run_m';
-    
+     
 let player = null; 
 let worker = null;
 let player_show = false;
@@ -63,8 +63,7 @@ function createWorker() {
     try_close_all();
   });
 }
-
-
+ 
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
@@ -178,7 +177,7 @@ app.on('activate', () => {
     createPlayer();
   }
 })
-
+ 
 app.on('ready', async () => {
   createWindow(null);
   createWorker();
@@ -199,9 +198,9 @@ if (isDevelopment) {
   }
 }
   
-
+  
 /////////////////////// main ////////////////////////////////
-
+  
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   console.log('should quit');
@@ -278,8 +277,8 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
     win.webContents.send('check-result', proj_id, results, version);
   }
 });
-
-ipcMain.handle('run-case', (_, info) => {
+  
+ipcMain.handle('run-case', async (_, info) => {
   if(player_show) {
     if(player.isMinimized()) {
       player.restore();
@@ -292,15 +291,15 @@ ipcMain.handle('run-case', (_, info) => {
   }
   player_show = true;
   player.focus();
-  run.run_case(info);
-}); 
-
-ipcMain.on('run-stop', () => {
+  return await run.run_case(info);
+});  
+  
+ipcMain.handle('run-stop', async () => {
   if(player_show) {
     player.hide();
     player_show = false;
   }
-  run.run_stop();
+  return await run.run_stop();
 });   
      
 // ipcMain.on('run-reply', run.reply);

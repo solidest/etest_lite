@@ -1,6 +1,6 @@
 const RpcTask = require('./core/rpctask');
 
-let _post_msg;
+let _post_sys_msg, _post_out_msgs;
 let _proj;
 let _run_uuid;
 let _case_id;
@@ -15,226 +15,168 @@ class SdkApi {
         this._srv.setup(_on_error);
     }
 
-    //执行服务器api
-    _xfn(method, params, callback) {
-        try {
-            return this._srv.sendTask({
-                method: method,
-                params: params
-            }, callback);
-        } catch (error) {
-            if (callback) {
-                callback(error, null);
-            }
-        }
-    }
-
-    make_env(cb) {
-        try {
-            let env = {
-                proj_id: _proj.id,
-                prots: _proj.prots,
-                xtras: _proj.xtras,
-                topos: _proj.topos,
-                libs: _proj.libs
-            };
-            return this._xfn('makeenv', env, (error) => {
-                if(error) {
-                    _post_msg('system', 'error', _proj.id, 0, {
-                        message: error.message
-                    });
-                } else {
-                    _post_msg('system', 'info', _proj.id, 0, {
-                        message: 'ETL执行环境生成完毕'
-                    });
-                    if(cb) {
-                        cb();
+    _xfn(method, params) {
+        return new Promise(resolve => {
+            try {
+                this._srv.sendTask({
+                    method: method,
+                    params: params
+                }, (err, value) => {
+                    if(err) {
+                        return resolve({
+                            result: 'error',
+                            value: err.message||err,
+                        });                        
                     }
-                }
-            });
-        } catch (error) {
-            _post_msg('system', 'error', _proj.id, 0, {
-                message: error.message
-            });
-        }
-    }
-
-    run_case(proj_id, case_id, name, script, vars, option) {
-        try {
-            let info = {
-                proj_id: proj_id,
-                script: script,
-                vars: vars,
-                option: option,
-                rpath_src: './'+name+'.lua',
-            }
-
-            return this._xfn('start', info, (error, uuid)=>{
-                if(error) {
-                    _post_msg('system', 'error', _proj.id, 0, {
-                        message: error.message
-                    });
-                } else {
-                    _run_uuid = uuid;
-                    _case_id = case_id;
-                    _start_readout();
-                }
-            });
-        } catch (error) {
-            _post_msg('system', 'error', _proj.id, 0, {
-                message: error.message
-            });
-        }
-    }
-
-    run_stop() {
-        try {
-            return this._xfn('stop', {
-                key: _run_uuid
-            }, (error)=>{
-                if(error) {
-                    _post_msg('system', 'error', _proj.id, 0, {
-                        message: error.message
-                    });
-                } else {
-                    _post_msg('system', 'info', _proj.id, 0, {
-                        message: '已发送停止指令',
-                    });
-                }
-            });
-        } catch (error) {
-            if (callback) {
-                _post_msg('system', 'error', _proj.id, 0, {
-                    message: error.message
+                    return resolve({
+                        result: 'ok',
+                        value: value
+                    }); 
+                });
+            } catch (error) {
+                return resolve({
+                    result: 'error',
+                    value: error.message
                 });
             }
-        }
+        });
     }
 
-    run_out(run_id, callback) {
-        try {
-            return this._xfn('readout', {
-                key: run_id
-            }, callback);
-        } catch (error) {
-            if (callback) {
-                callback(error);
-            }
-        }
+    async make_env() {
+        let env = {
+            proj_id: _proj.id,
+            prots: _proj.prots,
+            xtras: _proj.xtras,
+            topos: _proj.topos,
+            libs: _proj.libs
+        };
+        return await this._xfn('makeenv', env);
     }
 
-    // //查询执行状态
-    // state(callback) {
-    //     try {
-    //         return this._xfn('state', null, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
+    async run_case(name, script, vars, option) {
+        let info = {
+            proj_id: _proj.id,
+            script: script,
+            vars: vars,
+            option: option,
+            rpath_src: './' + name + '.lua',
+        }
+        return await this._xfn('start', info);
+    }
 
-    // //回复应答信息
-    // reply(run_id, answer, callback) {
-    //     try {
-    //         answer.key = run_id;
-    //         return this._xfn('reply', answer, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
+    async run_stop() {
+        return await this._xfn('stop', {
+            key: _run_uuid
+        })
+    }
 
-    // //发送命令
-    // cmd(run_id, command, params, callback) {
-    //     try {
-    //         return this._xfn('command', {
-    //             key: run_id,
-    //             command: command,
-    //             params: params
-    //         }, callback);
-    //     } catch (error) {
-    //         if (callback) {
-    //             callback(error);
-    //         }
-    //     }
-    // }
+    async run_out() {
+        return await this._xfn('readout', {
+            key: _run_uuid
+        });
+    }
+
+    async state() {
+        return await this._xfn('state', null);
+    }
+
+    async reply(answer) {
+        answer.key = _run_uuid;
+        return await this._xfn('reply', answer);
+    }
+
+    async cmd(command, params) {
+        return await this._xfn('command', {
+            key: run_id,
+            command: command,
+            params: params
+        });
+    }
 
 }
 
-function _on_runout(msglist) {
-    let exit = false;
-    for(let msg of msglist) {
-        _post_msg(msg.catalog, msg.kind, _proj.id, _case_id, msg.value);
-        if(msg.catalog === 'system' && msg.kind === 'stop') {
-            exit = true;
-        }
+function _on_runout(res) {
+    if(res.result !== 'ok') {
+        return _post_sys_msg(res, _proj.id);
     }
 
-    //TODO save to db
+    let msglist = res.value;
+    if(msglist.length===0) {
+        return;
+    }
 
-    if(exit) {
-        //TODO save to disk
+    let exit = false;
+    for (let msg of msglist) {
+        //TODO save to db
+        if (msg.catalog === 'system' && msg.kind === 'stop') {
+            exit = true;
+        }            
+    }
+
+    if (exit) {
+        //TODO save db to disk
         clearInterval(_timer);
         _run_uuid = null;
         _case_id = null;
     }
+
+    return _post_out_msgs(msglist, _proj.id, _case_id)
 }
 
 function _start_readout() {
-    if(_timer) {
+    if (_timer) {
         clearInterval(_timer);
     }
-    _timer = setInterval(() => {
-        if(_srv && _run_uuid) {
-            _srv.run_out(_run_uuid, (err, msgs)=> {
-                if(err) {
-                    _post_msg('system', 'error', _proj.id, 0, {
-                        message: err
-                    });
-                } 
-                if(msgs && msgs.length>0) {
-                    _on_runout(msgs);
-                }
-            })
-        } 
+    _timer = setInterval(async () => {
+        if (_srv && _run_uuid) {
+            let res = await _srv.run_out();
+            _on_runout(res);
+        }
     }, 40);
 }
 
 function _on_error(err_msg) {
-    _post_msg('system', 'error', _proj.id, 0, {
-        message: err_msg
-    });
-    if(_timer) {
+    if (_timer) {
         clearInterval(_timer);
-        _run_uuid = null;
-        _case_id = null;
     }
+    _srv = null;
+    _run_uuid = null;
+    _case_id = null;
+    _post_sys_msg({
+        kind: 'error',
+        value: err_msg
+    }, _proj ? _proj.id : 0);
 }
 
-function _get_srv(cb) {
-    let ip = _proj.setting.etestd_ip;
-    let port = _proj.setting.etestd_port;
-    if (_srv && _srv.ip === ip && _srv.port === port) {
-        return cb(_srv);
-    }
-
-    _srv = new SdkApi(ip, port, (err) => {
-        if (err) {
-            let msg = `连接执行器失败,${err.message}`;
-            _post_msg('system', 'error', _proj.id, 0, {
-                message: msg
+function _get_srv() {
+    return new Promise((resolve) => {
+        let ip = _proj.setting.etestd_ip;
+        let port = _proj.setting.etestd_port;
+        if (_srv && _srv.ip === ip && _srv.port === port) {
+            return resolve({
+                result: 'ok',
+                value: _srv
             });
-            return;
-        } else {
-            cb(_srv);
         }
+        let srv = new SdkApi(ip, port, (err) => {
+            if (err) {
+                return resolve({
+                    result: 'error',
+                    value: '连接执行器失败:' + err.message
+                });
+            }
+            _srv = srv;
+            return resolve({
+                result: 'ok',
+                value: srv
+            });
+        });
     });
 }
 
-function setup(post_msg) {
-    _post_msg = post_msg;
+function setup(post_sys_msg, post_out_msgs) {
+    _post_out_msgs = post_out_msgs;
+    _post_sys_msg = post_sys_msg;
 }
 
 function set_proj(proj) {
@@ -245,24 +187,36 @@ function get_proj() {
     return _proj;
 }
 
-function run_case(id, remake) {
-    let item = _proj.luas.find(it => it.id===id);
-    _get_srv(srv => {
-        if(remake) {
-            srv.make_env(() => {
-                srv.run_case(_proj.id, id, item.name, item.script, item.vars, item.option);
-            })
-        } else {
-            srv.run_case(_proj.id, id, item.script, item.vars, item.option);
+async function run_case(id, remake) {
+    let item = _proj.luas.find(it => it.id === id);
+    let res = await _get_srv();
+    if (res.result !== 'ok') {
+        return res;
+    }
+    let srv = res.value;
+    if (remake) {
+        res = await srv.make_env();
+        if (res.result !== 'ok') {
+            return res;
         }
-    });
+    }
+    res = await srv.run_case(item.name, item.script, item.vars, item.option);
+    if (res.result === 'ok') {
+        _run_uuid = res.value;
+        _case_id = id;
+        _start_readout();
+    }
+    return res;
 }
 
-function run_stop() {
-    if(!_srv || !_run_uuid) {
-        return;
+async function run_stop() {
+    if (!_srv || !_run_uuid) {
+        return {
+            result: 'error',
+            value: '没有需要停止的执行',
+        };
     }
-    _srv.run_stop();
+    return await _srv.run_stop();
 }
 
 export default {

@@ -16,16 +16,16 @@
                         </v-icon>
                     </v-col>
                     <v-col class="pa-0 ma-0 pr-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;"
-                        cols=4>
+                        cols=5>
                         <span style="cursor: pointer;" class="text-shenglue"
                             @click="goto_line(check_result.line)">{{check_result.tip}}</span>
                     </v-col>
-                    <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 100px; max-width: 100px;"
+                    <!-- <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 100px; max-width: 100px;"
                         cols=2>
                         <span>{{x_state}}</span>
-                    </v-col>
+                    </v-col> -->
                     <v-col class="pa-0 ma-0 pl-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;"
-                        cols=4>
+                        cols=5>
                         <span>{{show_out ? '':run_out}}</span>
                     </v-col>
                     <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 26px; max-width: 26px;" cols=1>
@@ -35,8 +35,9 @@
                     </v-col>
                 </v-row>
             </v-sheet>
-            <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px'}" class="ma-0 pa-0"
-                color="grey darken-3" width="100%" height="300" tile>
+            <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px', 'overflow-y':'scroll'}" class="outs ma-0 pa-0"
+                color="grey darken-3" width="100%" tile>
+                <e-outs :outs="outs" :debug="true" height="300" />
             </v-sheet>
         </v-card>
     </v-container>
@@ -54,17 +55,20 @@
 <script>
     import ipc from '../feature/r_ipc';
     import hrun from '../run/helper';
+    import f_outs from '../feature/f_outs';
     import cfg from '../helper/cfg_lua';
     import run from '../run/run_r';
     import Env from '../feature/f_env';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
     import EEditor from '../components/ELuaScriptEditor';
+    import EOuts from '../components/EOutsDebug';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
             'e-editor': EEditor,
+            'e-outs': EOuts,
         },
         mounted: function () {
             this.$store.commit('clearEditor');
@@ -75,6 +79,7 @@
             this.bar_items = this.cfg.bar_items;
             this.load_doc();
             this.editor = this.$refs.editor.get_action_handler();
+            this.outs = run.get_outs(this.doc_id);
         },
         data() {
             return {
@@ -157,7 +162,10 @@
                 return '<执行器状态>';
             },
             run_out: function () {
-                return '<无输出>';
+                if(this.outs.length === 0) {
+                    return '<无输出>';
+                }
+                return f_outs.parse_text(this.outs[this.outs.length-1]);
             },
             check_version: function () {
                 let res = this.$store.state.check_result;
@@ -165,7 +173,7 @@
             }
         },
         methods: {
-            do_play: function() {
+            do_play: async function() {
                 this.try_run_times++;
                 if(this.try_run_times>10){
                     this.$store.commit('setMsgError', '启动执行失败');
@@ -185,20 +193,15 @@
                     this.loading = false;
                     return;
                 }
-                try {
-                    let self = this;
-                    let info = {id: this.doc_id, proj_id: this.proj_id, remake: true}
-                    run.run_script(info).then(outs => {
-                        self.outs = outs;
-                        self.loading = false;
-                    });
-                    this.$nextTick(() => {
-                        self.show_out = true;
-                    });
-                } catch (error) {
-                    this.loading = false;
-                    this.$store.commit('setMsgError', error.message);
-                }
+
+                let self = this;
+                let info = {id: this.doc_id, proj_id: this.proj_id, remake: true}
+                this.$nextTick(() => {
+                    self.show_out = true;
+                });
+                this.outs.length = 0;
+                this.loading = false;
+                await run.run_script(this.outs, info);
             },
 
             play: async function () {
@@ -216,7 +219,11 @@
                 return false;
             },
             stop: function() {
-                run.stop_run();
+                run.stop_run(this.outs);
+                let self = this;
+                this.$nextTick(() => {
+                    self.show_out = true;
+                });
             },
             set_err_tip: function (line, msg) {
                 if (!this.editor || !this.editor.set_err) {

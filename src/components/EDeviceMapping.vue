@@ -1,6 +1,10 @@
 <template>
     <v-data-table :headers="headers" :items="items" no-data-text="暂时还没有设备" disable-sort hide-default-footer
         disable-pagination>
+        <template v-slot:item.used_="{item}">
+            <v-icon v-if="item.used==='uut'" :color="get_color(item)"> mdi-checkbox-blank-circle-outline</v-icon>
+            <v-icon v-else-if="item.used==='etest'" :color="get_color(item)"> mdi-checkbox-marked-circle</v-icon>
+        </template>
         <template v-slot:item.dev_id="{item}">
             <span :class="get_text_css1(item)"> {{get_dev_name(item.dev_id)}}</span>
         </template>
@@ -21,9 +25,9 @@
     export default {
         props: ['items', 'devs'],
         data: () => ({
-            headers: [{
+            headers: [{value: 'used_', align: 'end',},{
                     text: '设备',
-                    align: 'end',
+                    align: 'start',
                     sortable: false,
                     value: 'dev_id',
                 },
@@ -53,6 +57,16 @@
             },
             on_change: function () {
                 this.$emit('save');
+            },
+
+            get_color: function(item) {
+                if(item.used === 'none') {
+                    return 'grey darken-2';
+                }
+                if(item.used === 'etest') {
+                    return 'blue lighten-3';
+                }
+                return 'brown lighten-3';
             },
             get_text_css1: function(item) {
                 if(item.used === 'none') {
