@@ -1,5 +1,8 @@
 module.exports = {
   root: true,
+  globals: {
+    __static: true
+  },
   env: {
     node: true
   },

@@ -110,7 +110,7 @@ function _on_runout(res) {
         //TODO save to db
         if (msg.catalog === 'system' && msg.kind === 'stop') {
             exit = true;
-        }            
+        }
     }
 
     if (exit) {
