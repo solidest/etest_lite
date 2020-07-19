@@ -1,37 +1,42 @@
 const RpcTask = require('./core/rpctask');
 
-let _post_sys_msg, _post_out_msgs;
-let _proj;
-let _run_uuid;
-let _case_id;
-let _srv;
-let _timer;
-
-class SdkApi {
-    constructor(ip, port, cb) {
+class Runner {
+    constructor(ip, port, on_debug) {
         this.ip = ip;
         this.port = port;
-        this._srv = new RpcTask(ip, port, false, cb);
-        this._srv.setup(_on_error);
+        this.on_debug = on_debug;
+    }
+
+    get proj_id() {
+        if (this.db) {
+            return this.db.proj_id;
+        }
+        return null;
     }
 
     _xfn(method, params) {
         return new Promise(resolve => {
             try {
-                this._srv.sendTask({
+                if (!this.srv) {
+                    return resolve({
+                        result: 'error',
+                        value: '',
+                    });
+                }
+                this.srv.sendTask({
                     method: method,
                     params: params
                 }, (err, value) => {
-                    if(err) {
+                    if (err) {
                         return resolve({
                             result: 'error',
-                            value: err.message||err,
-                        });                        
+                            value: err.message || err,
+                        });
                     }
                     return resolve({
                         result: 'ok',
                         value: value
-                    }); 
+                    });
                 });
             } catch (error) {
                 return resolve({
@@ -42,187 +47,95 @@ class SdkApi {
         });
     }
 
-    async make_env() {
+    open() {
+        return new Promise(resolve => {
+            let self = this;
+            this.srv = new RpcTask(this.ip, this.port, false, (err)=>{
+                if(err) {
+                    return resolve({
+                        result: 'error',
+                        value: err,
+                    });
+                } else {
+                    self.srv.setup((err_msg) => {
+                        self.close();
+                        self.on_debug('error', err_msg, self.proj_id, self.case_id);
+                    });
+                    return resolve({
+                        result: 'ok'
+                    });
+                }
+            });      
+        })
+    }
+
+    clear() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    }
+
+    close() {
+        this.clear();
+        if (this.srv) {
+            this.srv.close();
+            this.srv = null;
+        }
+    }
+
+    async make_env(proj) {
         let env = {
-            proj_id: _proj.id,
-            prots: _proj.prots,
-            xtras: _proj.xtras,
-            topos: _proj.topos,
-            libs: _proj.libs
+            proj_id: proj.id,
+            prots: proj.prots,
+            xtras: proj.xtras,
+            topos: proj.topos,
+            libs: proj.libs
         };
         return await this._xfn('makeenv', env);
     }
 
-    async run_case(name, script, vars, option) {
+    async run_case(case_id, db) {
+        this.db = db;
+        this.case_id = case_id;
+        let proj = db.proj;
+        let item = proj.luas.find(it => it.id === case_id);
         let info = {
-            proj_id: _proj.id,
-            script: script,
-            vars: vars,
-            option: option,
-            rpath_src: './' + name + '.lua',
+            proj_id: proj.id,
+            script: item.script,
+            vars: item.vars,
+            option: item.option,
+            rpath_src: './' + item.name + '.lua',
         }
-        return await this._xfn('start', info);
+        let res = await this._xfn('start', info);
+
+        if (res.result === 'ok') {
+            this.run_uuid = res.value;
+            let self = this;
+            this.timer = setInterval(async () => {
+                let outs = await self._xfn('readout', {
+                    key: self.run_uuid,
+                });
+                if (outs.result !== 'ok') {
+                    self.close();
+                    self.on_debug('error', outs.value, proj.id, case_id);
+                } else if (outs.value.length > 0) {
+                    db.save_outs(case_id, outs.value);
+                    if (outs.value.find(msg => msg.kind === 'stop' && msg.catalog === 'system')) {
+                        self.clear();
+                        db.save();
+                    }
+                }
+            }, 40);
+        }
+        return res;
     }
 
     async run_stop() {
         return await this._xfn('stop', {
-            key: _run_uuid
-        })
-    }
-
-    async run_out() {
-        return await this._xfn('readout', {
-            key: _run_uuid
+            key: this.run_uuid,
         });
     }
-
-    async state() {
-        return await this._xfn('state', null);
-    }
-
-    async reply(answer) {
-        answer.key = _run_uuid;
-        return await this._xfn('reply', answer);
-    }
-
-    async cmd(command, params) {
-        return await this._xfn('command', {
-            key: run_id,
-            command: command,
-            params: params
-        });
-    }
-
 }
 
-function _on_runout(res) {
-    if(res.result !== 'ok') {
-        return _post_sys_msg(res, _proj.id);
-    }
-
-    let msglist = res.value;
-    if(msglist.length===0) {
-        return;
-    }
-
-    let exit = false;
-    for (let msg of msglist) {
-        //TODO save to db
-        if (msg.catalog === 'system' && msg.kind === 'stop') {
-            exit = true;
-        }
-    }
-
-    if (exit) {
-        //TODO save db to disk
-        clearInterval(_timer);
-        _run_uuid = null;
-        _case_id = null;
-    }
-
-    return _post_out_msgs(msglist, _proj.id, _case_id)
-}
-
-function _start_readout() {
-    if (_timer) {
-        clearInterval(_timer);
-    }
-    _timer = setInterval(async () => {
-        if (_srv && _run_uuid) {
-            let res = await _srv.run_out();
-            _on_runout(res);
-        }
-    }, 40);
-}
-
-function _on_error(err_msg) {
-    if (_timer) {
-        clearInterval(_timer);
-    }
-    _srv = null;
-    _run_uuid = null;
-    _case_id = null;
-    _post_sys_msg({
-        kind: 'error',
-        value: err_msg
-    }, _proj ? _proj.id : 0);
-}
-
-function _get_srv() {
-    return new Promise((resolve) => {
-        let ip = _proj.setting.etestd_ip;
-        let port = _proj.setting.etestd_port;
-        if (_srv && _srv.ip === ip && _srv.port === port) {
-            return resolve({
-                result: 'ok',
-                value: _srv
-            });
-        }
-        let srv = new SdkApi(ip, port, (err) => {
-            if (err) {
-                return resolve({
-                    result: 'error',
-                    value: '连接执行器失败:' + err.message
-                });
-            }
-            _srv = srv;
-            return resolve({
-                result: 'ok',
-                value: srv
-            });
-        });
-    });
-}
-
-function setup(post_sys_msg, post_out_msgs) {
-    _post_out_msgs = post_out_msgs;
-    _post_sys_msg = post_sys_msg;
-}
-
-function set_proj(proj) {
-    _proj = proj;
-}
-
-function get_proj() {
-    return _proj;
-}
-
-async function run_case(id, remake) {
-    let item = _proj.luas.find(it => it.id === id);
-    let res = await _get_srv();
-    if (res.result !== 'ok') {
-        return res;
-    }
-    let srv = res.value;
-    if (remake) {
-        res = await srv.make_env();
-        if (res.result !== 'ok') {
-            return res;
-        }
-    }
-    res = await srv.run_case(item.name, item.script, item.vars, item.option);
-    if (res.result === 'ok') {
-        _run_uuid = res.value;
-        _case_id = id;
-        _start_readout();
-    }
-    return res;
-}
-
-async function run_stop() {
-    if (!_srv || !_run_uuid) {
-        return {
-            result: 'error',
-            value: '没有需要停止的执行',
-        };
-    }
-    return await _srv.run_stop();
-}
-
-export default {
-    setup,
-    set_proj,
-    get_proj,
-    run_case,
-    run_stop,
-}
+export default Runner;

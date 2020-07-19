@@ -1,5 +1,5 @@
 
-import ipc from './r_ipc';
+import ipc from './ipc_render';
 import fp from './f_protocol';
 import yaml from 'js-yaml';
 

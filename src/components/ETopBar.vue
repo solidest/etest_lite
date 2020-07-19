@@ -72,7 +72,7 @@
     import EMiniBar from './widgets/EMiniToolBar';
     import EListEditor from './widgets/EListEditor';
     import ETreeEditor from './widgets/ETreeEditor';
-    import r_ipc from '../feature/r_ipc';
+    import r_ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_topbar';
 
     const show_ = cfg.width;

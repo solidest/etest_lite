@@ -19,7 +19,7 @@ const _store = new Vuex.Store({
     },
     play_ids: {},
     panel: null,
-    winid: -1,
+    winid: null,
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -41,7 +41,7 @@ const _store = new Vuex.Store({
       state.last_tip.tip_msg = '$'
       state.last_tip.tip = false
     },
-    setPlay: function (state, info) {
+    setPlayInfo: function (state, info) {
       state.proj.name = `${info.proj_name} :: ${info.case_name}`
       state.play_ids = {
         proj_id: info.proj_id,
@@ -57,8 +57,14 @@ const _store = new Vuex.Store({
   modules: {},
 })
 
-ipcRenderer.on('ctl-play', (_, info) => {
-  _store.commit('setPlay', info);
+ipcRenderer.on('debug', (_, kind, info, proj_id, case_id) => {
+  if(kind === 'play') {
+    _store.commit('setPlayInfo', info);
+  } else if(kind === 'error' && info) {
+    _store.commit('setMsgError', info);
+  } else {
+    console.log('debug', kind, info, proj_id, case_id);
+  }
 });
 
 export default _store

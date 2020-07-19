@@ -1,4 +1,4 @@
-import ipc from './r_ipc';
+import ipc from './ipc_render';
 import shortid from 'shortid';
 
 

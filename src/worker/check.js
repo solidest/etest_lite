@@ -1,5 +1,5 @@
 
-import ipc from '../feature/r_ipc';
+import ipc from '../feature/ipc_render';
 import load_proj from './wrapper/loader';
 
 let _task_id

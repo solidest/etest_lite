@@ -13,9 +13,10 @@ function work_check(proj_id, reason) {
     worker.webContents.send('check', proj_id, reason);
 }
 
-function setup_db(db_path) {
-    db.setup(db_path);
-    
+function open(_worker, db_path) {
+    worker = _worker;
+    db.open(db_path);
+
     ipcMain.handle('load_proj', (_, id) => {
         return db.load_proj(id);
     });
@@ -56,13 +57,8 @@ function setup_db(db_path) {
     });
 }
 
-function setup_worker(win) {
-    worker = win;
-    
+async function close() {
+    await db.close();
 }
 
-function save_db(cb) {
-    db.save(cb);
-}
-
-export default { setup_worker, setup_db, save_db }
+export default { open, close }

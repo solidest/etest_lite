@@ -14,7 +14,7 @@
     /**
      *  空组件
      */
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
 
     export default {
         props: ['tip'],

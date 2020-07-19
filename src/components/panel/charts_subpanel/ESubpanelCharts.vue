@@ -54,7 +54,11 @@
             recorder: function (v) {
                 this.load_data(v);
                 this.load_datas();
-                this.redraw_data();
+                if(this.design) {
+                    this.redraw();
+                } else {
+                    this.redraw_data();
+                }
             },
         },
 
@@ -204,8 +208,10 @@
             },
 
             redraw_data: function() {
-                // console.log('TODO redraw_data');
                 this.redraw();
+                // let opt = {};
+                // this.get_run_data_(opt);
+                // this.chart.setOption(opt);
             }
         }
 

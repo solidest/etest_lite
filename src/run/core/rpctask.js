@@ -118,6 +118,14 @@ class NetWork {
         this.on_error = on_error;
     }
 
+    close() {
+        this.on_error = null;
+        if(this._socket) {
+            this._socket.destroy();
+            this._socket = null;
+        }
+    }
+
     //发送
     send(body) {
         if(!this._socket) {
@@ -160,36 +168,33 @@ class NetWork {
         });
 
         socket.on('error', function (err) {
-            if(cb) {
-                cb(err);
-            } else {
-                if(self.on_error) {
-                    return self.on_error(err.message);
-                }
-                console.error('on_error', err);
+            if(self.on_error) {
+                return self.on_error(err.message);
             }
+            if(cb) {
+                return cb(err.message);
+            }
+            console.error('on_error', err);
         });
 
         socket.on('end', function () {
-            if(cb) {
-                cb({message: 'ETestD异常退出'});
-            } else {
-                if(self.on_error) {
-                    return self.on_error('ETestD退出');
-                }
-                console.error('ETestD退出');
+            if(self.on_error) {
+                return self.on_error('ETestD退出');
             }
+            if(cb) {
+                return cb('ETestD退出');
+            }
+            console.error('ETestD退出');
         });
 
         socket.on('timeout', function () {
-            if(cb) {
-                cb({message: 'on_timeout'});
-            } else {
-                if(self.on_error) {
-                    return self.on_error('连接执行器超时');
-                }
-                console.error('on_timeout');
+            if(self.on_error) {
+                return self.on_error('连接执行器超时');
             }
+            if(cb) {
+                return cb('连接执行器超时');
+            }
+            console.error('on_timeout');
         });
     }
 }
@@ -205,6 +210,14 @@ class RpcTask {
     setup(on_error) {
         this.on_error = on_error;
         this._net.setup(on_error);
+    }
+
+    close() {
+        this.on_error = null;
+        if(this._net) {
+            this._net.close();
+            this._net = null;            
+        }
     }
 
     //发送一个任务

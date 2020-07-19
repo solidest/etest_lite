@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import tcp_test from '../helper/tcp_test';
 
     export default {

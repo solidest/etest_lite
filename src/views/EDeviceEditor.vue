@@ -56,7 +56,7 @@
 
 <script>
     import Mousetrap from 'mousetrap';
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_device';
     import lman from '../helper/list_man';
     import shortid from 'shortid';

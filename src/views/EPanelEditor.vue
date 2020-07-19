@@ -54,7 +54,7 @@
 <script>
     import Mousetrap from 'mousetrap';
     import shortid from 'shortid';
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_panel';
     import PanelData from '../helper/panel_data';
     import RedoUndo from '../helper/redo_undo';

@@ -96,7 +96,7 @@
 </template>
 
 <script>
-  import ipc from '../feature/r_ipc';
+  import ipc from '../feature/ipc_render';
   import helper from '../helper/helper';
   import h from '../feature/f_project'
   import cfg from '../../package.json'
@@ -161,6 +161,7 @@
 
     mounted: function () {
       let self = this;
+      console.log('list_proj')
       ipc.list_proj().then((res) => {
         self.update(res);
       });

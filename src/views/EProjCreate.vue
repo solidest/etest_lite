@@ -108,7 +108,7 @@
 </template>
 
 <script>
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import h from '../feature/f_project'
     import shortid from 'shortid'
     export default {

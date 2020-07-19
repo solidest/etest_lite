@@ -97,7 +97,7 @@
 
 <script>
     import Mousetrap from 'mousetrap';
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_protocol';
     import h from '../feature/f_protocol';
     import EEditorBar from '../components/EEditorBar';

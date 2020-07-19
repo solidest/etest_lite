@@ -5,7 +5,7 @@
 </template>
 <script>
 
-import run from '../../run/run_r';
+import run from '../../run/run_render';
 import EPanel from '../../components/panel/EPanel'
 import cfg from '../../helper/cfg_panel';
 
@@ -17,7 +17,13 @@ export default {
     mounted: function() {
         this.commander = this.$store.state.panel.commander || {};
         this.recorder = this.$store.state.panel.recorder || {};
-        run.set_outs(this.outs);
+        this.start_read_out();
+    },
+    beforeDestroy: function() {
+        if(this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
     },
 
     data: () => {
@@ -26,8 +32,6 @@ export default {
             recorder: {},
             outs: [],
             cfg: cfg,
-            idx: 0,
-            rcds: [],
         }
     },
     
@@ -40,23 +44,48 @@ export default {
         },
     },
 
-    watch: {
-        outs: function(vs) {
-            if(this.idx>=vs.length) {
+    methods: {
+        start_read_out: function () {
+            this.last_time = -1;
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
+            let self = this;
+            let ids = this.$store.state.play_ids;
+            this.timer = setInterval(async () => {
+                await self.read_out(ids.proj_id, ids.case_id);
+            }, 40);
+        },
+
+        read_out: async function (proj_id, case_id) {
+            if (this.reading) {
                 return;
             }
-            let rcd = {};
-            for(; this.idx<vs.length; this.idx++) {
-                let item = vs[this.idx];
-                if(item.catalog === 'record') {
-                    this.rcds.push(item);
-                    for(let k in item.value) {
-                        rcd[k] = item.value[k];
-                    }
+            this.reading = true;
+            let info = {
+                proj_id: proj_id,
+                case_id: case_id,
+                limit: 1000,
+                begin_time: this.last_time,
+                kinds: {
+                    recorder: true,
                 }
             }
-            this.recorder = rcd;
-        }
+            let res = await run.get_outs(info);
+            this.reading = false;
+            if (res) {
+                if (res.recorder) {
+                    this.recorder = res.recorder;
+                }
+                if (res.stop) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }
+        },
     }
+
+
 }
 </script>~

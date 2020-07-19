@@ -1,7 +1,7 @@
 
 import path from 'path';
 import loki  from 'lokijs';
-import fs from 'fs';
+
 import {
     debounce
 } from 'throttle-debounce';
@@ -13,9 +13,8 @@ let _init = false;
 
 let auto_save = debounce(4000, () => {_db.saveDatabase();});
 
-function setup(db_path) {
+function open(db_path) {
     let f = path.resolve(db_path, 'db.json');
-
     _db = new loki(f, {
         autoload: true,
         autoloadCallback : init,
@@ -33,12 +32,17 @@ function init() {
     }
 }
 
-function save(cb) {
+function close() {
     if(!_db || !_init) {
         return;
     }
-    _db.saveDatabase(cb);
-    _db = null;
+    return new Promise(resolve => {
+        _db.saveDatabase(() =>{
+            _db.close();
+            _db = null;
+            return resolve();
+        });  
+    })
 }
 
 // {id: 'xx', proj_id: 'xx', name: 'xx', ....}
@@ -241,6 +245,6 @@ function recent_proj() {
 }
 
 export default { 
-    setup, save, list, load, insert, update, remove, load_proj,
+    open, close, list, load, insert, update, remove, load_proj,
     list_proj, insert_proj, update_proj, remove_proj, recent_proj, 
 }

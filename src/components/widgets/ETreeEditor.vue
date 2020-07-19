@@ -20,7 +20,7 @@
     </v-treeview>
 </template>
 <script>
-    import ipc from '../../feature/r_ipc';
+    import ipc from '../../feature/ipc_render';
     import tman from '../../helper/tree_man';
     import helper from '../../helper/helper';
     import shortid from 'shortid';

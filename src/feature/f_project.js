@@ -1,5 +1,5 @@
 
-import ipc from './r_ipc';
+import ipc from './ipc_render';
 
 async function check_proj_newname(name) {
     name = (name ? name : '').trim();

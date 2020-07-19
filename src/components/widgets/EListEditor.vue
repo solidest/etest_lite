@@ -14,7 +14,7 @@
 </template>
 
 <script>
-    import ipc from '../../feature/r_ipc';
+    import ipc from '../../feature/ipc_render';
     import helper from '../../helper/helper';
     import shortid from 'shortid';
 

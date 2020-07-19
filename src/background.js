@@ -11,25 +11,23 @@ import {
 import {
   createProtocol,
 } from 'vue-cli-plugin-electron-builder/lib';
-import ipc from './feature/m_ipc';
+import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
-import run from './run/run_m';
-     
+import run from './run/run_main';
+    
 let player = null; 
 let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
-   
-function quit() {
-  
-  ipc.save_db(() => {
-    run.save_db(() => {
-      console.log('db saved, will exit');
-      app.quit()
-    });
-  });
+const db_path = app.getPath('userData');
+
+async function quit() {
+  await ipc.close();
+  run.close();
+  console.log('db saved, will exit');
+  app.quit();
 }
-    
+  
 function try_close_all() {
   if (wins.size() === 0 && !player_show) {
     if (worker) {
@@ -50,7 +48,7 @@ function createWorker() {
       nodeIntegration: true
     }
   }); 
-  ipc.setup_worker(worker);
+  ipc.open(worker, db_path);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
     if (!process.env.IS_TEST) worker.webContents.openDevTools()
@@ -79,7 +77,7 @@ function createPlayer() {
     frame: false,
     backgroundColor: '#000000',
   });
-  run.setup_player(player);
+  run.open(player, db_path);
   let wid = '#/?winid=' + player.id;
   if (isDevelopment) {
     player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html' + wid)
@@ -113,8 +111,8 @@ function createWindow(proj_id) {
   wins.add(win, proj_id);
 
   if (!proj_id) {
-    globalShortcut.register('CommandOrControl+Q', () => {
-      quit();
+    globalShortcut.register('CommandOrControl+Q', async () => {
+      await quit();
     });
     globalShortcut.register('CommandOrControl+Alt+I', (e) => {
       win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
@@ -156,12 +154,6 @@ function beginCheck(proj_id, reason) {
   }
 }
 
-function setup() {
-  let db_path = app.getPath('userData');
-  ipc.setup_db(db_path);
-  run.setup_db(db_path);
-}
-
 
 //////////////////////// app //////////////////////////////
 app.on('window-all-closed', quit)
@@ -179,9 +171,9 @@ app.on('activate', () => {
 })
  
 app.on('ready', async () => {
-  createWindow(null);
   createWorker();
   createPlayer();
+  createWindow(null);
 })
 
 if (isDevelopment) {
@@ -215,18 +207,16 @@ protocol.registerSchemesAsPrivileged([{
   }
 }])
 
-setup();
-
 ///////////////////////// ipcMain ///////////////////////////////
 ipcMain.on('bind-proj', (_, wid, proj_id) => {
   let win = BrowserWindow.fromId(Number.parseInt(wid));
   if (!win) {
-    console.log('error win from id')
+    console.log('ERROR win from id')
   }
   wins.update(win, proj_id);
   beginCheck(proj_id, 'bind proj');
 })
-     
+  
 ipcMain.handle('open-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -241,7 +231,7 @@ ipcMain.handle('open-proj', (_, proj_id) => {
   createWindow(proj_id);
   beginCheck(proj_id, 'open-proj');
 });
-
+ 
 ipcMain.on('close-win', (_, wid) => {
   wid = Number.parseInt(wid);
   if(wid===player.id) {
@@ -252,12 +242,12 @@ ipcMain.on('close-win', (_, wid) => {
   }
   let win = BrowserWindow.fromId(wid);
   if (!win) {
-    console.log('error win from id');
+    console.log('ERROR win from id');
     return;
   }  
   win.close();
 });
-
+  
 ipcMain.handle('active-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -270,7 +260,7 @@ ipcMain.handle('active-proj', (_, proj_id) => {
     return win.id;
   }
   return 0;
-});
+}); 
    
 ipcMain.on('check-result', (_, proj_id, version, results) => {
   let win = wins.find(proj_id);
@@ -280,29 +270,33 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
 });
   
 ipcMain.handle('run-case', async (_, info) => {
-  if(player_show) {
-    if(player.isMinimized()) {
-      player.restore();
-    }
-  } else {  
-    player.show();
-    if(isDevelopment) {
-      player.webContents.openDevTools();
-    }
+  let res = await run.run_case(info);
+  if(res.result === 'ok') {
+    if(player_show) {
+      if(player.isMinimized()) {
+        player.restore();
+      }
+    } else {  
+      player.show();
+      if(isDevelopment) {
+        player.webContents.openDevTools();
+      }
+    } 
+    player_show = true;
+    player.focus();
   }
-  player_show = true;
-  player.focus();
-  return await run.run_case(info);
-}); 
- 
+  return res;
+});
+  
 ipcMain.handle('run-stop', async () => {
-  if(player_show) {
+  if(player_show) { 
     player.hide();
     player_show = false;
   }
   return await run.run_stop();
-}); 
-     
+});
+ 
+
 // ipcMain.on('run-reply', run.reply);
 // ipcMain.on('run-cmd', run.cmd);
 // ipcMain.on('db-find', run_db.find);

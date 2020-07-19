@@ -34,7 +34,7 @@
 
 <script>
     import h from '../feature/f_topo';
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_topology';
     import EEditorBar from '../components/ETopologyBar';
     import ETopoDraw from '../components/ETopologyDraw';

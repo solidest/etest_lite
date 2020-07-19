@@ -36,7 +36,7 @@
     }
 </style>
 <script>
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import cfg from '../helper/cfg_xtra';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';

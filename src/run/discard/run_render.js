@@ -14,14 +14,8 @@ function _push_result(outs, catalog, kind, message) {
     })
 }
 
-async function run_script(outs, info) {
-    let res = await ipcRenderer.invoke('run-case', info);
-    if(res.result !=='ok') {
-        _push_result(outs, 'system', 'error', res.value);
-    } else {
-        current = outs;
-        _push_result(outs, 'system', 'debug', '启动指令已发送');
-    }
+async function run_script(info) {
+    return await ipcRenderer.invoke('run-case', info);
 }
 
 async function stop_run(outs) {

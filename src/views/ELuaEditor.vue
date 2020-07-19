@@ -20,10 +20,6 @@
                         <span style="cursor: pointer;" class="text-shenglue"
                             @click="goto_line(check_result.line)">{{check_result.tip}}</span>
                     </v-col>
-                    <!-- <v-col class="pa-0 ma-0 flex-grow-0 flex-shrink-1" style="min-width: 100px; max-width: 100px;"
-                        cols=2>
-                        <span>{{x_state}}</span>
-                    </v-col> -->
                     <v-col class="pa-0 ma-0 pl-3 flex-grow-1 flex-shrink-0" style="min-width: 200px; max-width: 800px;"
                         cols=5>
                         <span>{{show_out ? '':run_out}}</span>
@@ -37,7 +33,7 @@
             </v-sheet>
             <v-sheet v-if="show_out" :style="{position:'absolute', left:'0px', bottom:'1px'}" class="outs ma-0 pa-0"
                 color="grey darken-3" width="100%" height="300px" tile>
-                <e-outs :outs="outs" :debug="true" />
+                <e-outs :outs="outs" />
             </v-sheet>
         </v-card>
     </v-container>
@@ -53,16 +49,15 @@
     }
 </style>
 <script>
-    import ipc from '../feature/r_ipc';
+    import ipc from '../feature/ipc_render';
     import hrun from '../run/helper';
-    import f_outs from '../feature/f_outs';
     import cfg from '../helper/cfg_lua';
-    import run from '../run/run_r';
+    import run from '../run/run_render';
     import Env from '../feature/f_env';
     import complition from '../language/complition';
     import EEditorBar from '../components/widgets/EScriptToolBar';
     import EEditor from '../components/ELuaScriptEditor';
-    import EOuts from '../components/EOutsDebug';
+    import EOuts from '../components/EConsoleOuts';
 
     export default {
         components: {
@@ -79,7 +74,27 @@
             this.bar_items = this.cfg.bar_items;
             this.load_doc();
             this.editor = this.$refs.editor.get_action_handler();
-            this.outs = run.get_outs(this.doc_id);
+            let self = this;
+            let info = {
+                proj_id: this.proj_id,
+                case_id: this.doc_id,
+                limit: -1000,
+                begin_time: -1,
+                kinds: {
+                    debug: true
+                }
+            }
+            run.get_outs(info).then(res => {
+                if(res && res.debug) {
+                    self.outs = res.debug;
+                }
+            });
+        },
+        beforeDestroy: function() {
+            if(this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
         },
         data() {
             return {
@@ -165,11 +180,14 @@
                 if(this.outs.length === 0) {
                     return '<无输出>';
                 }
-                return f_outs.parse_text(this.outs[this.outs.length-1]);
+                return this.outs[this.outs.length-1].text;
             },
             check_version: function () {
                 let res = this.$store.state.check_result;
                 return res ? res.version : 0;
+            },
+            play_info: function() {
+                return this.$store.state.play_info;
             }
         },
         methods: {
@@ -196,12 +214,16 @@
 
                 let self = this;
                 let info = {id: this.doc_id, proj_id: this.proj_id, remake: true}
-                this.$nextTick(() => {
-                    self.show_out = true;
-                });
-                this.outs.length = 0;
                 this.loading = false;
-                await run.run_script(this.outs, info);
+                let res = await run.run_script(info);
+                if(res.result !== 'ok') {
+                    this.$store.commit('setMsgError', res.value);
+                } else {
+                    this.start_read_out();
+                    this.$nextTick(() => {
+                        self.show_out = true;
+                    });
+                }
             },
 
             play: async function () {
@@ -218,12 +240,58 @@
                 }, 300);
                 return false;
             },
-            stop: function() {
-                run.stop_run(this.outs);
+
+            start_read_out: function() {
+                this.outs.length = 0;
+                this.last_time = -1;
+                if(this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
                 let self = this;
-                this.$nextTick(() => {
-                    self.show_out = true;
-                });
+                this.timer = setInterval(async ()=>{
+                    await self.read_out();
+                }, 40);
+            },
+
+            read_out: async function() {
+                if(this.reading) {
+                    return;
+                }
+                this.reading = true;
+                let info = {
+                    proj_id: this.proj_id,
+                    case_id: this.doc_id,
+                    limit: 1000,
+                    begin_time: this.last_time,
+                    kinds: {
+                        debug: true
+                    }
+                }
+                let res = await run.get_outs(info);
+                this.reading = false;
+                if(res) {
+                    if(res.debug && res.debug.length>0) {
+                        this.last_time = res.debug[res.debug.length-1].$time;
+                        this.outs.push(...res.debug);
+                        let dc = this.outs.length - 1000;
+                        if(dc>0) {
+                            this.outs.splice(0, dc);
+                        }
+                    }
+                    if(res.stop) {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    }
+                }
+            },
+            stop: async function() {
+                let res = await run.stop_run();
+                if(res.result==='ok') {
+                    this.$store.commit('setMsgSuccess', '停止指令已发送');
+                } else {
+                    this.$store.commit('setMsgError', res.value);
+                }
             },
             set_err_tip: function (line, msg) {
                 if (!this.editor || !this.editor.set_err) {

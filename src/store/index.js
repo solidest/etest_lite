@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import ipc from '../feature/r_ipc';
+import ipc from '../feature/ipc_render';
+
 const {
   ipcRenderer
 } = window.require('electron')
@@ -20,9 +21,10 @@ const _store = new Vuex.Store({
     redo_count: 0,
     undo_count: 0,
     proj: null,
-    winid: 1,
+    winid: null,
     copys: { device: '', protocol: '', panel: ''},
     check_result: {version: 0, proj_id: 0},
+    play_info: null,
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -87,7 +89,9 @@ const _store = new Vuex.Store({
     },
     setCheckResult: function(state, info) {
       state.check_result = info;
-      // console.log('check result', info);
+    },
+    setPlayInfo: function(state, info) {
+      state.play_info = info;
     }
   },
   actions: {},
@@ -102,9 +106,18 @@ const _store = new Vuex.Store({
   }
 })
 
-//更新执行机状态
 ipcRenderer.on('check-result', (_, proj_id, results, version) => {
   _store.commit('setCheckResult', {proj_id: proj_id, results: results, version: version});
+});
+
+ipcRenderer.on('debug', (_, kind, info, proj_id, case_id) => {
+  if(kind === 'play') {
+    _store.commit('setPlayInfo', info);
+  } else if(kind === 'error' && info) {
+    _store.commit('setMsgError', info);
+  } else {
+    console.log('debug', kind, info, proj_id, case_id);
+  }
 });
 
 export default _store

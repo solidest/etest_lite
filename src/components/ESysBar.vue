@@ -60,7 +60,7 @@ export default {
             window.minimize();
         },
         onClose: function() {
-          ipcRenderer.send('close-win', this.$store.state.winid||1);
+          ipcRenderer.send('close-win', this.$store.state.winid);
         }
     }
 

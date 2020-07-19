@@ -1,5 +1,5 @@
 
-import ipc from '../../feature/r_ipc';
+import ipc from '../../feature/ipc_render';
 import Project from './Project';
 import Device from './Device';
 import Topology from './Topology';
