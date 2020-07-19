@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <e-sys-bar header="ETestPlayer" />
+    <e-sys-bar header="ETestPlayer" :stop_run="true" />
     <v-snackbar top :timeout="touts" :color="tip_color" v-model="tip">
       {{ tip_msg }}
       <template v-slot:action="{ attrs }">
@@ -70,13 +70,13 @@
           this.$router.push({name: 'Home'})
         }
         let self = this;
-        this.$nextTick(() =>{
+        setTimeout(() =>{
           if(self.$store.state.panel) {
             self.$router.push({name: 'Panel'})
           } else {
             self.$router.push({name: 'Outs'})
           }
-        });
+        }, 100);
       }
     }
   };

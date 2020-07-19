@@ -22,10 +22,11 @@
 </style>
 <script>
 
+import run from '../run/run_render';
 const { ipcRenderer, remote  } = window.require('electron')
 
 export default {
-    props: ['header'],
+    props: ['header', 'stop_run'],
     data: () => {
         return {
             is_max: false,
@@ -60,6 +61,9 @@ export default {
             window.minimize();
         },
         onClose: function() {
+          if(this.stop_run) {
+            run.stop_run();
+          }
           ipcRenderer.send('close-win', this.$store.state.winid);
         }
     }

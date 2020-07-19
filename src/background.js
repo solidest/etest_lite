@@ -268,22 +268,25 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
     win.webContents.send('check-result', proj_id, results, version);
   }
 });
-  
+        
 ipcMain.handle('run-case', async (_, info) => {
   let res = await run.run_case(info);
   if(res.result === 'ok') {
-    if(player_show) {
-      if(player.isMinimized()) {
-        player.restore();
-      }
-    } else {  
-      player.show();
-      if(isDevelopment) {
-        player.webContents.openDevTools();
-      }
-    } 
-    player_show = true;
-    player.focus();
+    setTimeout(() =>{
+      if(player_show) {
+        if(player.isMinimized()) {
+          player.restore();
+        }
+      } else {  
+        player.show();
+        if(isDevelopment) {
+          player.webContents.openDevTools();
+        }
+      } 
+      player_show = true;
+      player.focus();      
+    }, 300);
+
   }
   return res;
 });
