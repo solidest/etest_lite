@@ -7,7 +7,6 @@
     import IWidget from './IWidget';
     export default {
         mixins: [IWidget],
-        
         computed: {
             value_: {
                 get: function () {

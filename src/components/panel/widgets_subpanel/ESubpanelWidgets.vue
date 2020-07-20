@@ -5,7 +5,7 @@
                 <v-card-title class="pa-2 ma-0">{{title}}</v-card-title>
             </v-col>
             <v-col v-for="(wed, idx) in items" :key="idx" :cols="wed.config.cols||12" class="px-2 py-4 ma-0">
-                <component v-bind:is="wed.type" :recorder="recorder" :commander="commander" :config="wed.config"></component>
+                <component v-bind:is="wed.type" :recorder="recorder" :commander="commander" :config="wed.config" @command="on_command"></component>
             </v-col>
         </v-row>
     </v-sheet>
@@ -41,5 +41,10 @@
             'e-button': EButton,
             'e-lamp': ELamp,
         },
+        methods: {
+            on_command: function(cmd) {
+                this.$emit('command', cmd)
+            }
+        }
     }
 </script>

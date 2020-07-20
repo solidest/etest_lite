@@ -36,6 +36,10 @@ function on_debug(kind, info, proj_id, case_id) {
     }
 }
 
+function on_ask(ask) {
+    _player.webContents.send('run-ask', ask);
+}
+
 
 async function run_case(info) {
     try {
@@ -54,7 +58,7 @@ async function run_case(info) {
             }
             db.save_proj(proj);
 
-            runner = new Runner(proj.setting.etestd_ip, proj.setting.etestd_port, on_debug);
+            runner = new Runner(proj.setting.etestd_ip, proj.setting.etestd_port, on_debug, on_ask);
             let res = await runner.open();
             if(res.result !== 'ok') {
                 return res;
@@ -108,26 +112,33 @@ async function run_stop() {
     return await _runner.run_stop();
 }
 
-function run_reply() {
-
-}
-
-function run_cmd() {
-
-}
-
 ipcMain.handle('get_outs', (_, info) => {
     if(!_db) {
         return null;
     }
     return _db.get_outs(info);
-  }); 
+});
+
+ipcMain.on('run-cmd', (_, cmd, commander) => {
+    if(_runner) {
+        _runner.run_cmd(cmd, commander);
+    } else {
+        on_debug('error', '执行器已经停止', 0, 0)
+    }
+});
+
+ipcMain.on('run-reply', (_, answer) => {
+    if(_runner) {
+        _runner.run_reply(answer);
+    } else {
+        on_debug('error', '执行器已经停止', 0, 0)
+    }
+   
+})
 
 export default {
     open,
     close,
     run_case,
     run_stop,
-    run_reply,
-    run_cmd,
 }

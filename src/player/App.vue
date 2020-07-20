@@ -12,6 +12,14 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+    <div v-if="ask">
+      <e-confirm-dlg v-if="ask.kind==='ok'" @closed="onAnswer" :dialog="ask" :title="ask.value.title" :text="ask.value.msg" />
+      <e-yesno-dlg v-else-if="ask.kind==='yesno'" @closed="onAnswer" :dialog="ask" :title="ask.title" :text="ask.msg" :option="ask" />
+      <e-input-dlg v-else-if="ask.kind==='text'" @closed="onAnswer" :dialog="ask" :tip="ask.msg" :value="ask.default" :persistent="true" />
+      <e-select-dlg v-else-if="ask.kind==='select'" @closed="onAnswer" :dialog="ask" :title="ask.title" :text="ask.msg" :value="ask.default" :items="ask.items" />
+      <e-number-dlg v-else-if="ask.kind==='number'" @closed="onAnswer" :dialog="ask" :title="ask.title" :text="ask.msg" :value="ask.default" :min="ask.min" :max="ask.max" :fixed="ask.fixed" :option="ask.option||{}" />
+      <e-multiswitch-dlg v-else-if="ask.kind==='multiswitch'" @closed="onAnswer" :dialog="ask" :title="ask.title" :text="ask.msg" :items="ask.items" />
+    </div>
   </v-app>
 </template>
 <style>
@@ -25,6 +33,12 @@
     name: 'App',
     components: {
       'e-sys-bar': ESysBar,
+      'e-confirm-dlg': () => import( /* webpackChunkName: "econfirmdlg" */ './dialogs/EConfirmDlg'),
+      'e-yesno-dlg': () => import( /* webpackChunkName: "eyesnodlg" */ './dialogs/EYesNoDlg'),
+      'e-input-dlg': () => import( /* webpackChunkName: "einputdlg" */ './dialogs/EInputDlg'),
+      'e-select-dlg': () => import( /* webpackChunkName: "eselectdlg" */ './dialogs/ESelectDlg'),
+      'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ './dialogs/EInputDlg'),
+      'e-multiswitch-dlg': () => import( /* webpackChunkName: "emultiswitchdlg" */ './dialogs/EMultiSwitch'),
     },
     created: function () {
       let wid = this.$route.query.winid;
@@ -62,6 +76,9 @@
           return 2000;
         }
       },
+      ask: function() {
+        return this.$store.state.ask;
+      },
     },
 
     watch: {
@@ -78,6 +95,15 @@
           }
         }, 100);
       }
+    },
+    methods: {
+      onAnswer: function (res) {
+        let r = res;
+        if(this.ask.kind === 'text') {
+          r = {result: res.value || null};
+        }
+        this.$store.commit('cmdReply', r);
+      },
     }
   };
 </script>

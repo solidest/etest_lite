@@ -92,7 +92,7 @@ const _store = new Vuex.Store({
     },
     setPlayInfo: function(state, info) {
       state.play_info = info;
-    }
+    },
   },
   actions: {},
   modules: {},
@@ -109,6 +109,7 @@ const _store = new Vuex.Store({
 ipcRenderer.on('check-result', (_, proj_id, results, version) => {
   _store.commit('setCheckResult', {proj_id: proj_id, results: results, version: version});
 });
+
 
 ipcRenderer.on('debug', (_, kind, info, proj_id, case_id) => {
   if(kind === 'play') {

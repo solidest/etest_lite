@@ -1,10 +1,11 @@
 const RpcTask = require('./core/rpctask');
 
 class Runner {
-    constructor(ip, port, on_debug) {
+    constructor(ip, port, on_debug, on_ask) {
         this.ip = ip;
         this.port = port;
         this.on_debug = on_debug;
+        this.on_ask = on_ask;
     }
 
     get proj_id() {
@@ -125,6 +126,10 @@ class Runner {
                         self.clear();
                         db.save();
                     }
+                    let ask = outs.value.find(msg => msg.catalog === 'ask')
+                    if(ask && this.on_ask) {
+                        this.on_ask(ask);
+                    }
                 }
             }, 40);
         }
@@ -135,6 +140,19 @@ class Runner {
         return await this._xfn('stop', {
             key: this.run_uuid,
         });
+    }
+
+    async run_cmd(cmd, commander) {
+        return await this._xfn('command', {
+            key: this.run_uuid,
+            command: cmd,
+            params: commander
+        });
+    }
+
+    async run_reply(answer) {
+        answer.key = this.run_uuid;
+        return await this._xfn('reply', answer);
     }
 }
 

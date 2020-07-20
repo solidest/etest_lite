@@ -8,7 +8,7 @@ export default {
                 this.set_value_(this.commander, this.cmd_keys, this.value);
             }
         } else if(this.cmd_keys) {
-            this.value = this.get_value_(this.commander, this.cmd_keys);
+            this.value = this.get_value_(this.commander, this.cmd_keys) || null;
         }
     },
 

@@ -7,7 +7,7 @@
             drag-ignore-from=".no-drag">
             <div :style="{ border: get_border(item), width: '100%', height: '100%'}" @click="on_click(item)">
                 <e-widgets v-if="item.kind==='widgets'" :title="item.title" :items="item.items" :recorder="recorder"
-                    :commander="commander">
+                    :commander="commander" @command="on_command">
                 </e-widgets>
                 <e-charts v-else-if="item.kind==='charts'" :title="item.title" :design="design" :id="item.id" :size="item.size" 
                     :items="item.items" :recorder="recorder" :recorders="recorders">
@@ -56,6 +56,9 @@
             on_click(item) {
                 this.selected = item;
                 this.$emit("selected", item);
+            },
+            on_command(cmd) {
+                this.$emit('command', cmd);
             },
             get_border: function (item) {
                 if (!this.show_line) {

@@ -119,6 +119,13 @@ function format_item_record(item) {
     }
 }
 
+function format_item_ask(item) {
+    return {
+        tag: {is_print: true, is_ask: true},
+        text: (item.value ? item.value.msg : '')||'ask',
+    }
+}
+
 function format_item(item) {
     let it;
     switch (item.catalog) {
@@ -132,6 +139,10 @@ function format_item(item) {
 
         case 'record':
             it = format_item_record(item);
+            break;
+
+        case 'ask':
+            it = format_item_ask(item);
             break;
 
         default:

@@ -172,10 +172,10 @@ app.on('activate', () => {
     createPlayer();
   }
 })
-
+   
 app.on('ready', async () => {
   createWorker();
-  createPlayer();
+  createPlayer(); 
   createWindow(null);
 })
 
@@ -209,7 +209,7 @@ protocol.registerSchemesAsPrivileged([{
     standard: true
   }
 }])
-
+  
 ///////////////////////// ipcMain ///////////////////////////////
 ipcMain.on('bind-proj', (_, wid, proj_id) => {
   let win = BrowserWindow.fromId(Number.parseInt(wid));

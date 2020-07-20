@@ -20,6 +20,7 @@ const _store = new Vuex.Store({
     play_ids: {},
     panel: null,
     winid: null,
+    ask: null,
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -52,9 +53,22 @@ const _store = new Vuex.Store({
     setWinId: function (state, id) {
       state.winid = id;
     },
+    setAsk: function(state, info) {
+      state.ask = info;
+    },
+    cmdReply: function(state, answer) {
+      state.ask = null;
+      ipcRenderer.send('run-reply', answer);
+    },
+
   },
   actions: {},
   modules: {},
+})
+
+ipcRenderer.on('run-ask', (_, info) => {
+  console.log('on ask', info)
+  _store.commit('setAsk', info);
 })
 
 ipcRenderer.on('debug', (_, kind, info, proj_id, case_id) => {

@@ -1,6 +1,6 @@
 <template>
     <e-panel :layout="layout" :cfg="cfg" :show_line="show_line" :design="false"
-        :recorder="recorder" :recorders="recorders" :commander="commander">
+        :recorder="recorder" :recorders="recorders" :commander="commander" @command="on_command">
     </e-panel>
 </template>
 <script>
@@ -90,6 +90,9 @@ export default {
                 }
             }
         },
+        on_command: function(cmd) {
+            run.run_cmd(cmd, this.commander);
+        }
     }
 
 
