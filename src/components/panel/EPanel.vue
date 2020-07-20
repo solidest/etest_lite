@@ -10,7 +10,7 @@
                     :commander="commander">
                 </e-widgets>
                 <e-charts v-else-if="item.kind==='charts'" :title="item.title" :design="design" :id="item.id" :size="item.size" 
-                    :items="item.items" :recorder="recorder">
+                    :items="item.items" :recorder="recorder" :recorders="recorders">
                 </e-charts>
             </div>
         </grid-item>
@@ -22,7 +22,7 @@
     import ECharts from './charts_subpanel/ESubpanelCharts'
 
     export default {
-        props: ['layout', 'cfg', 'design', 'show_line', 'recorder', 'commander'],
+        props: ['layout', 'cfg', 'design', 'show_line', 'recorder', 'commander', 'recorders'],
         components: {
             'GridLayout': VueGridLayout.GridLayout,
             'GridItem': VueGridLayout.GridItem,

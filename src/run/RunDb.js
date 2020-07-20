@@ -8,6 +8,7 @@ class RunDb {
     constructor(proj_id, db_path) {
         this.proj_id = proj_id;
         this.db_path = db_path;
+        this.keys = {};
     }
 
     open() {
@@ -75,10 +76,38 @@ class RunDb {
         }
         coll.insert(proj);
         this.proj = proj;
+        this.keys = {};
     }
 
     find_case(case_id) {
         return this.proj.luas.find(it => it.id === case_id);
+    }
+
+    get_keys(case_id) {
+        let item = this.find_case(case_id);
+        if(!item || !item.panel || !item.panel.layout) {
+            this.keys[case_id] = {};
+            return {};
+        }
+        let keys = {};
+        item.panel.layout.forEach(subit => {
+            if(subit.items) {
+                subit.items.forEach (it => {
+                    let x_key = (it.config && it.config.x_record_key) ? it.config.x_record_key.trim():'';
+                    let y_key = (it.config && it.config.y_record_key) ? it.config.y_record_key.trim():'';
+                    if(x_key && y_key) {
+                        keys[x_key + '::' + y_key] = {
+                            x: x_key,
+                            y: y_key,
+                            xs: x_key.split('.'),
+                            ys: y_key.split('.'),
+                        }
+                    }
+                });
+            }
+        });
+        this.keys[case_id] = keys;
+        return keys;
     }
 
     clear_outs(case_id) {
@@ -137,6 +166,7 @@ class RunDb {
         });
     }
 
+
     get_outs_items(case_id, begin_time) {
         let coll = this.db.getCollection(case_id);
         if (!coll) {
@@ -159,6 +189,63 @@ class RunDb {
                 '$gt': begin_time
             }
         });
+    }
+
+    get_recorder(rcds) {
+        let rcd = {};
+        rcds.forEach(r => {
+            for (let k in r) {
+                rcd[k] = r[k];
+            }
+        });
+        return rcd;
+    }
+
+    get_value_ (obj, keys) {
+        let o = obj;
+        let idx = 0;
+        let last = keys.length - 1;
+        while (o && (typeof o === 'object')) {
+            if (idx === last) {
+                return o[keys[last]];
+            }
+            o = o[keys[idx]];
+            idx++;
+        }
+        return undefined;
+    }
+
+    get_recorders(rcds, case_id) {
+        let res = {};
+        let keys = this.keys[case_id];
+        if(!keys) {
+            keys = this.get_keys(case_id);
+        }
+        let ok = false;
+   
+        rcds.forEach(rcd => {
+            for(let kk in keys) {
+                let kobj = keys[kk];
+                let xv = this.get_value_(rcd, kobj.xs);
+                if(xv !== undefined && xv !== null) {
+                    let yv = this.get_value_(rcd, kobj.ys);
+                    if(yv !== undefined && yv !== null) {
+                        if(!res[kk]) {
+                            res[kk] = [];
+                        }
+                        res[kk].push({
+                            $time: rcd.$time,
+                            value:[xv, yv]
+                        });
+                        ok = true;
+                    }
+                }
+            }
+        });
+        if(!ok) {
+            return null;
+        }
+        return res;
     }
 
     get_outs_debug_reverse(items, limit) {
@@ -198,7 +285,7 @@ class RunDb {
         }
 
         let res = {
-            is_stop: !!items.find(msg => msg.kind === 'stop' && msg.catalog === 'system')
+            is_stop: !!items.find(msg => msg.kind === 'stop' && msg.catalog === 'system'),
         }
         if (info.kinds.debug) {
             res.debug = info.limit >= 0 ? this.get_outs_debug(items, info.limit) : this.get_outs_debug_reverse(items, -info.limit);
@@ -207,17 +294,15 @@ class RunDb {
             let nitems = items.filter(item => item.catalog === 'log' || (item.catalog === 'system' && ['exit', 'error', 'assertFail', 'verifyFail', 'print'].includes(item.kind)));
             res.console = info.limit >= 0 ? this.get_outs_debug(nitems, info.limit) : this.get_outs_debug_reverse(nitems, -info.limit);
         }
-        if (info.kinds.recorder || info.kinds.records) {
+        if (info.kinds.recorder || info.kinds.recorders) {
             let rcds = this.get_outs_rcds(info.case_id, info.begin_time);
             if (rcds && rcds.length > 0) {
+                res.$time = rcds[rcds.length-1].$time;
                 if (info.kinds.recorder) {
-                    let rcd = {};
-                    rcds.forEach(r => {
-                        for (let k in r) {
-                            rcd[k] = r[k];
-                        }
-                    });
-                    res.recorder = rcd;
+                    res.recorder = this.get_recorder(rcds);
+                }
+                if (info.kinds.recorders) {
+                    res.recorders = this.get_recorders(rcds, info.case_id);
                 }
             }
         }

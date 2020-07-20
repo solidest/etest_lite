@@ -5,12 +5,21 @@
 
 <script>
     import echarts from 'echarts';
-    import mocker from './mocker_data';
+    import gauge from './gauge';
+    import lines from './lines';
+    import mocker_data from './mocker_data';
+
+    const max_points = 1000;
 
     export default {
-        props: ['id', 'size', 'items', 'title', 'design', 'recorder', ],
+        props: ['id', 'size', 'items', 'title', 'design', 'recorder', 'recorders'],
         
         mounted: function() {
+            if(this.design) {
+                this.mock_datas();
+            } else {
+                this.init_datas();
+            }
             this.load_data(this.recorder);
         },
 
@@ -32,53 +41,55 @@
                 this.$nextTick(() => {
                     if (!self.chart) {
                         self.chart = echarts.init(document.getElementById(this.id),'dark');
-                        self.redraw();
+                        self.redraw('size');
                         return;
                     }
-                    if (self.design) {
-                        self.chart.resize();
-                        self.redraw();
-                    } else {
-                        self.chart.resize();
-                    }
+                    self.chart.resize();
+                    self.redraw('size');
                 });
             },
             title: function () {
                 let self = this;
                 this.$nextTick(() => {
                     if (self.chart) {
-                        self.redraw();
+                        self.redraw('title');
                     }
                 });
             },
             recorder: function (v) {
-                this.load_data(v);
-                this.load_datas();
-                if(this.design) {
-                    this.redraw();
-                } else {
-                    this.redraw_data();
+                if(!this.is_gauge) {
+                    if(this.design) {
+                        this.mock_datas();
+                        this.redraw('recorder');
+                    }
+                    return;
                 }
+                let res = this.load_data(v);
+                if(!res && !this.design) {
+                    return;
+                }
+                let self = this;
+                this.$nextTick(() =>{
+                    if(self.design) {
+                        self.redraw('recorder');
+                    } else {
+                        self.redraw_data('recorder');
+                    }
+                });
             },
+            recorders: function(vs) {
+                if(this.is_gauge || !this.load_datas(vs)) {
+                    return;
+                }
+                let self = this;
+                this.$nextTick(() =>{
+                    self.redraw_data('recorders');
+                })
+            }
         },
 
         methods: {
-            load_data: function(recorder) {
-                if(this.is_gauge) {
-                    this.items.forEach(it => {
-                        if (it.config.record_key && it.config.record_key.trim()) {
-                            let keys = it.config.record_key.trim().split('.');
-                            let v = this.get_value_(recorder, keys);
-                            if (v !== undefined) {
-                                this.value[it] = v;
-                            }
-                        }
-                    });
-                }
-            },
-            load_datas: function() {
-                console.log('TODO load datas');
-            },
+
             get_value_: function (obj, keys) {
                 let o = obj;
                 let idx = 0;
@@ -92,126 +103,94 @@
                 }
                 return undefined;
             },
-
-            set_value_: function (obj, keys, v) {
-                let idx = 0;
-                let last = keys.length - 1;
-                let o = obj;
-                do {
-                    if (idx === last) {
-                        o[keys[last]] = v;
-                        return;
+            
+            load_data: function(recorder) {
+                let res = false;
+                this.items.forEach(it => {
+                    if (it.config.record_key && it.config.record_key.trim()) {
+                        let key = it.config.record_key.trim();
+                        let keys = key.split('.');
+                        let v = this.get_value_(recorder, keys);
+                        if (v !== undefined) {
+                            this.value[key] = v;
+                            res = true;
+                        }
                     }
-                    if (!o[keys[idx]]) {
-                        o[keys[idx]] = {};
-                    }
-                    o = o[keys[idx]];
-                } while (idx++ < last);
+                });
+                return res;
             },
 
-            get_main_option_: function () {
-                if(this.items.length === 0) {
+            load_datas: function(recorders) {
+                let res = false;
+                if (!this.items || this.items.length === 0) {
+                    return res;
+                }
+                this.items.forEach (it => {
+                    let x_key = (it.config && it.config.x_record_key) ? it.config.x_record_key.trim():'';
+                    let y_key = (it.config && it.config.y_record_key) ? it.config.y_record_key.trim():'';
+                    if(x_key && y_key) {
+                        let key = x_key + '::' + y_key;
+                        let vs = recorders[key];
+                        if(vs) {
+                            res = true;
+                            if(!this.values[key]) {
+                                this.values[key] = vs;
+                            } else {
+                                this.values[key].push(...vs);
+                            }
+                            let rc = this.values[key].length - max_points;
+                            if(rc>0) {
+                                this.values[key].splice(0, rc);
+                            }
+                        }                
+                    }
+                });
+                return res;
+            },
+
+            init_datas: function() {
+                this.values = {};
+                if (!this.items || this.items.length === 0) {
                     return;
                 }
-                let cfg = this.items[0].config.items;
-                cfg = JSON.parse(JSON.stringify(cfg));
-                if (this.title) {
-                    cfg.title = {
-                        text: this.title,
-                        textStyle: {
-                            color: '#EEEEEE',
-                        },
-                        left: 20,
-                        top: 20,
-                        show: true,
-                    };
-                } else {
-                    cfg.title = {
-                        show: false
-                    };
-                }
-                if(!this.is_gauge) {
-                    cfg.xAxis = cfg.xAxis || {};
-                    cfg.yAxis = cfg.yAxis || {};
-                }
-                return cfg;
-            },
-
-            get_series_option_: function (opt) {
-                let series = [];
-                this.items.forEach(it => {
-                    let cfg = it.config;
-                    let se = {};
-                    if(cfg && cfg.items && cfg.items.series && cfg.items.series.length===1) {
-                        se = cfg.items.series[0];
-                    }
-                    se.type = it.type.substring(2);
-                    se.name = cfg.label;
-                    series.push(se);
-                });
-                opt.series = series;
-            },
-
-            get_design_data_: function (opt) {
-                opt.series.forEach(se => {
-                    if (se.type === 'gauge') {
-                        if(this.value[se] !== undefined) {
-                            se.data = [{
-                                value: this.value[se],
-                                name: se.name,
-                            }];
-                        } else if(!se.data) {
-                            se.data = [{value: 0, name: se.name}]
-                        }
-                    } else {
-                        se.data = mocker.create_data(se);
+                this.items.forEach (it => {
+                    let x_key = (it.config && it.config.x_record_key) ? it.config.x_record_key.trim():'';
+                    let y_key = (it.config && it.config.y_record_key) ? it.config.y_record_key.trim():'';
+                    if(x_key && y_key) {
+                        this.values[x_key + '::' + y_key] = [];                   
                     }
                 });
             },
 
-            get_run_data_: function(opt) {
-                opt.series.forEach(se => {
-                    if (se.type === 'gauge') {
-                        if(this.value[se] !== undefined) {
-                            se.data = [{
-                                value: this.value[se],
-                                name: se.name,
-                            }];
-                        } else if(!se.data) {
-                            se.data = [{value: 0, name: se.name}]
-                        }
-                    } else {
-                        //TODO
+
+            mock_datas: function() {
+                this.values = {};
+                if (!this.items || this.items.length === 0) {
+                    return;
+                }
+                this.items.forEach (it => {
+                    let x_key = (it.config && it.config.x_record_key) ? it.config.x_record_key.trim():'';
+                    let y_key = (it.config && it.config.y_record_key) ? it.config.y_record_key.trim():'';
+                    if(x_key && y_key) {
+                        this.values[x_key + '::' + y_key] = mocker_data.create_data(it);                   
                     }
                 });
             },
 
             redraw: function () {
-                if (!this.chart) {
-                    return;
-                }
+                // console.log('redraw by', reason)
+                this.chart.clear();
                 if(this.items.length === 0) {
-                    this.chart.clear();
                     return;
                 }
-                let option = this.get_main_option_();
-                this.get_series_option_(option);
-
-                if (this.design) {
-                    this.get_design_data_(option);
-                    this.chart.clear();
-                } else {
-                    this.get_run_data_(option);
-                }
-
+                let option = this.is_gauge ? gauge.get_option(this.items, this.value, this.title) : lines.get_option(this.items, this.values, this.title);
                 this.chart.setOption(option);
             },
 
             redraw_data: function() {
-                this.redraw();
-                // let opt = {};
-                // this.get_run_data_(opt);
-                // this.chart.setOption(opt);
+                // console.log('redraw_data by', reason)
+                let option = this.is_gauge ? gauge.get_data_option(this.items, this.value) : lines.get_data_option(this.items, this.values);
+                this.chart.setOption(option);
             }
         }
 

@@ -1,6 +1,6 @@
 <template>
     <e-panel :layout="layout" :cfg="cfg" :show_line="show_line" :design="false"
-        :recorder="recorder" :commander="commander">
+        :recorder="recorder" :recorders="recorders" :commander="commander">
     </e-panel>
 </template>
 <script>
@@ -30,6 +30,7 @@ export default {
         return {
             commander: {},
             recorder: {},
+            recorders: {},
             outs: [],
             cfg: cfg,
         }
@@ -70,15 +71,20 @@ export default {
                 begin_time: this.last_time,
                 kinds: {
                     recorder: true,
+                    recorders: true,
                 }
             }
             let res = await run.get_outs(info);
             this.reading = false;
             if (res) {
-                if (res.recorder) {
+                this.last_time = res.$time;
+                if(res.recorder) {
                     this.recorder = res.recorder;
                 }
-                if (res.stop) {
+                if(res.recorders) {
+                    this.recorders = res.recorders;
+                }
+                if(res.is_stop) {
                     clearInterval(this.timer);
                     this.timer = null;
                 }

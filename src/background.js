@@ -64,7 +64,7 @@ function createWorker() {
     try_close_all();
   });
 }
- 
+  
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
@@ -160,7 +160,7 @@ function beginCheck(proj_id, reason) {
 
 //////////////////////// app //////////////////////////////
 app.on('window-all-closed', quit)
-
+  
 app.on('activate', () => {
   if (wins.size() === 0) {
     createWindow(null);
@@ -172,7 +172,7 @@ app.on('activate', () => {
     createPlayer();
   }
 })
- 
+
 app.on('ready', async () => {
   createWorker();
   createPlayer();

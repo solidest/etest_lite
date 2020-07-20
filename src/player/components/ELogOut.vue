@@ -66,7 +66,7 @@
                             this.outs.splice(0, dc);
                         }
                     }
-                    if (res.stop) {
+                    if (res.is_stop) {
                         clearInterval(this.timer);
                         this.timer = null;
                     }

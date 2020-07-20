@@ -35,9 +35,8 @@ function create_data(se) {
     for (var i = 0; i < 100; i++) {
         data.push(randomData1());
     }
+    // console.log('data', data)
     return data;
 }
-
-
 
 export default { create_data };
