@@ -20,6 +20,9 @@ let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const db_path = app.getPath('userData');
+if(isDevelopment) {
+  console.log('db_path: ', db_path);
+}
 
 async function quit() {
   await ipc.close();

@@ -75,7 +75,7 @@
             on_save: function (script) {
                 this.data.option_code = script;
                 try {
-                    this.data.items = yaml.safeLoad(script, 'utf8');
+                    this.data.items = yaml.load(script, 'utf8');
                 } catch (error) {
                     this.$store.commit('setMsgError', error.message);
                 }

@@ -12,7 +12,7 @@ class PanelData {
             return;
         }
         try {
-            let doc = yaml.safeLoad(str, 'utf8');
+            let doc = yaml.load(str, 'utf8');
             if (doc) {
                 this.commander = doc.command || {};
                 this.recorder = doc.record || {};
