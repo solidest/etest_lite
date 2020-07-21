@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import EEmpty from '../components/EEmpty.vue'
 import ELuaEditor from '../views/ELuaEditor'
+import ETcgEditor from '../views/ETcgEditor'
 
 Vue.use(VueRouter)
 
@@ -49,6 +50,10 @@ const routes = [{
     path: '/lua',
     name: 'Lua',
     component: ELuaEditor,
+  }, {
+    path: '/tcg',
+    name: 'Tcg',
+    component: ETcgEditor, //() => import( /* webpackChunkName: "e_editor_tcg" */ '../views/TcgEditor'),
   }, {
     path: '/xtra',
     name: 'Xtra',

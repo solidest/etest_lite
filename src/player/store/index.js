@@ -19,7 +19,6 @@ const _store = new Vuex.Store({
     },
     play_ids: {},
     panel: null,
-    winid: null,
     ask: null,
   },
   mutations: {
@@ -50,9 +49,6 @@ const _store = new Vuex.Store({
       }
       state.panel = info.panel;
     },
-    setWinId: function (state, id) {
-      state.winid = id;
-    },
     setAsk: function(state, info) {
       state.ask = info;
     },
@@ -67,7 +63,6 @@ const _store = new Vuex.Store({
 })
 
 ipcRenderer.on('run-ask', (_, info) => {
-  console.log('on ask', info)
   _store.commit('setAsk', info);
 })
 

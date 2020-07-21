@@ -51,8 +51,8 @@ async function open_proj(proj_id) {
 }
 
 
-function bind_proj(wid, proj_id) {
-    return ipcRenderer.send('bind-proj', wid || 1, proj_id)
+function bind_proj(proj_id) {
+    return ipcRenderer.send('bind-proj', proj_id)
 }
 
 

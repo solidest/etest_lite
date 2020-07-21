@@ -64,7 +64,7 @@ export default {
           if(this.stop_run) {
             run.stop_run();
           }
-          ipcRenderer.send('close-win', this.$store.state.winid);
+          ipcRenderer.send('close-win');
         }
     }
 

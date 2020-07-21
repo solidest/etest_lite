@@ -81,12 +81,11 @@ function createPlayer() {
     backgroundColor: '#000000',
   });
   run.open(player, db_path);
-  let wid = '#/?winid=' + player.id;
   if (isDevelopment) {
-    player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html' + wid)
+    player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html')
   } else {
     createProtocol('app')
-    player.loadURL('app://./player.html' + wid)
+    player.loadURL('app://./player.html')
   }
   player.on('closed', () => {
     player = null;
@@ -126,7 +125,6 @@ function createWindow(proj_id) {
   }
 
   let open_proj = proj_id ? '#/?proj_id=' + proj_id : '#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false');
-  open_proj += ('&winid=' + win.id);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
@@ -211,11 +209,8 @@ protocol.registerSchemesAsPrivileged([{
 }])
   
 ///////////////////////// ipcMain ///////////////////////////////
-ipcMain.on('bind-proj', (_, wid, proj_id) => {
-  let win = BrowserWindow.fromId(Number.parseInt(wid));
-  if (!win) {
-    console.log('ERROR win from id')
-  }
+ipcMain.on('bind-proj', (ev, proj_id) => {
+  let win = wins.lookup(ev.sender);
   wins.update(win, proj_id);
   beginCheck(proj_id, 'bind proj');
 })
@@ -235,19 +230,15 @@ ipcMain.handle('open-proj', (_, proj_id) => {
   beginCheck(proj_id, 'open-proj');
 });
  
-ipcMain.on('close-win', (_, wid) => {
-  wid = Number.parseInt(wid);
-  if(wid===player.id) {
+ipcMain.on('close-win', (ev) => {
+  if(ev.sender===player.webContents) {
     player.hide();
     player_show = false;
     try_close_all();
     return;
   }
-  let win = BrowserWindow.fromId(wid);
-  if (!win) {
-    console.log('ERROR win from id');
-    return;
-  }  
+  
+  let win = wins.lookup(ev.sender);
   win.close();
 });
   

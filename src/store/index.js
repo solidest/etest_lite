@@ -21,7 +21,6 @@ const _store = new Vuex.Store({
     redo_count: 0,
     undo_count: 0,
     proj: null,
-    winid: null,
     copys: { device: '', protocol: '', panel: ''},
     check_result: {version: 0, proj_id: 0},
     play_info: null,
@@ -51,11 +50,8 @@ const _store = new Vuex.Store({
         return;
       }
       state.proj = proj;
-      ipc.bind_proj(state.winid, proj ? proj.id : null);
+      ipc.bind_proj(proj ? proj.id : null);
       state.edit_doc = null;
-    },
-    setWinId: function(state, id) {
-      state.winid = id;
     },
     setEditDoc: function(state, info) {
       // console.log('open doc', info.doc.id);

@@ -1,62 +1,3 @@
-//             get_design_data_: function (opt) {
-//                 opt.series.forEach(se => {
-//                     if (se.type === 'gauge') {
-//                         if(this.value[se] !== undefined) {
-//                             se.data = [{
-//                                 value: this.value[se],
-//                                 name: se.name,
-//                             }];
-//                         } else if(!se.data) {
-//                             se.data = [{value: 0, name: se.name}]
-//                         }
-//                     } else {
-//                         se.data = mocker.create_data(se);
-//                     }
-//                 });
-//             },
-
-//             get_run_data_: function(opt) {
-//                 opt.series.forEach(se => {
-//                     if (se.type === 'gauge') {
-//                         if(this.value[se] !== undefined) {
-//                             se.data = [{
-//                                 value: this.value[se],
-//                                 name: se.name,
-//                             }];
-//                         } else if(!se.data) {
-//                             se.data = [{value: 0, name: se.name}]
-//                         }
-//                     } else {
-//                         //TODO
-//                     }
-//                 });
-//             },
-
-
-
-
-// if (this.design) {
-//     this.get_design_data_(option);
-//     this.chart.clear();
-// } else {
-//     this.get_run_data_(option);
-// }
-
-// set_value_: function (obj, keys, v) {
-//     let idx = 0;
-//     let last = keys.length - 1;
-//     let o = obj;
-//     do {
-//         if (idx === last) {
-//             o[keys[last]] = v;
-//             return;
-//         }
-//         if (!o[keys[idx]]) {
-//             o[keys[idx]] = {};
-//         }
-//         o = o[keys[idx]];
-//     } while (idx++ < last);
-// },
 
 function get_data_option(items, value) {
     let series = [];
@@ -68,7 +9,7 @@ function get_data_option(items, value) {
                 series.push({
                     data: [{
                         value: value[key],
-                        name: it.name,
+                        name: icfg.label||'',
                     }]
                 });
             } else {
@@ -116,12 +57,12 @@ function get_option(items, value, title) {
             if (value[key] !== undefined) {
                 se.data = [{
                     value: value[key],
-                    name: it.name,
+                    name: se.name||'',
                 }]
             } else {
                 se.data = [{
                     value: 0,
-                    name: it.name
+                    name: se.name||''
                 }]
             }
             series.push(se);

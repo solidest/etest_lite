@@ -180,7 +180,6 @@
                 if (!res) {
                     return {}
                 }
-                // console.log(res[this.doc_id])
                 return res[this.doc_id] || {};
             }
         },
@@ -309,7 +308,6 @@
                 return true;
             },
             on_action: function (ac, data) {
-                console.log('ac', ac);
                 if (this[ac](data)) {
                     this.save_doc();
                     if (!(ac === 'redo' || ac === 'undo')) {

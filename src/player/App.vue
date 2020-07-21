@@ -40,10 +40,6 @@
       'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ './dialogs/EInputDlg'),
       'e-multiswitch-dlg': () => import( /* webpackChunkName: "emultiswitchdlg" */ './dialogs/EMultiSwitch'),
     },
-    created: function () {
-      let wid = this.$route.query.winid;
-      this.$store.commit('setWinId', wid);
-    },
 
     computed: {
       play_ids: function(){

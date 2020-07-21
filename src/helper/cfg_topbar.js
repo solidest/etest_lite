@@ -6,7 +6,7 @@ const cfg = {
         catalog: 'program',
         type: 'tree',
         icons: {
-            model: 'mdi-vector-polyline',
+            tcg: 'mdi-vector-polyline',
             actions: 'mdi-playlist-play',
             lua: 'mdi-script-text-outline',
         }
@@ -119,7 +119,7 @@ const cfg = {
                 },
                 {
                     text: 'AutoTCG模型',
-                    value: 'model',
+                    value: 'tcg',
                 }
             ]
         },

@@ -37,6 +37,16 @@ function find(proj_id) {
     return null;
 }
 
+function lookup(contents) {
+    let keys = _wins.keys();
+    for(let k of keys) {
+        if(k.win.webContents === contents) {
+            return k.win;
+        }
+    }
+    return null;
+}
+
 function search(win) {
     let keys = _wins.keys();
     for(let k of keys) {
@@ -51,4 +61,4 @@ function size() {
     return _wins.size;
 }
 
-export default { add, del, find, search, update, size }
+export default { add, del, find, search, update, size, lookup }

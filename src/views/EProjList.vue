@@ -201,7 +201,7 @@
           return;
         }
         let res = await ipc.active_proj(proj.data.id);
-        if (!res || !this.$store.state.winid || res === this.$store.state.winid) {
+        if (!res) {
           this.$store.commit('setProj', proj.data);
           this.$router.push({
             name: 'TestCase'

@@ -1,6 +1,6 @@
 <template>
     <v-edit-dialog large save-text="确定" cancel-text="取消"
-    @cancel="doClear" @close="doClear" @open="onOpen">
+    @cancel="doClear" @close="doClear" @open="onOpen" @save="onSave">
         <span :class="cls" @click="onClick">{{text||' '}}</span>
         <span class = "ml-2 grey--text" @click="onClick">{{memo}}</span>
         <template v-slot:input>

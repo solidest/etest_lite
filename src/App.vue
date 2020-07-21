@@ -32,10 +32,6 @@
       'e-toolbar': EToolBar,
     },
 
-    created: function() {
-      this.$store.commit('setWinId', this.$route.query.winid);
-    },
-
     computed: {
       tip: {
         get: function () {
@@ -86,6 +82,10 @@
           case 'lua':
             res.route_name = 'Lua';
             break;
+          case 'tcg':
+            res.route_name = 'Tcg';
+            break;
+
           case 'project':
             res.route_name = ed.doc.value;
             break;

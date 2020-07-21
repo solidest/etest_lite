@@ -10,7 +10,7 @@
                 </template>
                 <span>{{item.tip}}</span>
             </v-tooltip>
-            <v-icon v-else-if="item.tag.is_console" class="pa-0 pb-1 ma-0" small color="grey"
+            <v-icon v-else-if="item.tag.is_console||item.tag.is_ask" class="pa-0 pb-1 ma-0" small color="grey"
                 style="display:inline-block;">
                 mdi-greater-than
             </v-icon>
