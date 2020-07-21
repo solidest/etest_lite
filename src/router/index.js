@@ -42,6 +42,14 @@ const routes = [{
     path: '/protocol',
     name: 'Protocol',
     component: () => import( /* webpackChunkName: "e_editor_protocol" */ '../views/EProtocolEditor'),
+  },  {
+    path: '/test/protocol',
+    name: 'ProtocolTest',
+    component: () => import( /* webpackChunkName: "e_test_protocol" */ '../views/EProtocolTestor'),
+  }, {
+    path: '/tool/dataformat',
+    name: 'tool_dataformat',
+    component: () => import( /* webpackChunkName: "e_tool_dataformat" */ '../views/EToolDataFormat'),
   }, {
     path: '/panel',
     name: 'Panel',

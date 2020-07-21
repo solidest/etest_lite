@@ -5,7 +5,8 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom v-for="(item, idx) in items" :key="idx" open-delay="300">
             <template v-slot:activator="{ on }">
-                <v-edit-dialog v-if="item.value.startsWith('new_')" @save="on_new_finish">
+                <v-spacer v-if="!item.value" />
+                <v-edit-dialog v-else-if="item.value.startsWith('new_')" @save="on_new_finish">
                     <v-btn icon small v-on="on" class="mx-1" 
                         @click="(e)=>{(item.disabled && item.disabled())?e.stopPropagation():on_new_init(item)}">
                         <v-icon :color="`grey ${(item.disabled && item.disabled())?'darken-2':'lighten-1'}`">{{item.icon}}</v-icon>
@@ -14,7 +15,7 @@
                         <slot name="new_sheet" :new_data="new_data"></slot>
                     </template>
                 </v-edit-dialog>
-                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" >
+                <v-btn v-else-if="item.value.startsWith('d_')" icon small v-on="on" class="mx-1" @click="emit(item)" :disabled="item.is_disabled" >
                     <v-icon color="grey lighten-1">{{item.icon}}</v-icon>
                 </v-btn>
                 <v-btn v-else-if="item.value==='undo'||item.value==='redo'" icon small v-on="on" class="mx-1"

@@ -1,6 +1,6 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
-        <v-card height="100%" width="100%" tile>
+        <v-card height="100%" width="100%" tile :loading="loading">
             <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1, name:''}"
                 :kind="cfg.kind" @action="on_action">
                 <template v-slot:new_sheet="{new_data}">
@@ -139,7 +139,8 @@
             this.bar_items = this.cfg.bar_items;
             this.headers = this.cfg.headers;
             this.load_doc();
-            this.cfg.bar_items[0].disabled = this.disabled_sub_insert;
+            
+            this.cfg.bar_items.find(it=>it.value==='new_item_sub').disabled = this.disabled_sub_insert;
         },
 
         data() {
@@ -155,6 +156,8 @@
                     frm: null,
                 },
                 current_row: null,
+                loading: false,
+                version: 0,
             }
         },
         computed: {
@@ -181,7 +184,11 @@
                     return {}
                 }
                 return res[this.doc_id] || {};
-            }
+            },
+            check_version: function () {
+                let res = this.$store.state.check_result;
+                return res ? res.version : 0;
+            },
         },
         watch: {
             current_row: function (v) {
@@ -189,6 +196,46 @@
             }
         },
         methods: {
+            do_play: async function() {
+                this.try_run_times++;
+                if(this.try_run_times>10){
+                    this.$store.commit('setMsgError', '协议测试启动失败');
+                    this.loading = false;
+                    return;
+                }
+                if (this.check_version !== this.version) {
+                    let self = this;
+                    setTimeout(() => {
+                        self.do_play();
+                    }, 300);
+                    return;
+                }
+                if (this.error_obj.$count>0) {
+                    this.$store.commit('setMsgError', '启动协议测试失败，因为存在未解决的错误');
+                    this.loading = false;
+                    return;
+                }
+                this.loading = false;
+                this.$router.push({
+                    name: 'ProtocolTest',
+                    params: {doc_id: this.doc_id},
+                })
+            },
+
+            d_play: async function () {
+                if(!this.content.frm || this.content.frm.draw_items.length===0 ) {
+                    this.$store.commit('setMsgError', '通信协议内容无效');
+                    return;
+                }
+                await this.save_doc();
+                this.try_run_times = 0;
+                this.loading = true;
+                let self = this;
+                setTimeout(() => {
+                    self.do_play();
+                }, 300);
+                return false;
+            },
             fmt_name_arrlen: function (item) {
                 if (item.arrlen && item.arrlen.trim()) {
                     return `${item.full_name()} [ ${item.arrlen.trim()} ]`;
@@ -358,7 +405,7 @@
                     kind: this.kind,
                     content: this.get_save_obj(),
                 };
-                await ipc.update({
+                this.version = await ipc.update({
                     kind: 'doc',
                     doc: doc
                 });

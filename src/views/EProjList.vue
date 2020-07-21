@@ -161,7 +161,6 @@
 
     mounted: function () {
       let self = this;
-      console.log('list_proj')
       ipc.list_proj().then((res) => {
         self.update(res);
       });

@@ -5,55 +5,67 @@ const cfg = {
         text: '协议测试',
         value: 'd_play',
         icon: 'mdi-play',
+        is_disabled: true,
     },{
         text: '关闭测试',
         value: 'd_stop',
         icon: 'mdi-stop',
-        is_disabled: true,
+        is_disabled: false,
     },{},{
         text: '添加子级',
-        value: 'new_item_sub',
+        value: 'd_new_item_sub',
         icon: 'mdi-table-row',
+        is_disabled: true,
     }, {
         text: '向后添加',
-        value: 'new_item_after',
-        icon: 'mdi-table-row-plus-after'
+        value: 'd_new_item_after',
+        icon: 'mdi-table-row-plus-after',
+        is_disabled: true,
     }, {
         text: '向前添加',
-        value: 'new_item_before',
-        icon: 'mdi-table-row-plus-before'
+        value: 'd_new_item_before',
+        icon: 'mdi-table-row-plus-before',
+        is_disabled: true,
     }, {
         text: '上移',
-        value: 'move_up',
-        icon: 'mdi-arrow-up'
+        value: 'd_move_up',
+        icon: 'mdi-arrow-up',
+        is_disabled: true,
     }, {
         text: '下移',
-        value: 'move_down',
-        icon: 'mdi-arrow-down'
+        value: 'd_move_down',
+        icon: 'mdi-arrow-down',
+        is_disabled: true,
     }, {
         text: '剪切',
-        value: 'cut',
-        icon: 'mdi-content-cut'
+        value: 'd_cut',
+        icon: 'mdi-content-cut',
+        is_disabled: true,
     }, {
         text: '复制',
-        value: 'copy',
-        icon: 'mdi-content-copy'
+        value: 'd_copy',
+        icon: 'mdi-content-copy',
+        is_disabled: true,
     }, {
         text: '粘贴',
-        value: 'paste',
-        icon: 'mdi-content-paste'
+        value: 'd_paste',
+        icon: 'mdi-content-paste',
+        is_disabled: true,
     }, {
         text: '撤销',
-        value: 'undo',
-        icon: 'mdi-undo'
+        value: 'd_undo',
+        icon: 'mdi-undo',
+        is_disabled: true,
     }, {
         text: '恢复',
-        value: 'redo',
+        value: 'd_redo',
         icon: 'mdi-redo',
+        is_disabled: true,
     }, {
         text: '删除',
-        value: 'del_item',
-        icon: 'mdi-delete-outline'
+        value: 'd_del_item',
+        icon: 'mdi-delete-outline',
+        is_disabled: true,
     }, ],
     headers: [{
         width: 48

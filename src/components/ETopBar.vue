@@ -133,6 +133,8 @@
                     if (this.page !== cfg.pages[0]) {
                         this.changePage(cfg.pages[0]);
                     }
+                } else if(v && v.startsWith('tool_')) {
+                    this.width = hide_;
                 }
             }
         },

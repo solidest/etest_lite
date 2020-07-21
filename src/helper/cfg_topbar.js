@@ -47,6 +47,10 @@ const cfg = {
         type: 'items',
         file_icon: 'mdi-help-rhombus-outline',
         items: [{
+            name: '数据格式转换',
+            value: 'tool_dataformat',
+            id: 'tool_dataformat'
+        }, {
             name: '组合配对',
             value: 'pairwise',
             id: 'tool_pairwise'

@@ -1,4 +1,12 @@
 
+## ETestDev设计器 0.1.5
+- 工具箱新增数据格式转换工具，支持以下数据类型
+    - JSON
+    - Excel
+    - Yaml
+    - JavaScript（代码执行结果）
+
+
 ## ETestDev设计器 0.1.3
 
 - 新增执行模块ETestPlayer
