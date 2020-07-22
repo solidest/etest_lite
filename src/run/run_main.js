@@ -1,11 +1,14 @@
 
 import wins from '../feature/m_wins';
+import m_db from '../feature/m_db';
 import load_proj from './wrapper/loader';
 import Runner from './Runner';
 import RunDb from './RunDb';
 import {
     ipcMain,
   } from 'electron';
+import Project from './wrapper/Project';
+import Protocol from './wrapper/Protocol';
 
 let _db_path;
 let _player;
@@ -112,7 +115,69 @@ async function run_stop() {
     return await _runner.run_stop();
 }
 
-ipcMain.handle('get_outs', (_, info) => {
+
+ipcMain.handle('run-test', async (_, info) => {
+    try {
+
+        let db = new RunDb(info.proj_id, _db_path);
+        let res = await db.open();
+        if(res.result !== 'ok') {
+            return res;
+        }                
+        let proj = m_db.load_proj(info.proj_id);
+        proj = new Project(proj);
+        if(info.prot_id) {
+            let item = m_db.load('protocol', info.prot_id);
+            let doc = m_db.load('doc', info.prot_id);      
+            proj.addKind('protocol', new Protocol(doc, proj, item.name));      
+        }
+        proj = proj.make_out();
+        if(!proj.setting || !proj.setting.etestd_ip || !proj.setting.etestd_port) {
+            return {
+                result: 'error',
+                value: '执行器连接设置错误'
+            }
+        }
+        db.proj = proj;
+
+        
+        let runner = new Runner(proj.setting.etestd_ip, proj.setting.etestd_port, on_debug, on_ask);
+        res = await runner.open();
+        if(res.result !== 'ok') {
+            return res;
+        }
+        let env = {
+            proj_id: proj.id,
+            prots: proj.prots,
+        };
+        res = await runner.make_test_env(env);
+        if(res.result !== 'ok') {
+            return res;
+        }
+
+        let case_info = {
+            proj_id: info.proj_id,
+            script: info.script,
+            vars: info.vars,
+            option: info.option,
+            rpath_src: './' + info.name + '.lua',
+        }
+        db.clear_outs(info.id);
+        res = await runner.run_test_case(case_info, db, info.id);
+        if(res.result === 'ok') {
+            _runner = runner;
+            _db = db;
+        }
+        return res;
+    } catch (error) {
+        return {
+            result: 'error',
+            value: error.message
+        }
+    }
+});
+
+ipcMain.handle('get-outs', (_, info) => {
     if(!_db) {
         return null;
     }
@@ -133,7 +198,6 @@ ipcMain.on('run-reply', (_, answer) => {
     } else {
         on_debug('error', '执行器已经停止', 0, 0)
     }
-   
 })
 
 export default {

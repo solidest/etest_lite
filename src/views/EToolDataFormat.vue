@@ -40,7 +40,7 @@
                             <v-row class="pa-0 ma-0">
                                 <v-col cols="6" class="ma-0 pa-1" align="begin">
                                     <v-btn color="grey lighten-2" outlined @click="on_yaml">
-                                        JAML
+                                        YAML
                                     </v-btn>
                                 </v-col>
                                 <v-col cols="6" class="ma-0 pa-1" align="end">

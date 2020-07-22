@@ -1,6 +1,23 @@
+
+
+function get_script_pack() {
+    const res = [
+        'function entry(vars, option)',
+        'local buff = pack(protocol[vars.prot], vars.msg)',
+        'if buff==nil then error("打包失败") end',
+        'record.pack_result = string.buff2hex(buff)',
+        'exit()',
+        'end',
+    ]
+    return res.join('\n');
+}
+
 const cfg = {
     kind: 'protocol',
     icon: 'mdi-message-outline',
+    script: {
+        pack: get_script_pack(),
+    },
     bar_items: [{
         text: '协议测试',
         value: 'd_play',

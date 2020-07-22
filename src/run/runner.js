@@ -85,6 +85,30 @@ class Runner {
         }
     }
 
+    _start_readout(db, case_id, uuid) {
+        this.run_uuid = uuid;
+        let self = this;
+        this.timer = setInterval(async () => {
+            let outs = await self._xfn('readout', {
+                key: self.run_uuid,
+            });
+            if (outs.result !== 'ok') {
+                self.close();
+                self.on_debug('error', outs.value, proj.id, case_id);
+            } else if (outs.value.length > 0) {
+                db.save_outs(case_id, outs.value);
+                if (outs.value.find(msg => msg.kind === 'stop' && msg.catalog === 'system')) {
+                    self.clear();
+                    db.save();
+                }
+                let ask = outs.value.find(msg => msg.catalog === 'ask')
+                if(ask && self.on_ask) {
+                    self.on_ask(ask);
+                }
+            }
+        }, 40);
+    }
+
     async make_env(proj) {
         let env = {
             proj_id: proj.id,
@@ -94,6 +118,18 @@ class Runner {
             libs: proj.libs
         };
         return await this._xfn('makeenv', env);
+    }
+
+    async make_test_env(env) {
+        return await this._xfn('makeenv', env);
+    }
+
+    async run_test_case(info, db, case_id) {
+        let res = await this._xfn('start', info);
+        if (res.result === 'ok') {
+            this._start_readout(db, case_id, res.value);
+        }
+        return res;
     }
 
     async run_case(case_id, db) {
@@ -111,27 +147,7 @@ class Runner {
         let res = await this._xfn('start', info);
 
         if (res.result === 'ok') {
-            this.run_uuid = res.value;
-            let self = this;
-            this.timer = setInterval(async () => {
-                let outs = await self._xfn('readout', {
-                    key: self.run_uuid,
-                });
-                if (outs.result !== 'ok') {
-                    self.close();
-                    self.on_debug('error', outs.value, proj.id, case_id);
-                } else if (outs.value.length > 0) {
-                    db.save_outs(case_id, outs.value);
-                    if (outs.value.find(msg => msg.kind === 'stop' && msg.catalog === 'system')) {
-                        self.clear();
-                        db.save();
-                    }
-                    let ask = outs.value.find(msg => msg.catalog === 'ask')
-                    if(ask && this.on_ask) {
-                        this.on_ask(ask);
-                    }
-                }
-            }, 40);
+            this._start_readout(db, case_id, res.value);
         }
         return res;
     }
