@@ -162,4 +162,17 @@ function bin2hex(str) {
     return format_hex(res.join(''));
 }
 
-export default {valid_hex, format_hex, hex2bin, valid_bin, format_bin, bin2hex}
+function zip_hex(str) {
+    let res = [];
+    let reg_v = new RegExp(/[0-9a-fA-F]/);
+    let len = str.length;
+    for (let index = 0; index < len; index++) {
+        const c = str.charAt(index);
+        if(reg_v.test(c)) {
+            res.push(c);
+        }
+    }
+    return res.join('');
+}
+
+export default {valid_hex, format_hex, hex2bin, valid_bin, format_bin, bin2hex, zip_hex}

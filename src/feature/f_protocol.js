@@ -8,6 +8,38 @@ function property_str(name, value) {
     return `${name}: ${value}`;
 }
 
+
+function _get_value(fullname, obj) {
+    let keys = fullname.split('.');
+    let o = obj;
+    let idx = 0;
+    let last = keys.length - 1;
+    while (o && (typeof o === 'object')) {
+        if (idx === last) {
+            return o[keys[last]];
+        }
+        o = o[keys[idx]];
+        idx++;
+    }
+    return undefined;
+}
+
+
+function _get_pos(bitpos, is_end) {
+    if(bitpos === 0) {
+        return 'byte[0] bit[0]';
+    }
+    if(!bitpos) {
+        return;
+    }
+    if(is_end) {
+        bitpos--;
+    }
+    let byte = Math.floor(bitpos/8);
+    let bit = bitpos%8;
+    return `byte[${byte}] bit[${bit}]`
+}
+
 class OneofItem {
     constructor(data, parent, condition) {
         this.parent = parent;
@@ -34,10 +66,8 @@ class OneofItem {
     }
     last_index(draw_items) {
         if(this.children.length === 0) {
-            // console.log('pid',  draw_items.findIndex(it => it === this.parent))
             return draw_items.findIndex(it => it === this.parent);
         } else {
-            // console.log('lid',  this.children[this.children.length-1].last_index(draw_items))
             return this.children[this.children.length-1].last_index(draw_items);
         }
     }
@@ -59,10 +89,18 @@ class OneofItem {
         });
     }
     insert_children(segs) {
-        // let draw_idx = this.last_index(draw_items);
-        // console.log('index', draw_idx)
         this.children.push(...segs);
-        // draw_items.splice(draw_idx+1, 0, ...segs);
+    }
+    load_msg(res, vmsg, detail) {
+        this.children.forEach(ch => {
+            ch.load_msg(res, vmsg, detail);
+        })
+    }
+    eval_conditon(vmsg) {
+        let reg = new RegExp(/\b(this\.)/,"g")
+        let exp = this.condition.replace(reg,"self.");
+        let sevl = 'let self = ' + JSON.stringify(vmsg) + ';' + exp;
+        return eval(sevl);
     }
 }
 
@@ -175,6 +213,15 @@ class Oneof{
             this.selected = this.children[0];
         }
     }
+    load_msg(res, vmsg, detail) {
+        this.children.forEach(ch => {
+            if(ch.eval_conditon(vmsg)) {
+                ch.load_msg(res, vmsg, detail);
+                return;
+            }
+        })
+    }
+    
 }
 
 class Segments {
@@ -243,15 +290,28 @@ class Segments {
         });
     }
     insert_children(segs) {
-        // let draw_idx = this.last_index(draw_items);
         this.children.push(...segs);
-        // draw_items.splice(draw_idx+1, 0, ...segs);
     }
     update_name_arrlen(name, memo, arrlen){
-        // console.log(name, memo, arrlen)
         this.data.name = name || '';
         this.data.memo = memo || '';
         this.data.arrlen = arrlen;
+    }
+    load_msg(res, vmsg, detail) {
+        let fname = this.full_name();
+        let pos = detail['this.' + fname] || {};
+        let v = {
+            name: fname,
+            parser: '{ }',
+            value: '',
+            begin: _get_pos(pos.bit_begin_pos, false),
+            end: _get_pos(pos.bit_end_pos, true),
+            pos: pos,
+        }
+        res.push(v);
+        this.children.forEach(ch => {
+            ch.load_msg(res, vmsg, detail);
+        })
     }
 }
 
@@ -334,6 +394,20 @@ class Segment {
         this.data.name = name || '';
         this.data.memo = memo || '';
         this.data.arrlen = arrlen;
+    }
+
+    load_msg(res, vmsg, detail) {
+        let fname = this.full_name();
+        let pos = detail['this.'+fname] || {};
+        let v = {
+            name: fname,
+            parser: this.parser,
+            value: _get_value(fname, vmsg),
+            begin: _get_pos(pos.bit_begin_pos, false),
+            end: _get_pos(pos.bit_end_pos, true),
+            pos: pos,
+        }
+        res.push(v);
     }
 }
 
@@ -593,4 +667,17 @@ function udpate_conditions(frm, oneof_id, conditions) {
     frm.draw_items = frm.draw();
 }
 
-export default { load_frm, insert, remove, moveup, movedown, copy, paste, udpate_conditions }
+
+function load_msg(items, msg, detail) {
+    if(!items || !msg || !detail) {
+        return [];
+    }
+    let res = [];
+    let frm = load_frm(items);
+    frm.children.forEach(ch =>{
+        ch.load_msg(res, msg, detail);
+    })
+    return res;
+}
+
+export default { load_msg, load_frm, insert, remove, moveup, movedown, copy, paste, udpate_conditions }

@@ -98,7 +98,7 @@ class Protocol {
         let brs = [];
         oneof.items.forEach(br => {
             let segs = this.get_run_segments(br);
-            brs.push({kind: 'oneof', seglist: segs, exp: br.condition});
+            brs.push({kind: 'oneof', seglist: segs.seglist, exp: br.condition});
         });
         return brs;
     }

@@ -8,7 +8,7 @@
     import * as monaco from 'monaco-editor';
 
     export default {
-        props: ['script', 'type', 'id'],
+        props: ['script', 'type', 'id', 'zero_lnumber'],
         mounted: function () {
             let self = this;
             this.editor = monaco.editor.create(document.getElementById(this.id), {
@@ -22,6 +22,7 @@
                 contextmenu: false,
                 codeLens: false,
                 theme: 'vs-dark',
+                lineNumbers: this.zero_lnumber ? this.getlineNumber : undefined,
                 minimap: {
                     enabled: false
                 },
@@ -43,6 +44,9 @@
             }
         },
         methods: {
+            getlineNumber: function(originalLineNumber) {
+                return (originalLineNumber - 1 ) + '';
+            },
             on_change: function (value) {
                 this.script_ = value;
                 if (this.is_update) {
@@ -61,6 +65,15 @@
                     }, 200);
                     return;
                 }, 200);
+            },
+            select_range: function(L1, B1, L2, B2) {
+                let range = {
+                    startLineNumber: L1+1,                 
+                    endLineNumber: L2+1,
+                    startColumn: B1+1,
+                    endColumn: B2+2,
+                }
+                this.editor.setSelection(range);
             },
 
         },

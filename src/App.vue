@@ -57,7 +57,7 @@
         if (t === 'error') {
           return 5000;
         } else {
-          return 3000;
+          return 1500;
         }
       },
       editor_route: function() {

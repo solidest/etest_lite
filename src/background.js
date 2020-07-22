@@ -262,7 +262,7 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
     win.webContents.send('check-result', proj_id, results, version);
   }
 });
-        
+      
 ipcMain.handle('run-case', async (_, info) => {
   let res = await run.run_case(info);
   if(res.result === 'ok') {

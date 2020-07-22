@@ -73,10 +73,10 @@ const cfg = {
     }],
     bitaligns: [{
         text: "高位在前",
-        value: "rl",
+        value: "lr",
     }, {
         text: "低位在前",
-        value: "lr",
+        value: "rl",
     }],
     new_widgets: [{
             name: 'type',

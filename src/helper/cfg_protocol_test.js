@@ -3,10 +3,35 @@
 function get_script_pack() {
     const res = [
         'function entry(vars, option)',
-        'local buff = pack(protocol[vars.prot], vars.msg)',
-        'if buff==nil then error("打包失败") end',
-        'record.pack_result = string.buff2hex(buff)',
+        'local buff, detail = etl.pack(protocol[vars.prot], vars.msg)',
+        'if buff == nil then',
+        'record.result = "error"',
+        'record.value = "打包失败"',
+        'else',
+        'record.result = "pack"',
+        'record.value = string.buff2hex(buff)',
+        'record.detail = detail',
+        'record.auto_value = unpack(protocol[vars.prot], buff)',
         'exit()',
+        'end',
+        'end',
+    ]
+    return res.join('\n');
+}
+
+function get_script_unpack() {
+    const res = [
+        'function entry(vars, option)',
+        'local msg, len, detail = etl.unpack(protocol[vars.prot], string.hex2buff(vars.buff))',
+        'if msg == nil then',
+        'record.result = "error"',
+        'record.value = "解包失败"',
+        'else',
+        'record.result = "unpack"',
+        'record.value = msg',
+        'record.detail = detail',
+        'exit()',
+        'end',
         'end',
     ]
     return res.join('\n');
@@ -17,6 +42,7 @@ const cfg = {
     icon: 'mdi-message-outline',
     script: {
         pack: get_script_pack(),
+        unpack: get_script_unpack(),
     },
     bar_items: [{
         text: '协议测试',
@@ -84,136 +110,24 @@ const cfg = {
         icon: 'mdi-delete-outline',
         is_disabled: true,
     }, ],
-    headers: [{
-        width: 48
-    }, {
-        width: 48
-    }, {
+    headers: [ {
         text: '名称',
         value: 'name',
         width: '20%',
     }, {
         text: '解析',
         align: 'start',
-        value: 'kind',
+        value: 'parser',
     }, {
-        text: '设置',
-        value: 'config'
-    }],
-    bitaligns: [{
-        text: "高位在前",
-        value: "rl",
+        text: '值',
+        value: 'value'
     }, {
-        text: "低位在前",
-        value: "lr",
+        text: '开始位置',
+        value: 'begin'
+    }, {
+        text: '结束位置',
+        value: 'end'
     }],
-    new_widgets: [{
-            name: 'type',
-            type: 'select',
-            cols: 8,
-            items: [{
-                    text: '协议段',
-                    value: 'segment'
-                },
-                {
-                    text: '协议段分组',
-                    value: 'segments'
-                }, {
-                    text: '动态分支',
-                    value: 'oneof'
-                }
-            ],
-            label: '类型',
-        },
-        {
-            name: 'count',
-            type: 'number',
-            cols: 4,
-            label: '数量'
-        },
-        {
-            name: 'name',
-            type: 'text',
-            cols: 12,
-            label: '名称',
-            visual: function (data) {
-                return data.type !== 'oneof';
-            },
-        },
-        {
-            name: 'arrlen',
-            type: 'text',
-            cols: 12,
-            label: '数组长度',
-            visual: function (data) {
-                return data.type !== 'oneof';
-            },
-        },
-        {
-            name: 'parser',
-            type: 'text',
-            cols: 12,
-            label: '解析方式',
-            visual: function (data) {
-                return data.type === 'segment';
-            },
-        }
-    ],
-    name_widgets: [{
-            name: 'name',
-            type: 'text',
-            cols: 4,
-            label: '名称'
-        },
-        {
-            name: 'memo',
-            type: 'text',
-            cols: 8,
-            label: '说明'
-        },
-        {
-            name: 'arrlen',
-            type: 'text',
-            cols: 12,
-            label: '数组长度',
-        },
-    ],
-    autovalue_widgets: [{
-        name: 'autovalue',
-        type: 'text',
-        cols: 12,
-        label: '自动赋值'
-    }, ],
-    config_widgets: [{
-            name: 'parser',
-            type: 'text',
-            cols: 6,
-            label: '解析方式'
-        },
-        {
-            name: 'autovalue',
-            type: 'text',
-            cols: 6,
-            label: '自动赋值'
-        },
-        {
-            name: 'length',
-            type: 'text',
-            cols: 6,
-            label: '字节长度',
-            visual: function (data) {
-                return data.parser && data.parser.indexOf('string') >= 0;
-            },
-        },
-        {
-            name: 'endwith',
-            type: 'text',
-            cols: 6,
-            label: '结尾符',
-            visual: function (data) {
-                return data.parser && data.parser.indexOf('string') >= 0;
-            },
-        },
-    ]
+
 }
 export default cfg
