@@ -8,14 +8,14 @@
     import * as monaco from 'monaco-editor';
 
     export default {
-        props: ['script', 'type', 'id', 'zero_lnumber'],
+        props: ['script', 'type', 'id', 'zero_lnumber', 'small'],
         mounted: function () {
             let self = this;
             this.editor = monaco.editor.create(document.getElementById(this.id), {
                 value: this.script || '',
                 language: this.type,
                 automaticLayout: true,
-                fontSize: "20px",
+                fontSize: this.small ? "16px":"20px",
                 overviewRulerBorder: false,
                 lineNumbersMinChars: 3,
                 lineDecorationsWidth: 0,

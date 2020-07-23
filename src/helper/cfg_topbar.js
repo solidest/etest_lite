@@ -55,6 +55,10 @@ const cfg = {
             value: 'tool_icons',
             id: 'tool_icons'
         }, {
+            name: '状态机代码生成',
+            value: 'tool_state_code',
+            id: 'tool_state_code'
+        }, {
             name: '组合配对',
             value: 'pairwise',
             id: 'tool_pairwise'

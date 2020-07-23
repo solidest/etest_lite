@@ -55,6 +55,10 @@ const routes = [{
     name: 'tool_icons',
     component: () => import( /* webpackChunkName: "e_tool_icons" */ '../views/EToolIcons'),
   }, {
+    path: '/tool/state_code',
+    name: 'tool_state_code',
+    component: () => import( /* webpackChunkName: "e_tool_statecode" */ '../views/EToolStateCode'),
+  }, {
     path: '/panel',
     name: 'Panel',
     component: () => import( /* webpackChunkName: "e_editor_panel" */ '../views/EPanelEditor'),

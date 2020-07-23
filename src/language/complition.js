@@ -16,7 +16,9 @@ const sub_api = {
         ['ioctl', '(conn, cmd, opt, fn )'],
         ['on_recv', '(conn, nil|p, fn)'],
         ['off_recv', '(conn)'],
-
+        ['on', '(event, fn)'],
+        ['off', '(event)'],
+        ['emit', '(event, udata)'],
     ],
     'log': [
         ['info', '(string)'],

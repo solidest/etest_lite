@@ -20,6 +20,7 @@
     "js-yaml": "^3.14.0",
     "lokijs": "^1.5.8",
     "luaparse": "^0.3.0",
+    "mermaid": "^8.6.2",
     "monaco-editor": "^0.20.0",
     "monaco-editor-locales-plugin": "^0.0.3",
     "monaco-editor-webpack-plugin": "^1.9.0",
