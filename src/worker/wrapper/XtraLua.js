@@ -23,7 +23,7 @@ class Lua {
             return;
         }
         try {
-            let ast = parser.parse(this.script);
+            let ast = parser.parse(this.script, {luaVersion: '5.3'});
             if(!ast) {
                 this.proj.pushError('语法错误', KIND, this.kind, -1);
             }

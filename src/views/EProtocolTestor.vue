@@ -112,7 +112,7 @@
                 cfg: cfg,
                 bin: '',
                 hex: '',
-                msg: '',
+                msg: '{}',
                 omsg: {},
                 frm: {},
                 loading: false,
@@ -332,8 +332,15 @@
                     if(B2>3){
                         B2++;
                     }
+                    if(this.align==='rl') {
+                        let b = B1;
+                        B1 = 8-B2;
+                        B2 = 8-b;
+                    }
                     this.$refs.hex.select_range(L1, 0, L2, 1);
-                    this.$refs.bin.select_range(L1, B1, L2, B2);
+                    if(this.align==='lr' || L1===L2) {
+                        this.$refs.bin.select_range(L1, B1, L2, B2);
+                    }
                 }
             },
             load_doc: async function () {

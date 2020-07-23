@@ -51,13 +51,13 @@ const cfg = {
             value: 'tool_dataformat',
             id: 'tool_dataformat'
         }, {
+            name: '图标库',
+            value: 'tool_icons',
+            id: 'tool_icons'
+        }, {
             name: '组合配对',
             value: 'pairwise',
             id: 'tool_pairwise'
-        }, {
-            name: '图标库',
-            value: 'iconlib',
-            id: 'tool_iconlib'
         },
     ]
     }, {

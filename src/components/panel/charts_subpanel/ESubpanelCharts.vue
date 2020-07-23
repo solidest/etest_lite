@@ -9,7 +9,7 @@
     import lines from './lines';
     import mocker_data from './mocker_data';
 
-    const max_points = 1000;
+    const max_points = 2000;
 
     export default {
         props: ['id', 'size', 'items', 'title', 'design', 'recorder', 'recorders'],

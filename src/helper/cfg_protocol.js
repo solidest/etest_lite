@@ -83,14 +83,14 @@ const cfg = {
             type: 'select',
             cols: 8,
             items: [{
-                    text: '协议段',
+                    text: 'segment',
                     value: 'segment'
                 },
                 {
-                    text: '协议段分组',
+                    text: 'segments',
                     value: 'segments'
                 }, {
-                    text: '动态分支',
+                    text: 'oneof',
                     value: 'oneof'
                 }
             ],
