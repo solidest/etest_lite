@@ -1,7 +1,7 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <div style="height: calc(100vh - 40px);  overflow-y:auto">
+            <div>
                 <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
                     <v-col cols="4">
                         <v-sheet class="pa-2">

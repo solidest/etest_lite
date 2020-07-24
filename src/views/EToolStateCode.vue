@@ -1,29 +1,34 @@
 <template>
     <v-container class="pa-0 fill-height" fluid>
         <v-card height="100%" width="100%" tile>
-            <div style="height: calc(100vh - 40px);  overflow-y:auto">
+            <div>
                 <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
-                    <v-col cols="7">
-                        <v-sheet class="pa-2" height="100%" style="border:1px solid grey">
-                        </v-sheet>
-                    </v-col>
                     <v-col cols="5">
                         <v-sheet class="pa-2">
                             <v-row class="pa-0 ma-0">
                                 <v-col cols="12" class="ma-0 pa-1" align="center">
                                     <v-btn color="grey lighten-2" outlined @click="on_code">
-                                        {{design ? '生成代码':'编辑设置'}}
+                                        生成代码
+                                    </v-btn>
+                                    <v-btn color="grey lighten-2" class="ml-3" outlined @click="on_graph">
+                                        生成状态图
                                     </v-btn>
                                 </v-col>
                                 <v-col cols="12" class="ma-0 pa-0">
                                     <v-sheet class="pa-0 ma-0" style="height: calc(100vh - 130px);">
-                                        <e-script-editor v-if="design" :small="true" id="yaml" :script="yaml" type="yaml"
+                                        <e-script-editor :small="true" id="yaml" :script="yaml" type="yaml"
                                             @change="on_change" />
-                                        <v-sheet v-else class="pa-0 ma-0" style="height: calc(100vh - 130px);">
-                                            <e-script-editor id="lua" :small="true" :script="lua" type='etlua' @change="on_change" />
-                                        </v-sheet>
                                     </v-sheet>
                                 </v-col>
+                            </v-row>
+                        </v-sheet>
+                    </v-col>
+                    <v-col cols="7">
+                        <v-sheet class="pa-2" height="100%" style="height: calc(100vh - 70px);">
+                            <e-script-editor v-if="coding" id="lua" :small="true" :script="lua" type='etlua'
+                                @change="on_change" />
+                            <v-row v-else align="center" justify="center">
+                                <div id="graph"></div>
                             </v-row>
                         </v-sheet>
                     </v-col>
@@ -32,22 +37,35 @@
         </v-card>
     </v-container>
 </template>
-
+<style scoped>
+    svg {
+        display: block;
+        margin: auto;
+    }
+</style>
 <script>
     import EScriptEditor from '../components/widgets/EDataFormatEditor';
     import yaml from 'js-yaml';
     import helper from '../helper/helper';
+    import mermaid from 'mermaid';
 
     export default {
         components: {
             'e-script-editor': EScriptEditor,
         },
 
+        created: function () {
+            mermaid.mermaidAPI.initialize({
+                startOnLoad: false,
+                theme: "default",
+            });
+        },
+
         data() {
             return {
-                yaml: '- comment: 测试程序启动事件\n  when: $entry\n  then: todo1\n',
-                lua: '',
-                design: true,
+                yaml: '- state: 开始 初始化\n  when: $entry\n  then: task1\n- state: 初始化 执行\n  when: event1\n  then: timer1@2000 task2 timer1@\n- state: 执行 结束\n  when: timeout.timer1\n  then: task3',
+                lua: '-- 代码输出\n',
+                coding: true,
             }
         },
 
@@ -98,12 +116,26 @@
                 }
                 return true;
             },
+            valid_state(state) {
+                if(!state || !state.trim()) {
+                    return false;
+                }
+                state = state.trim();
+                let ss = state.split(' ');
+                let i = 0;
+                ss.forEach(s => {
+                    if(s && s.trim()) {
+                        i++;
+                    }
+                });
+                return i >= 2;
+            },
             valid_yaml() {
                 try {
                     let states = yaml.safeLoad(this.yaml);
                     for (let it of states) {
                         for (let k in it) {
-                            if (!['when', 'then', 'comment'].includes(k)) {
+                            if (!['when', 'then', 'state'].includes(k)) {
                                 throw new Error('无效关键词' + k);
                             }
                         }
@@ -111,7 +143,10 @@
                             throw new Error('when无效事件' + it.when);
                         }
                         if (!this.valid_actions(it.then)) {
-                            throw new Error('then无效动作' + it.then);
+                            throw new Error('then无效任务' + it.then);
+                        }
+                        if (!this.valid_state(it.state)) {
+                            throw new Error('state无效状态' + it.state);
                         }
                     }
                     if (states.length === 0) {
@@ -126,33 +161,45 @@
                 }
                 return false;
             },
-            make_timeouts(states, codes) {
+            make_eves(states, codes) {
                 let begin = [];
                 let end = [];
                 let out = [];
+                let eves = [];
                 states.forEach(st => {
                     if (st.event.type === 'timeout') {
                         if (!out.includes(st.event.name)) {
                             out.push(st.event.name);
+                        } else {
+                            throw new Error(`timeout.${st.event.name}被多次订阅`);
                         }
                     }
                     st.actions.forEach(ac => {
-                        if (ac.type === 'begin_timer' && !begin.includes(ac.name)) {
-                            begin.push(ac.name);
+                        if (ac.type === 'begin_timer') {
+                            if (!begin.includes(ac.name)) {
+                                begin.push(ac.name);
+                            } else {
+                                throw new Error(`定时器${st.event.name}被多次启动`);
+                            }
                         } else if (ac.type === 'end_timer' && !end.includes(ac.name)) {
                             end.push(ac.name);
                         }
                     });
+                    if (!eves.includes(st.event.name)) {
+                        eves.push(st.event.name);
+                    } else {
+                        throw new Error(`${st.event.name}被多次订阅`);
+                    }
                 });
                 begin.forEach(t => {
                     if (!end.includes(t)) {
-                        throw new Error(`定时器${t}没有结束`);
+                        throw new Error(`定时器${t}没有被清除`);
                     }
                     if (!out.includes(t)) {
-                        throw new Error(`定时器${t}超时没有被捕获`);
+                        throw new Error(`timeout.${t}没有被订阅`);
                     }
                 });
-                codes.push('local _timers = {}');
+                codes.push('local _timers = {}\n');
             },
             make_fns(states, codes) {
                 let fns = [];
@@ -164,56 +211,72 @@
                     });
                 });
                 fns.forEach(fn => {
-                    codes.push('\n');
                     codes.push(`function ${fn}(udata)`);
-                    codes.push('\t\n');
-                    codes.push('end');
+                    codes.push('\t');
+                    codes.push('end\n');
                 });
             },
             append_action(ac, codes, level) {
                 let pre = '\t'.repeat(level);
-                if(ac.type === 'begin_timer') {
-                    codes.push(`${pre}_timers.${ac.name} = async.timeout(${ac.value}, async.emit, 'timeout.${ac.name}')`);
-                } else if(ac.type === 'end_timer') {
+                if (ac.type === 'begin_timer') {
+                    codes.push(
+                        `${pre}_timers.${ac.name} = async.timeout(${ac.value}, async.emit, 'timeout.${ac.name}')`);
+                } else if (ac.type === 'end_timer') {
                     codes.push(`${pre}async.clear(_timers.${ac.name})`);
-                } else if(ac.type === 'action') {
-                    codes.push(`${pre}${ac.name}()`)
+                } else if (ac.type === 'action') {
+                    codes.push(`${pre}${ac.name}(vars)`)
                 }
             },
 
             make_entry(states, codes) {
                 let self = this;
                 states.forEach(st => {
-                    if(st.comment) {
-                        codes.push(`\n${'\t'.repeat(st.event.type === 'entry'?0:1)}-- ${st.comment}`)
-                    }
-                    if(st.event.type === 'entry') {
+                    if (st.event.type === 'entry') {
                         codes.push('function entry(vars, option)')
                     } else {
-                        if(st.actions.length === 1 && st.actions[0].type === 'action') {
-                            codes.push(`\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', ${st.actions[0].name})`);
+                        if (st.actions.length === 1 && st.actions[0].type === 'action') {
+                            codes.push(
+                                `\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', ${st.actions[0].name}, vars)`
+                                );
                         } else {
-                            codes.push(`\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', function()`);
+                            codes.push(
+                                `\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', function()`
+                                );
                             st.actions.forEach(ac => self.append_action(ac, codes, 2));
                             codes.push('\tend)');
                         }
                     }
                 });
+                codes.push('');
                 states[0].actions.forEach(ac => {
                     self.append_action(ac, codes, 1);
                 });
                 codes.push('end');
             },
             make_code(states) {
-                let codes = ['\n'];
-                this.make_timeouts(states, codes);
+                let codes = ['\n--[['];
+                codes.push(this.yaml);
+                codes.push('--]]\n')
+                this.make_eves(states, codes);
                 this.make_fns(states, codes);
                 this.make_entry(states, codes);
                 return codes.join('\n');
             },
-            get_code(yaml_code) {
+            get_state(ss) {
+                ss = ss.trim();
+                let sls = ss.split(' ');
+                let sts = [];
+                for(let s of sls) {
+                    if(s && s.trim()) {
+                        sts.push(s.trim())
+                    }
+                }
+                return { from: sts, to: sts.pop() };
+            },
+            get_state_list(yaml_code) {
                 let state_list = [];
                 let states = yaml.safeLoad(yaml_code);
+                let self = this;
                 states.forEach(st => {
                     let ev = st.when.trim();
                     let oev;
@@ -266,23 +329,56 @@
                     state_list.push({
                         event: oev,
                         actions: actls,
-                        comment: st.comment,
+                        state: self.get_state(st.state),
                     });
                 });
-                return this.make_code(state_list);
+                return state_list;
             },
             on_code() {
-                if (this.design) {
-                    if (this.valid_yaml()) {
-                        try {
-                            this.lua = this.get_code(this.yaml);
-                            this.design = false;
-                        } catch (error) {
-                            this.$store.commit('setMsgError', error.message);
-                        }
+                if (this.valid_yaml()) {
+                    try {
+                        let state_list = this.get_state_list(this.yaml);
+                        this.lua = this.make_code(state_list);
+                        this.coding = true;
+
+                    } catch (error) {
+                        this.$store.commit('setMsgError', error.message);
                     }
-                } else {
-                    this.design = true;
+                }
+            },
+            graph_name(state) {
+                if(['开始', '结束'].includes(state)) {
+                    return '[*]'
+                }
+                return state;
+            },
+            make_graph(yaml_code) {
+                let res = [];
+                let state_list = this.get_state_list(yaml_code);
+                let self = this;
+                res.push('stateDiagram-v2');
+                state_list.forEach(st => {
+                    st.state.from.forEach(fr => {
+                        let l = `\t${self.graph_name(fr)} --> ${self.graph_name(st.state.to)}`;
+                        if(st.event.type !=='entry') {
+                            l += ` : ${st.event.type==='timeout' ? 'timeout.':''}${st.event.name}`;
+                        }
+                        res.push(l)                        
+                    })
+                });
+                let str = res.join('\n');
+                return str;
+            },
+            on_graph() {
+                if (this.valid_yaml()) {
+                    this.coding = false;
+                    let self = this;
+                    this.$nextTick(() => {
+                        let element = document.getElementById('graph');
+                        mermaid.mermaidAPI.render('graph_svg', self.make_graph(self.yaml), svgCode => {
+                            element.innerHTML = svgCode;
+                        });
+                    })
                 }
             }
         }

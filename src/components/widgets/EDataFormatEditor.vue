@@ -15,7 +15,7 @@
                 value: this.script || '',
                 language: this.type,
                 automaticLayout: true,
-                fontSize: this.small ? "16px":"20px",
+                fontSize: this.small ? "18px":"20px",
                 overviewRulerBorder: false,
                 lineNumbersMinChars: 3,
                 lineDecorationsWidth: 0,

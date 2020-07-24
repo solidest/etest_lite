@@ -47,7 +47,7 @@ const cfg = {
         type: 'items',
         file_icon: 'mdi-help-rhombus-outline',
         items: [{
-            name: '数据格式转换',
+            name: '数据格式转换工具',
             value: 'tool_dataformat',
             id: 'tool_dataformat'
         }, {
@@ -55,11 +55,11 @@ const cfg = {
             value: 'tool_icons',
             id: 'tool_icons'
         }, {
-            name: '状态机代码生成',
+            name: '状态机生成器',
             value: 'tool_state_code',
             id: 'tool_state_code'
         }, {
-            name: '组合配对',
+            name: '组合配对工具',
             value: 'pairwise',
             id: 'tool_pairwise'
         },
