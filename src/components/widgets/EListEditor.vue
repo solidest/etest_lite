@@ -72,20 +72,11 @@
         },
         methods: {
             action: function(ac, v) {
-                switch (ac) {
-                    case 'new_file':
-                        this.new_file(v);
-                        break;
-                    case 're_name':
-                        this.re_name(v);
-                        break;
-                    case 'del_item':
-                        this.del_item();
-                        break;
-                    default:
-                        console.log(ac, v)
-                        break;
+                if(!this[ac]) {
+                    console.log('TODO action', ac, v)
+                    return;
                 }
+                this[ac](v);
             },
             new_file: async function(n) {
                 let res = helper.valid_name(this.items, n);
@@ -130,10 +121,57 @@
                 if(isNaN(this.selected) || this.selected<0 || this.selected>= this.items.length) {
                     return;
                 }
+                let oldsel = this.selected;
                 let doc = this.items[this.selected];
                 await ipc.remove({kind: this.catalog, doc: doc});
                 await this.load(this.catalog);
                 this.$store.commit('deletedDoc', doc.id);
+
+                if(oldsel===this.items.length) {
+                    oldsel = this.items.length-1;
+                }
+                this.selected = -1;
+                let self = this;
+                this.$nextTick(() => {
+                    self.selected = oldsel;
+                });
+            },
+            clone_item: async function() {
+                if(isNaN(this.selected) || this.selected<0 || this.selected>= this.items.length) {
+                    return;
+                }
+                let opt = {
+                    kind: this.catalog,
+                    id: this.items[this.selected].id,
+                    proj_id: this.proj.id,
+                }
+                let res = await ipc.clone_element(opt);
+                if(res) {
+                    await this.load(this.catalog);
+                    this.selected = -1;
+                    let self = this;
+                    this.$nextTick(() => {
+                        self.selected = self.items.findIndex(it => it.id === res.id);
+                    })
+                } else {
+                    this.$store.commit('setMsgError', '执行失败');
+                }
+            },
+            export_item: async function() {
+                if(isNaN(this.selected) || this.selected<0 || this.selected>= this.items.length) {
+                    return;
+                }
+                let it = this.items[this.selected];
+                let opt = {
+                    kind: this.catalog,
+                    id: it.id,
+                    proj_id: this.proj.id,
+                    name: it.name,
+                }
+                let res = await ipc.export_element(opt);
+                if(res.result!=='ok') {
+                    this.$store.commit('setMsgError', res.value);
+                }
             },
             load: async function(catalog) {
                 if(!catalog || !this.proj) {

@@ -102,18 +102,20 @@ const cfg = {
         value: 're_name',
         icon: 'mdi-pencil'
     }, {
+        text: '复制并新建',
+        value: 'clone_item',
+        icon: 'mdi-content-duplicate'
+    }, {
+        text: '导出文件',
+        value: 'export_item',
+        icon: 'mdi-file-export-outline'
+    }, {
         text: '删除选中项',
         value: 'del_item',
         icon: 'mdi-delete-outline'
     }],
 
     tree_bars: [
-        // {
-        //     text: '新建目录',
-        //     value: 'new_dir',
-        //     disabled: false,
-        //     icon: 'mdi-folder-plus-outline',
-        // },
         {
             text: '新建文件',
             value: 'new_file',
@@ -136,6 +138,10 @@ const cfg = {
             value: 're_name',
             disabled: false,
             icon: 'mdi-pencil'
+        }, {
+            text: '复制并新建',
+            value: 'clone_item',
+            icon: 'mdi-content-duplicate'
         }, {
             text: '删除选中项',
             value: 'del_item',

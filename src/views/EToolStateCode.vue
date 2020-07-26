@@ -7,11 +7,8 @@
                         <v-sheet class="pa-2">
                             <v-row class="pa-0 ma-0">
                                 <v-col cols="12" class="ma-0 pa-1" align="center">
-                                    <v-btn color="grey lighten-2" outlined @click="on_code">
-                                        生成代码
-                                    </v-btn>
-                                    <v-btn color="grey lighten-2" class="ml-3" outlined @click="on_graph">
-                                        生成状态图
+                                    <v-btn color="grey lighten-2" outlined @click="on_create">
+                                        生成
                                     </v-btn>
                                 </v-col>
                                 <v-col cols="12" class="ma-0 pa-0">
@@ -25,10 +22,24 @@
                     </v-col>
                     <v-col cols="7">
                         <v-sheet class="pa-2" height="100%" style="height: calc(100vh - 70px);">
-                            <e-script-editor v-if="coding" id="lua" :small="true" :script="lua" type='etlua'
-                                @change="on_change" />
-                            <v-row v-else align="center" justify="center">
-                                <div id="graph"></div>
+                            <v-row class="pa-0 ma-0">
+                                <v-col cols="12" class="ma-0 pa-1" align="center">
+                                    <v-btn color="grey lighten-2" outlined @click="on_code">
+                                        代码
+                                    </v-btn>
+                                    <v-btn color="grey lighten-2" class="ml-10" outlined @click="on_graph">
+                                        状态图
+                                    </v-btn>
+                                </v-col>
+                                <v-col cols="12" class="ma-0 pa-0">
+                                    <v-sheet class="pa-0 ma-0" style="height: calc(100vh - 130px);">
+                                        <e-script-editor v-if="coding" id="lua" :small="true" :script="lua" type='etlua'
+                                            @change="on_change" />
+                                        <v-row v-else align="center" justify="center">
+                                            <div id="graph"></div>
+                                        </v-row>
+                                    </v-sheet>
+                                </v-col>
                             </v-row>
                         </v-sheet>
                     </v-col>
@@ -66,6 +77,7 @@
                 yaml: '- state: 开始 初始化\n  when: $entry\n  then: task1\n- state: 初始化 执行\n  when: event1\n  then: timer1@2000 task2 timer1@\n- state: 执行 结束\n  when: timeout.timer1\n  then: task3',
                 lua: '-- 代码输出\n',
                 coding: true,
+                kind: 'graph',
             }
         },
 
@@ -117,14 +129,14 @@
                 return true;
             },
             valid_state(state) {
-                if(!state || !state.trim()) {
+                if (!state || !state.trim()) {
                     return false;
                 }
                 state = state.trim();
                 let ss = state.split(' ');
                 let i = 0;
                 ss.forEach(s => {
-                    if(s && s.trim()) {
+                    if (s && s.trim()) {
                         i++;
                     }
                 });
@@ -237,11 +249,11 @@
                         if (st.actions.length === 1 && st.actions[0].type === 'action') {
                             codes.push(
                                 `\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', ${st.actions[0].name}, vars)`
-                                );
+                            );
                         } else {
                             codes.push(
                                 `\tasync.on('${st.event.type==='timeout'?'timeout.':''}${st.event.name}', function()`
-                                );
+                            );
                             st.actions.forEach(ac => self.append_action(ac, codes, 2));
                             codes.push('\tend)');
                         }
@@ -266,12 +278,15 @@
                 ss = ss.trim();
                 let sls = ss.split(' ');
                 let sts = [];
-                for(let s of sls) {
-                    if(s && s.trim()) {
+                for (let s of sls) {
+                    if (s && s.trim()) {
                         sts.push(s.trim())
                     }
                 }
-                return { from: sts, to: sts.pop() };
+                return {
+                    from: sts,
+                    to: sts.pop()
+                };
             },
             get_state_list(yaml_code) {
                 let state_list = [];
@@ -334,20 +349,8 @@
                 });
                 return state_list;
             },
-            on_code() {
-                if (this.valid_yaml()) {
-                    try {
-                        let state_list = this.get_state_list(this.yaml);
-                        this.lua = this.make_code(state_list);
-                        this.coding = true;
-
-                    } catch (error) {
-                        this.$store.commit('setMsgError', error.message);
-                    }
-                }
-            },
             graph_name(state) {
-                if(['开始', '结束'].includes(state)) {
+                if (['开始', '结束'].includes(state)) {
                     return '[*]'
                 }
                 return state;
@@ -360,16 +363,38 @@
                 state_list.forEach(st => {
                     st.state.from.forEach(fr => {
                         let l = `\t${self.graph_name(fr)} --> ${self.graph_name(st.state.to)}`;
-                        if(st.event.type !=='entry') {
+                        if (st.event.type !== 'entry') {
                             l += ` : ${st.event.type==='timeout' ? 'timeout.':''}${st.event.name}`;
                         }
-                        res.push(l)                        
+                        res.push(l)
                     })
                 });
                 let str = res.join('\n');
                 return str;
             },
+            on_code() {
+                this.kind = 'code';
+                if (this.valid_yaml()) {
+                    
+                    try {
+                        let state_list = this.get_state_list(this.yaml);
+                        this.lua = this.make_code(state_list);
+                        this.coding = true;
+
+                    } catch (error) {
+                        this.$store.commit('setMsgError', error.message);
+                    }
+                }
+            },
+            on_create() {
+                if(this.kind === 'graph') {
+                    this.on_graph();
+                } else {
+                    this.on_code();
+                }
+            },
             on_graph() {
+                this.kind = 'graph';
                 if (this.valid_yaml()) {
                     this.coding = false;
                     let self = this;

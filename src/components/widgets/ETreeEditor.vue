@@ -146,7 +146,9 @@
                     case 'del_item':
                         this.del_item();
                         break;
-
+                    case 'clone_item':
+                        this.clone_item();
+                        break;
                     default:
                         console.log(ac, v)
                         break;
@@ -180,6 +182,29 @@
                 for(let l of leafs) {
                     ipc.remove({kind: 'doc', doc: {id: l.id, proj_id: this.proj.id}})
                     this.$store.commit('deletedDoc', l.id);
+                }
+            },
+            clone_item: async function() {
+                if(this.active.length === 0) {
+                    return;
+                }
+                let it = this.active[0];
+                let opt = {
+                    kind: this.catalog,
+                    id: it.id,
+                    proj_id: this.proj.id,
+                }
+                let res = await ipc.clone_element(opt);
+                if(res) {
+                    let its = tman.findParentChildren(this.items, it.id);
+                    tman.insert(its, res);
+                    this.save_all();
+                    let self = this;
+                    this.$nextTick(() => {
+                        self.active = [res];
+                    })
+                } else {
+                    this.$store.commit('setMsgError', '执行失败');
                 }
             },
             load: async function (catalog) {

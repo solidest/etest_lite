@@ -52,9 +52,16 @@ async function open_proj(proj_id) {
 
 
 function bind_proj(proj_id) {
-    return ipcRenderer.send('bind-proj', proj_id)
+    return ipcRenderer.send('bind-proj', proj_id);
 }
 
+async function export_element(opt) {
+    return ipcRenderer.invoke('export_element', opt);
+}
+
+async function clone_element(opt) {
+    return ipcRenderer.invoke('clone_element', opt);
+}
 
 export default {
     list,
@@ -70,4 +77,6 @@ export default {
     active_proj,
     open_proj,
     bind_proj,
+    clone_element,
+    export_element,
 }

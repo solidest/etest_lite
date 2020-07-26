@@ -14,7 +14,7 @@ import {
 import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
 import run from './run/run_main';
-    
+  
 let player = null; 
 let worker = null;
 let player_show = false;
@@ -170,7 +170,7 @@ app.on('activate', () => {
     createPlayer();
   }
 })
-   
+
 app.on('ready', async () => {
   createWorker();
   createPlayer(); 

@@ -1,12 +1,14 @@
 import {
     ipcMain,
+    dialog,
 } from 'electron';
 import db from './m_db';
+import assist from '../assist';
 
 let worker;
 
 function work_check(proj_id, reason) {
-    if(!proj_id || !worker) {
+    if (!proj_id || !worker) {
         console.log('empty check')
         return;
     }
@@ -55,10 +57,39 @@ function open(_worker, db_path) {
     ipcMain.handle('load', (_, opt) => {
         return db.load(opt.kind, opt.id);
     });
+    ipcMain.handle('clone_element', (_, opt) => {
+        return assist.clone_element(opt.kind, opt.proj_id, opt.id);
+    });
+    ipcMain.handle('export_element', async (_, opt) => {
+        let file = await dialog.showSaveDialog(null, {
+            filters: [{name: 'ETL文件', extensions: [opt.kind==="panel"? 'yaml':'etl']}],
+            title: '导出文件',
+            defaultPath: opt.name,
+        });
+        if(file.canceled) {
+            return {
+                result: 'ok',
+            }
+        }
+        try {
+            assist.export_element(opt.kind, opt.id, file.filePath);
+            return {
+                result: 'ok',
+            }
+        } catch (error) {
+            return {
+                result: 'error',
+                value: error.message,
+            }
+        }
+    });
 }
 
 async function close() {
     await db.close();
 }
 
-export default { open, close }
+export default {
+    open,
+    close
+}
