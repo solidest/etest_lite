@@ -190,44 +190,42 @@ function get_sub_suggestions(keys, result) {
     }
     if (!keys[keys.length - 1]) {
         keys.pop();
-        len--;
     }
     let k = keys[0];
-    if(k === 'record') {
-        return get_obj_suggestions(record, keys, result);
-    }
-    if(k === 'vars') {
-        return get_obj_suggestions(vars, keys, result);
-    }
-
-    if (len === 2) {
-        if (k !== 'device') {
+    switch (k) {
+        case 'record':
+            return get_obj_suggestions(record, keys, result);
+        case 'vars':
+            return get_obj_suggestions(vars, keys, result);
+        case 'device': {
+            if(len>3) {
+                return;
+            }
+            if(len>2) {
+                return get_connor_suggestions(keys[1], result);
+            }
+            return get_device_suggestions(result);
+        }
+        case 'protocol':
+            return get_protocol_suggestions(result);
+ 
+    
+        default: {
+            let subs = sub_api[k];
+            if (!subs) {
+                return;
+            }
+            subs.forEach(sub => {
+                result.push({
+                    label: sub[0],
+                    kind: monaco.languages.CompletionItemKind.Function,
+                    insertText: sub[0],
+                    detail: sub[1],
+                })
+            });
             return;
         }
-        return get_connor_suggestions(keys[1], result);
     }
-    if (len !== 1) {
-        return;
-    }
-
-    if (k === 'protocol') {
-        return get_protocol_suggestions(result);
-    } else if (k === 'device') {
-        return get_device_suggestions(result);
-    }
-
-    let subs = sub_api[k];
-    if (!subs) {
-        return;
-    }
-    subs.forEach(sub => {
-        result.push({
-            label: sub[0],
-            kind: monaco.languages.CompletionItemKind.Function,
-            insertText: sub[0],
-            detail: sub[1],
-        })
-    });
 }
 
 function set_env(devs, prots, rcd, vs) {
@@ -247,7 +245,7 @@ const provider = {
             endLineNumber: position.lineNumber,
             endColumn: position.column
         });
-        let match = textUntilPosition.match(/([a-zA-Z\\d_\\.]+)$/);
+        let match = textUntilPosition.match(/([a-zA-Z\d_\\.]+)$/);
         if (!match) return [];
         let keys = match[0].split('.');
         let suggestions = [];
