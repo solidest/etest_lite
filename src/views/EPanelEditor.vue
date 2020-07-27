@@ -62,6 +62,7 @@
     import EPanel from '../components/panel/EPanel';
     import EPanelDataEditor from '../components/EPanelDataEditor';
     import EPanelConfigEditor from '../components/EPanelConfigEditor';
+    import helper from  '../helper/helper';
 
     export default {
         components: {
@@ -150,8 +151,9 @@
                 this.panel_data.load_yaml(content.data_yaml||'');
             },
             get_content: function () {
+                let layout = helper.deep_copy(this.layout)
                 return {
-                    layout: this.layout,
+                    layout: layout,
                     memo: this.memo,
                     show_line: this.show_line,
                     data_yaml: this.panel_data.script,

@@ -8,6 +8,7 @@
     import gauge from './gauge';
     import lines from './lines';
     import mocker_data from './mocker_data';
+    import yaml from 'js-yaml';
 
     const max_points = 2000;
 
@@ -21,6 +22,15 @@
                 this.init_datas();
             }
             this.load_data(this.recorder);
+            this.items.forEach(it => {
+                if(it.config && it.config.option_code) {
+                    try {
+                        it.config.items = yaml.load( it.config.option_code, 'utf8');
+                    } catch (error) {
+                        this.$store.commit('setMsgError', error.message);
+                    }
+                }
+            })
         },
 
         data: () => {
