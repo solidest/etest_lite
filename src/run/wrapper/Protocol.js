@@ -19,7 +19,7 @@ class Protocol {
         parser.forEach(prop => {
             res[prop.name] = prop.value.list[0];
         });
-        res.kind = 'string';
+        res.type = 'string';
         return res;
     }
 
@@ -48,7 +48,7 @@ class Protocol {
         } else {
             seg.parser = segparser.parse(seg.parser);
         }
-   
+
         this._make_autovalue(seg);
         this._make_arrlen(seg);
 
