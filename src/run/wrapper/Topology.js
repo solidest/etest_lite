@@ -1,6 +1,6 @@
 
 import helper from '../../helper/helper';
-
+import dev_cfg from '../../helper/cfg_device';
 
 function _get_mapping(doc, all_devs) {
     let raw = doc.mapping || [];
@@ -14,6 +14,7 @@ function _get_mapping(doc, all_devs) {
     }
     return mapping;
 }
+
 
 function _get_linking(doc, all_conns) {
     let raw = doc.linking || [];
@@ -91,6 +92,28 @@ class Topology {
         return this.data.id;
     }
 
+    
+    _get_config(cfg) {
+        if(!cfg) {
+            return null;
+        }
+        let res = {};
+        for(let k in cfg) {
+            if(dev_cfg.num_propers.includes(k)) {
+                if(isNaN(cfg[k])) {
+                    continue;
+                }
+                let v = Number.parseInt(cfg[k]);
+                if(!isNaN(v)) {
+                    res[k] = v;
+                }
+            } else {
+                res[k] = cfg[k]
+            }
+        }
+        return res;
+    }
+
     get_dev_name(id) {
         let devlist = this.proj.device;
         if(!id || !devlist) {
@@ -154,7 +177,7 @@ class Topology {
         let res = [];
         let conns = dev.connectors;
         conns.forEach(conn => {
-            let oconn = {name: conn.name, config: conn.config, type: conn.kind };
+            let oconn = {name: conn.name, config: this._get_config(conn.config), type: conn.kind };
             let uri = this.get_conn_uri(conn.id);
             if(uri) {
                 oconn.uri = uri;
@@ -162,7 +185,7 @@ class Topology {
             this.set_conn_target(oconn, conn.id);
             res.push(oconn);
         })
-
+        // console.log(res)
         return res;
     }
 

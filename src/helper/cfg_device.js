@@ -1,3 +1,8 @@
+
+let num_propers = [
+    'port', 'keepalive', 'baudrate', 'bytesize', 'stopbits', 'ttl'
+];
+
 let new_widgets = [{
         name: 'type',
         type: 'select',
@@ -240,6 +245,7 @@ const cfg = {
     name_widgets: [
         {name: 'name', type: 'text', cols: 4, label: '名称'},
         {name: 'memo', type: 'text', cols: 8, label: '说明'},
-    ]
+    ],
+    num_propers: num_propers,
 }
 export default cfg

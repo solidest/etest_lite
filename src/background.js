@@ -123,7 +123,7 @@ function createWindow(proj_id) {
       win.reload();
     });
   }
-
+   
   let open_proj = proj_id ? '#/?proj_id=' + proj_id : '#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false');
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
@@ -143,7 +143,7 @@ function createWindow(proj_id) {
     wins.del(win);
     try_close_all();
   });
-
+ 
   win.on('focus', () => {
     beginCheck(wins.search(win), 'focus');
   });
