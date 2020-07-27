@@ -87,7 +87,6 @@
             break;
           case 'project':
             res.route_name = ed.doc.value;
-            console.log('editor', ed);
             break;
           case 'tools':
             res.route_name = ed.doc.value;

@@ -83,14 +83,14 @@ const cfg = {
             type: 'select',
             cols: 8,
             items: [{
-                    text: 'segment',
+                    text: '- segment',
                     value: 'segment'
                 },
                 {
-                    text: 'segments',
+                    text: '{ } segments',
                     value: 'segments'
                 }, {
-                    text: 'oneof',
+                    text: '... oneof',
                     value: 'oneof'
                 }
             ],
