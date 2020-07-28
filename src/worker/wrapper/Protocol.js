@@ -84,7 +84,12 @@ class Protocol {
         oneof.items.forEach(br => {
             br.items.forEach(it => {
                 if (it.kind === 'oneof') {
-                    res.push(...this._check_get_oneof_names(it));
+                    let sub_ns = this._check_get_oneof_names(it);
+                    sub_ns.forEach(n => {
+                        if(!res.includes(n)) {
+                            sub_ns.push(n);
+                        }
+                    })
                 } else {
                     if (!res.includes(it.name)) {
                         res.push(it.name);
