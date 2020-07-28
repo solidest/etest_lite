@@ -89,6 +89,10 @@ class OneofItem {
         });
     }
     insert_children(segs) {
+        let self = this;
+        segs.forEach(seg => {
+            seg.parent = self;
+        })
         this.children.push(...segs);
     }
     load_msg(res, vmsg, detail) {
@@ -477,7 +481,7 @@ function load_frm(items) {
     return frm;
 }
 
-function insert_brother_(segs, frm, parent, seg, offset) {
+function insert_brother_(segs, parent, seg, offset) {
     let data_idx //, draw_idx
     if(seg) {
         data_idx = parent.children.findIndex(it => it === seg) + offset;
@@ -517,6 +521,7 @@ function insert(frm, seg, info, offset) {
                 n = name + (i+1);
             }
             let p = offset===-1 ? seg : parent;
+
             if(kind === 'segment') {
                 nseg = new Segment(null, p, n, arrlen);
                 nseg.update_config(info.parser);
@@ -558,7 +563,7 @@ function insert(frm, seg, info, offset) {
         }
         seg.insert_children(segs);
     } else {
-        insert_brother_(segs, frm, parent, seg, offset);
+        insert_brother_(segs, parent, seg, offset);
     }
     frm.draw_items = frm.draw();
     if(frm.draw_items.findIndex(it => it.id === segs[0].id)<0) {
