@@ -87,7 +87,7 @@ class Protocol {
                     let sub_ns = this._check_get_oneof_names(it);
                     sub_ns.forEach(n => {
                         if(!res.includes(n)) {
-                            sub_ns.push(n);
+                            res.push(n);
                         }
                     })
                 } else {
@@ -212,7 +212,7 @@ class Protocol {
             this._check_autovalue(seg);
         }
         this._check_arrlen(seg);
-        if (seg.parser.type === 'string' && !seg.parser.pack && !seg.parser.unpack) {
+        if (seg.parser && seg.parser.type === 'string' && !seg.parser.pack && !seg.parser.unpack) {
             if (seg.length) {
                 try {
                     seg.length = expparser.parse(seg.length);
