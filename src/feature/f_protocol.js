@@ -677,6 +677,7 @@ function load_msg(items, msg, detail) {
     if(!items || !msg || !detail) {
         return [];
     }
+    console.log('detail', detail)
     let res = [];
     let frm = load_frm(items);
     frm.children.forEach(ch =>{

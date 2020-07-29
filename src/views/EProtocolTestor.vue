@@ -4,7 +4,7 @@
             <e-editor-bar :items="bar_items" :title="title" :icon="cfg.icon" :newdef_data="{count:1, name:''}"
                 :kind="cfg.kind" @action="on_action">
             </e-editor-bar>
-            <div style="height: calc(100vh - 90px);  overflow-y:auto">
+            <div style="height: calc(100vh - 80px);  overflow-y:auto">
                 <v-row class="pa-0 ma-0" style="flex-wrap: nowrap;">
                     <v-col cols="2" class="pa-0 ma-0 flex-grow-0 flex-shrink-1"
                         style="min-width: 100px; max-width: 100%;">
@@ -19,7 +19,7 @@
                                     <v-btn color="grey lighten-1" outlined @click="unpack_hex">解包十六进制</v-btn>
                                 </v-col>
                                 <v-col cols="12" class="ma-0 pa-0">
-                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 150px);">
+                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 160px);">
                                         <e-script-editor :zero_lnumber="true" id="hex" ref="hex" :script="hex" type="ethex" @change="on_change" />
                                     </v-sheet>
                                 </v-col>
@@ -39,7 +39,7 @@
                                     <v-btn color="grey lighten-1" outlined @click="unpack_bin">解包二进制</v-btn>
                                 </v-col>
                                 <v-col cols="12" class="ma-0 pa-0">
-                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 150px);">
+                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 160px);">
                                         <e-script-editor :zero_lnumber="true" id="bin" ref="bin" :script="bin" type="etbin" @change="on_change" />
                                     </v-sheet>
                                 </v-col>
@@ -57,7 +57,7 @@
                                     <v-btn color="grey lighten-1" outlined @click="pack">打包</v-btn>
                                 </v-col>
                                 <v-col cols="12" class="ma-0 pa-0">
-                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 150px);">
+                                    <v-sheet class="pa-1 ma-0" style="height: calc(100vh - 160px);">
                                         <e-script-editor id="msg" :script="msg" type="yaml" @change="on_change" />
                                     </v-sheet>
                                 </v-col>
@@ -66,12 +66,14 @@
                     </v-col>
                     <v-col cols="4" class="pa-1 ma-0 flex-grow-1 flex-shrink-0"
                         style="min-width: 200px; max-width: 100%;">
-                        <v-data-table :headers="cfg.headers" :items="items" no-data-text="空" disable-sort hide-default-footer
-                            dense disable-pagination @click:row="click_row">
-                            <template v-slot:top>
-                                <v-card-text>{{align==='lr'? '高位在前':'低位在前'}} </v-card-text>
-                            </template>
-                        </v-data-table>
+                        <div style="height: calc(100vh - 110px);  overflow-y:auto;">
+                            <v-data-table :headers="cfg.headers" :items="items" no-data-text="空" disable-sort hide-default-footer
+                                dense disable-pagination @click:row="click_row">
+                                <template v-slot:top>
+                                    <v-card-text>{{align==='lr'? '高位在前':'低位在前'}} </v-card-text>
+                                </template>
+                            </v-data-table>
+                        </div>
                     </v-col>
 
                 </v-row>
@@ -165,7 +167,7 @@
                         break;
                     case 'pack':
                         this.$store.commit('setMsgSuccess', '打包成功');
-                        this.set_pack_detail(recorder.value, recorder.detail,recorder.auto_value);
+                        this.set_pack_detail(recorder.value, recorder.detail, recorder.auto_value);
                         break;
                     case 'unpack':
                         this.$store.commit('setMsgSuccess', '解包成功');
