@@ -59,7 +59,7 @@ class CaseTree {
         return this.libs.map(it => {
             let res = it.make_out();
             return {
-                file: res.name,
+                file: res.name + '.lua',
                 code: res.script,
             }
         });
