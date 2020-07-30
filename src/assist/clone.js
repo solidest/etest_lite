@@ -40,7 +40,7 @@ function _update_topology(doc) {
     }
 
     doc.content.linking.forEach(it => {
-        id = it.id
+        let id = it.id
         it.id = shortid.generate();
         if (it.conns.length > 2) {
             doc.content.draw_data.nodes.forEach(data => {
@@ -75,7 +75,6 @@ function _update_protocol(doc) {
 }
 // 克隆sium
 function _update_simu(doc) {
-    console.log(doc)
     if (!doc || !doc.content || !doc.content.items) {
         return;
     }
@@ -123,12 +122,12 @@ function clone_element(kind, proj_id, id) {
     if (kind == 'program'){
         return _update_program(proj_id, id)
     }else{
-        let clone_el = helper.deep_copy(db.load(kind, id));
-        let clone_doc =  helper.deep_copy(db.load('doc', id));
-        let items = db.list(kind, proj_id);
-        delete clone_el.meta;
-        delete clone_el.$loki;
-        clone_el.id = shortid.generate();
+        let clone_el = helper.deep_copy(db.load(kind, id))
+        let clone_doc =  helper.deep_copy(db.load('doc', id))
+        let items = db.list(kind, proj_id)
+        delete clone_el.meta
+        delete clone_el.$loki
+        clone_el.id = shortid.generate()
         clone_el.name = _get_clone_name(items, clone_el.name);
         
         if(clone_doc) {
@@ -174,7 +173,7 @@ function _update_pro(items){
         // let select_parent = tree.findParentChildren(items, it.id)
         // it.name = _get_clone_name(select_parent, it.name)
         let clone_el = helper.deep_copy(db.load('doc', it.id));
-        clone_id = shortid.generate();
+        let clone_id = shortid.generate();
         if (clone_el){
             clone_el.id = clone_id
             delete clone_el.meta;
