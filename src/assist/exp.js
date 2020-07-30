@@ -3,6 +3,8 @@ import helper from '../helper/helper';
 import yaml from 'js-yaml';
 import fs  from 'fs';
 
+
+
 // 导出监控面板
 function _exp_panel(clone_doc, clone_el, filename){
     if(!clone_doc || !clone_doc.content || !clone_doc.content.layout){
@@ -10,10 +12,17 @@ function _exp_panel(clone_doc, clone_el, filename){
     }
     clone_doc.content.id = clone_el.id
     clone_doc.content.name = clone_el.name
+    clone_doc.content.layout.forEach(it =>{
+        for (let item of it.items){
+            delete item.config.option_code
+        }
+    })
     try{
-        fs.writeFileSync(filename, yaml.dump(clone_doc.content), 'utf8');
+        fs.writeFile(filename, yaml.dump(clone_doc.content), 'utf8',function(err){
+            return err
+        })
     }catch{
-        return;
+        return
     }
 }
 //  导出设备
@@ -27,16 +36,8 @@ function _exp_device(clone_doc, clone_el, filename){
     list.push(dict_start)
     if (clone_doc.content.items){
         clone_doc.content.items.forEach(items => {
-            // let config = '{'
-            // for (let i in items.config){
-            //     if(items.config[i] == null && items.config[i]){
-
-            //     }
-            //     config = config + i + ": " + items.config[i] + ', '
-            // }
-    
-            let config1 = JSON.stringify(items.config)
-            let it_obj = {level: 4, text: `${items.kind} ${items.name} ${config1}`}
+            let str =  _exp_device_kind(items.config)
+            let it_obj = {level: 4, text: `${items.kind} ${items.name} { ${str}} `}
             list.push(it_obj)
         });
     }
@@ -44,7 +45,53 @@ function _exp_device(clone_doc, clone_el, filename){
     list.push(dict_end)
     _writefile(list, filename)
 }
+function _exp_device_kind(config){
+    let str = ""
+    if (config.ip){
+        str = str + `ip: '${config.ip}', `
+    }
+    if (config.port != null){
+        str = str + `port: ${config.port}, `
+    }
+    if (config.ttl){
+        str = str + `ttl: ${config.ttl}, `
+    }
+    if (config.reuseaddr){
+        str = str + `reuseaddr: ${config.reuseaddr}, `
+    }
+    if (config.maxu){
+        str = str + `maxu: ${config.maxu}, `
+    }
+    if (config.ratio){
+        str = str + `ratio: ${config.ratio}, `
+    }
 
+    if (config.baudrate){
+        str = str + `baudrate: ${config.baudrate}, `
+    }
+    if (config.bytesize){
+        str = str + `bytesize: ${config.bytesize}, `
+    }
+    if (config.stopbits){
+        str =  str + `stopbits: ${config.stopbits}, `
+    }
+    if (config.parity != 'none' && config.parity != undefined){
+        str = `parity: ${config.parity}, `
+    }
+    if (config.flowcontrol != 'none' && config.flowcontrol != undefined){
+        str = `flowcontrol: ${config.flowcontrol}, `
+    }
+    if (config.keepalive){
+        str = str + `keepalive: ${config.keepalive}, `
+    }
+    if (config.nodelay){
+        str = str + `nodelay: ${config.nodelay}, `
+    }
+    if (config.acceptany){
+        str = str + `acceptany: ${config.acceptany}, `
+    }
+    return str
+}
 // 根据设备id获取设备名称
 function _exp_device_name(device_id){
     let clone_el = helper.deep_copy(db.load('device', device_id))
@@ -76,7 +123,7 @@ function _writefile(list, filename){
     codes.forEach(it=>{
         str = str + it + "\n"
     })
-    fs.appendFile(filename, str, function(err){
+    fs.writeFile(filename, str, function(err){
         if (err){
             return err;
         }
@@ -97,13 +144,14 @@ function _binding(list, clone_doc, co){
                         li.push( it.name + '.' + item.coon_name )
                     }
                 })
-                
             })
-            let lik = {level: 8, text: `${li.join(', ')}: '${obj.uri}',`}
-            list.push(lik)
+            console.log(obj)
+            if (obj.uri){
+                list.push({level: 8, text: `${li.join(', ')}: '${obj.uri}',`})
+            }
+            
         })
-        let map = {level: 4, text: `}`}
-        list.push(map)
+        list.push({level: 4, text: `}`})
     }
     list.push({level:0,text:'}'})
     return list
@@ -131,10 +179,15 @@ function _mapping(list, clone_doc, co){
                 list_uut.push(device_name)
             }
         })
-        let etest_obj = {level: 8, text: `etest: [${list_etest.join(', ')}],`}
-        let uut_obj = {level: 8, text: `uut: [${list_uut.join(', ')}],`}
-        list.push(etest_obj)
-        list.push(uut_obj)
+        // if (list_etest.length > 0){
+        //     list.push({level: 8, text: `etest: [${list_etest.join(', ')}],`})
+        // }
+        // if (list_uut.length > 0){
+        //     list.push({level: 8, text: `uut: [${list_uut.join(', ')}],`})
+        // }
+        list.push({level: 8, text: `uut: [${list_uut.join(', ')}],`})
+        list.push({level: 8, text: `etest: [${list_etest.join(', ')}],`})
+
     }
     let map = {level: 4, text: `}`}
     list.push(map)
@@ -147,20 +200,23 @@ function _linking(list, clone_doc, co){
         list.push(mapping_start)
         let idx = 0
         clone_doc.content.linking.forEach(it =>{
-            let name = ("link_" + idx++).toString()
-            let li = []
-            it.conns.forEach(id =>{
-                co.forEach(it =>{
-                    it.conn_list.forEach(item =>{
-                        if (id == item.conn_id){
-                            li.push(' ' + it.name + '.' + item.coon_name )
-                        }
+            if(it.conns.length > 0){
+                let name = ("link_" + idx++).toString()
+                let li = []
+                it.conns.forEach(id =>{
+                    co.forEach(it =>{
+                        // let finditem = it.conn_list.find(item => item.conn_id == id);
+                        // li.push(' ' + it.name + '.' + finditem.coon_name)
+                        it.conn_list.forEach(item =>{
+                            if (id == item.conn_id){
+                                li.push(' ' + it.name + '.' + item.coon_name )
+                            }
+                        })
                     })
-                   
                 })
-            })
-            let lik = {level: 8, text: `${name}: [${li}],`}
-            list.push(lik)
+                list.push({level: 8, text: `${name}: [${li}],`})
+            }
+            
         })
         let map = {level: 4, text: `}`}
         list.push(map)
@@ -170,13 +226,22 @@ function _linking(list, clone_doc, co){
 // 导出协议oneof
 function _exp_oneof(items, num, list){
     num = num + 4
+    let is_oneof = false
     items.forEach(item =>{
         if (item.kind == 'oneof'){
             item.items.forEach(it =>{
                 if (it.kind == 'oneofitem'){
+                    if (is_oneof){
+                        list.push({level: num,text:"segment a {}"})
+                    }
+                    else{
+                        is_oneof = true
+                    }
                     list.push({level: num, text: `${item.kind} (${it.condition}) {`}) 
                     _exp_oneof(it.items, num, list)
                     list.push({level: num, text:`}`})
+                }else{
+                    is_oneof = false
                 }
             }) 
         }
@@ -207,9 +272,9 @@ function _exp_protocol_array(item, list, num){
 function _exp_protocol_string1(item, list, num){
     if (item.length && item.endwith){
         list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}, endwith: ${item.endwith}}`})
-    }else if(item.length && item.endwith == null){
+    }else if(item.length && !(item.endwith)){
         list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}}`}) 
-    }else if(item.length == null && item.endwith){
+    }else if(!(item.length) && item.endwith){
         list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, endwith: ${item.endwith}}`}) 
     }else{
         list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}}`})
@@ -218,11 +283,11 @@ function _exp_protocol_string1(item, list, num){
 
 function _exp_protocol_string2(item, list, num){
     if (item.length && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}, endwith: ${item.endwith}}`})
-    }else if(item.length && item.endwith == null){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}}`}) 
-    }else if(item.length == null && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, endwith: ${item.endwith}}`}) 
+        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', length: ${item.length}, endwith: ${item.endwith}}`})
+    }else if(item.length && !(item.endwith)){
+        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', length: ${item.length}}`}) 
+    }else if(!(item.length) && item.endwith){
+        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', endwith: ${item.endwith}}`}) 
     }else{
         list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}'}`})
     }
@@ -230,11 +295,11 @@ function _exp_protocol_string2(item, list, num){
 
 function _exp_protocol_string3(item, list, num){
     if (item.length && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}, endwith: ${item.endwith}}`})
-    }else if(item.length && item.endwith == null){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}}`}) 
-    }else if(item.length == null && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, endwith: ${item.endwith}}`}) 
+        list.push({level: num, text:`${item.kind} ${item.name}  {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}, endwith: ${item.endwith}}`})
+    }else if(item.length && !(item.endwith)){
+        list.push({level: num, text:`${item.kind} ${item.name}  {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}}`}) 
+    }else if(!(item.length) && item.endwith){
+        list.push({level: num, text:`${item.kind} ${item.name}  {parser: '${item.parser}', autovalue: ${item.autovalue}, endwith: ${item.endwith}}`}) 
     }else{
         list.push({level: num, text:`${item.kind} ${item.name} {parser: '${item.parser}', autovalue: ${item.autovalue}}`})
     }
@@ -242,12 +307,13 @@ function _exp_protocol_string3(item, list, num){
 
 function _exp_protocol_string4(item, list, num){
     if (item.length && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}, endwith: ${item.endwith}}`})
-    }else if(item.length && item.endwith == null){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, length: ${item.length}}`}) 
-    }else if(item.length == null && item.endwith){
-        list.push({level: num, text:`${item.kind} ${item.name} [${item.arrlen}] {parser: '${item.parser}', autovalue: ${item.autovalue}, endwith: ${item.endwith}}`}) 
+        list.push({level: num, text:`${item.kind} ${item.name} {parser: '${item.parser}', length: ${item.length}, endwith: ${item.endwith}}`})
+    }else if(item.length && !(item.endwith)){
+        list.push({level: num, text:`${item.kind} ${item.name} {parser: '${item.parser}', length: ${item.length}}`}) 
+    }else if(!(item.length) && item.endwith){
+        list.push({level: num, text:`${item.kind} ${item.name}  {parser: '${item.parser}', endwith: ${item.endwith}}`}) 
     }else{
+
         list.push({level: num, text:`${item.kind} ${item.name} {parser: '${item.parser}'}`})
     }
 }
@@ -256,10 +322,10 @@ function _exp_protocol_segment(item, list, num){
     if (item.autovalue && item.arrlen){
         _exp_protocol_string1(item, list, num)
     }
-    else if(item.autovalue == false && item.arrlen){
+    else if(!(item.autovalue) && item.arrlen){
         _exp_protocol_string2(item, list, num)
     }
-    else if(item.autovalue && item.arrlen == null){
+    else if(item.autovalue && !(item.arrlen)){
         _exp_protocol_string3(item, list, num)
     }
     else{
