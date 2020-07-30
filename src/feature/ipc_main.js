@@ -62,7 +62,7 @@ function open(_worker, db_path) {
     });
     ipcMain.handle('export_element', async (_, opt) => {
         let file = await dialog.showSaveDialog(null, {
-            filters: [{name: 'ETL文件', extensions: [opt.kind==="panel"? 'yaml':'etl']}],
+            filters: [{name: 'ETL文件', extensions: [opt.kind==="panel"? 'yml':'etl']}],
             title: '导出文件',
             defaultPath: opt.name,
         });
