@@ -1,4 +1,8 @@
 
+## ETestDev 0.1.11
+- 新增ETL文件快速复制新文件功能
+- 新增从Dev导出单个ETL文件，可以在VSCode中使用
+
 ## ETestDev 0.1.9
 - 异步库新增3个用户自定义事件相关API，`on off emit`
     - 使用说明参见在线手册
