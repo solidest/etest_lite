@@ -2,9 +2,9 @@
     <v-sheet width="100%" height="100%" tile class="pa-3 ma-0">
         <v-row class="pa-0 ma-0">
             <v-col v-if="title" class="pa-0 ma-0" cols=12>
-                <v-card-title class="pa-2 ma-0">{{title}}</v-card-title>
+                <v-card-title class="pa-0 ma-0">{{title}}</v-card-title>
             </v-col>
-            <v-col v-for="(wed, idx) in items" :key="idx" :cols="wed.config.cols||12" class="px-2 py-4 ma-0">
+            <v-col v-for="(wed, idx) in items" :key="idx" :cols="wed.config.cols||12" class="px-2 py-2 ma-0">
                 <component v-bind:is="wed.type" :recorder="recorder" :commander="commander" :config="wed.config" @command="on_command"></component>
             </v-col>
         </v-row>

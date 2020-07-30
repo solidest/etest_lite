@@ -1,6 +1,6 @@
 <template>
     <div style="display: inline-block" class="pa-0 ma-0">
-        <v-avatar :color="face.background" size="40" class="mr-2">
+        <v-avatar :color="face.background" size="36" class="mr-2">
             <v-icon v-if="face.icon" :color="face.foreground">
                 {{face.icon}}
             </v-icon>

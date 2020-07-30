@@ -6,7 +6,7 @@
                     <v-icon :color="`${error_obj[item.id]?'red':'grey'} lighten-2`" v-text="icon"></v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                    <v-list-item-title v-text="item.name" :class="`body-1 ${error_obj[item.id]?'red':'gerey'}--text text--lighten-2`"></v-list-item-title>
+                    <v-list-item-title class="pa-1" v-text="item.name" :class="`body-1 ${error_obj[item.id]?'red':'gerey'}--text text--lighten-2`"></v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
         </v-list-item-group>
