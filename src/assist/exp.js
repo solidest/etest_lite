@@ -3,7 +3,7 @@ import helper from '../helper/helper';
 import yaml from 'js-yaml';
 import fs  from 'fs';
 
-
+let a = 0
 
 // 导出监控面板
 function _exp_panel(clone_doc, clone_el, filename){
@@ -229,21 +229,22 @@ function _exp_oneof(items, num, list){
     let is_oneof = false
     items.forEach(item =>{
         if (item.kind == 'oneof'){
+            if(is_oneof){
+                list.push({level: num,text: `segment _seg${a} { }`})
+                a = a + 1
+            }else{
+                is_oneof = true
+            }
             item.items.forEach(it =>{
                 if (it.kind == 'oneofitem'){
-                    if (is_oneof){
-                        list.push({level: num,text:"segment a {}"})
-                    }
-                    else{
-                        is_oneof = true
-                    }
                     list.push({level: num, text: `${item.kind} (${it.condition}) {`}) 
                     _exp_oneof(it.items, num, list)
                     list.push({level: num, text:`}`})
-                }else{
-                    is_oneof = false
                 }
             }) 
+            
+        }else{
+            is_oneof = false
         }
         if (item.kind == 'segment'){
             _exp_protocol_segment(item, list, num)
