@@ -264,6 +264,9 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
       
 ipcMain.handle('run-case', async (_, info) => {
   let res = await run.run_case(info);
+  if(!res.$is_panel) {
+    return res;
+  }
   if(res.result === 'ok') {
     setTimeout(() =>{
       if(player_show) {
@@ -277,7 +280,7 @@ ipcMain.handle('run-case', async (_, info) => {
         }
       } 
       player_show = true;
-      player.focus();      
+      player.focus(); 
     }, 300);
 
   }

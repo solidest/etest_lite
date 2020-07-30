@@ -9,24 +9,24 @@ function _get_clone_name(items, old_name) {
     let base_name = old_name + '_copy';
     let name = base_name;
     let idx = 1;
-    while (items.find(it => it.name === name)) {
+    while(items.find(it => it.name===name)) {
         name = base_name + idx++;
     }
     return name;
 }
 // 克隆监控面板
 function _update_panel(doc) {
-    if (!doc || !doc.content || !doc.content.layout) {
+    if(!doc || !doc.content || !doc.content.layout){
         return;
     }
-
+    
     doc.content.layout.forEach(it => {
         it.id = shortid.generate()
     })
 }
 // 克隆设备
 function _update_device(doc) {
-    if (!doc || !doc.content || !doc.content.items) {
+    if(!doc || !doc.content || !doc.content.items) {
         return;
     }
     doc.content.items.forEach(it => {
@@ -35,7 +35,7 @@ function _update_device(doc) {
 }
 // 克隆拓扑结构
 function _update_topology(doc) {
-    if (!doc || !doc.content || !doc.content.mapping) {
+    if(!doc || !doc.content || !doc.content.mapping) {
         return;
     }
 
@@ -46,7 +46,7 @@ function _update_topology(doc) {
             doc.content.draw_data.nodes.forEach(data => {
                 if (id == data.id) {
                     data.id = it.id
-                }
+                } 
             });
             doc.content.draw_data.edges.forEach(dege => {
                 if (id == dege.target) {
@@ -55,42 +55,53 @@ function _update_topology(doc) {
             });
         }
     });
-
+  
 }
 // 修改协议的id号
 function _update_protocol_id(items) {
-    items.forEach(it => {
+    items.forEach(it =>{
         it.id = shortid.generate();
-        if (it.items) {
+        if(it.items) {
             _update_protocol_id(it.items)
         }
     });
 }
 // 克隆协议
 function _update_protocol(doc) {
-    if (!doc || !doc.content || !doc.content.items) {
+    if(!doc || !doc.content || !doc.content.items) {
         return;
     }
     _update_protocol_id(doc.content.items);
 }
 // 克隆sium
 function _update_simu(doc) {
+    console.log(doc)
     if (!doc || !doc.content || !doc.content.items) {
         return;
     }
     doc.content.items.forEach(it => {
         it.id = shortid.generate();
     });
-
+    
 }
 // 克隆测试用例
 function _update_program(proj_id, id) {
     let items = db.list('program', proj_id);
     let select = tree.findItem(items[0].items, id)
     let clone_el = helper.deep_copy(select);
-
-    // 获取当前节点的父级数组
     let select_parent = tree.findParentChildren(items[0].items, id)
+    if (id === clone_el.id && clone_el.kind === 'lua'){
+        let lua = helper.deep_copy(db.load('doc', clone_el.id));
+        lua.id = shortid.generate();
+        clone_el.id = lua.id
+        clone_el.name =  _get_clone_name(select_parent, clone_el.name)
+        delete lua.meta;
+        delete lua.$loki;
+        db.insert('doc', lua)
+        tree.insert(select_parent,clone_el)
+        return clone_el
+    }
+    // 获取当前节点的父级数组
     // let res = JSON.parse(JSON.stringify(select_parent))
 
     if (clone_el.kind == 'dir') {
@@ -99,28 +110,28 @@ function _update_program(proj_id, id) {
     }
     let clone = helper.deep_copy(db.load('doc', clone_el.id));
     let clone_id = shortid.generate();
-    if (clone) {
+    if (clone){
         clone.id = clone_id;
     }
     clone_el.id = clone_id;
-    clone_el.name = _get_clone_name(items, clone_el.name)
+    clone_el.name = _get_clone_name(select_parent, clone_el.name)
     tree.insert(select_parent, clone_el)
     return clone_el
 }
 
 function clone_element(kind, proj_id, id) {
-    if (kind == 'program') {
+    if (kind == 'program'){
         return _update_program(proj_id, id)
-    } else {
+    }else{
         let clone_el = helper.deep_copy(db.load(kind, id));
-        let clone_doc = helper.deep_copy(db.load('doc', id));
+        let clone_doc =  helper.deep_copy(db.load('doc', id));
         let items = db.list(kind, proj_id);
         delete clone_el.meta;
         delete clone_el.$loki;
         clone_el.id = shortid.generate();
         clone_el.name = _get_clone_name(items, clone_el.name);
-
-        if (clone_doc) {
+        
+        if(clone_doc) {
             delete clone_doc.meta;
             delete clone_doc.$loki;
             clone_doc.id = clone_el.id;
@@ -143,34 +154,35 @@ function clone_element(kind, proj_id, id) {
                 default:
                     console.error('TODO clone', kind);
                     break;
-            }
+            }        
         }
         db.insert(kind, clone_el);
-        if (clone_doc) {
+        if(clone_doc) {
             db.insert('doc', clone_doc);
         }
         return clone_el;
-    }
-
+        }
+        
 }
 
 // 克隆测试用例
-function _update_pro(items) {
-    if (items.length === 0) {
+function _update_pro(items){
+    if (items.length === 0){
         return;
     }
-    items.forEach(it => {
-        it.name = _get_clone_name(items, it.name)
+    items.forEach(it =>{
+        // let select_parent = tree.findParentChildren(items, it.id)
+        // it.name = _get_clone_name(select_parent, it.name)
         let clone_el = helper.deep_copy(db.load('doc', it.id));
         clone_id = shortid.generate();
-        if (clone_el) {
+        if (clone_el){
             clone_el.id = clone_id
             delete clone_el.meta;
             delete clone_el.$loki;
             db.insert('doc', clone_el)
         }
         it.id = clone_id
-        if (it.kind === 'dir') {
+        if (it.kind === 'dir'){
             _update_pro(it.children)
         }
     });

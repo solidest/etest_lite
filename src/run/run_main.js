@@ -96,6 +96,7 @@ async function run_case(info) {
             _runner = runner;
             _db = db;
         }
+        res.$is_panel = !!item.panel;
         return res;
     } catch (error) {
         return {
