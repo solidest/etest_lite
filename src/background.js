@@ -282,11 +282,10 @@ ipcMain.handle('run-case', async (_, info) => {
       player_show = true;
       player.focus(); 
     }, 300);
-
   }
   return res;
 });
-  
+
 ipcMain.handle('run-stop', async () => {
   if(player_show) { 
     player.hide();

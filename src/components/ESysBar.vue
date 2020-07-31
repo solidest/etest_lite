@@ -15,6 +15,7 @@
 <style>
   #app_bar {
     -webkit-app-region: drag;
+    -webkit-user-select: none;
   }
   .nodrag {
     -webkit-app-region: no-drag;

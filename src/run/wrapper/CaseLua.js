@@ -22,6 +22,13 @@ class CaseLua {
             real_time: this.option.type && (this.option.type !== 'normal'),
             rt_cycle: this.option.rt_cycle,
         };
+        let topo = this.option.topology;
+        if(topo && this.proj.topology) {
+            topo = this.proj.topology.find(it => it.id === topo);
+            if(topo) {
+                opt.topology = topo.name;
+            }
+        }
         if (opt.real_time) {
             opt.rt_policy = this.option.type;
         }
