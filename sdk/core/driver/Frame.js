@@ -3,6 +3,9 @@ const msgpack = require("msgpack-lite");
 const magic = 0x7777;
 
 class Frame {
+    constructor () {
+        this._bufs = [];
+    }
 
     static pack(body) {
         let buf_body = msgpack.encode(body);
@@ -13,8 +16,31 @@ class Frame {
         return Buffer.concat([buf_magic, buf_len, buf_body]);
     }
 
-    constructor () {
-        this._bufs = [];
+    unpack(buf) {
+        if(buf) {
+            this._bufs.push(buf);
+        }
+        let count = this._bufs.length;
+        if(count===0) {
+            return null;
+        }
+
+        let first = this._bufs[0];
+        if(first.length<8) {
+            if(count===1) {
+                return null;
+            }
+            first = Buffer.concat(this._bufs);
+            this._bufs = [first];
+            if(first.length<8) {
+                return null;
+            }
+        }
+        if(first.readInt16LE(2)!==magic) {
+            throw new Error('json rpc error');
+        }
+        let body_len = first.readInt32LE(4);
+        return this._unpack(body_len + 8);
     }
 
     _unpack(data_len) {
@@ -59,32 +85,6 @@ class Frame {
         return msgpack.decode(buf.subarray(8, 8+data_len));
     }
 
-    unpack(buf) {
-        if(buf) {
-            this._bufs.push(buf);
-        }
-        let count = this._bufs.length;
-        if(count===0) {
-            return null;
-        }
-
-        let first = this._bufs[0];
-        if(first.length<8) {
-            if(count===1) {
-                return null;
-            }
-            first = Buffer.concat(this._bufs);
-            this._bufs = [first];
-            if(first.length<8) {
-                return null;
-            }
-        }
-        if(first.readInt16LE(2)!==magic) {
-            throw new Error('json rpc error');
-        }
-        let body_len = first.readInt32LE(4);
-        return this._unpack(body_len + 8);
-    }
 }
 
 module.exports = Frame;

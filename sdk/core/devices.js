@@ -1,14 +1,5 @@
 
 
-/**
- * 设备解析模块
- * 提取etl文件中的设备接口描述和连接拓扑描述
- * 返回的解析结果为拓扑图对象数组
- */
-// const path = require("path");
-// const fs = require("fs");
-// const parser = require("./parser/etxParser")
-
 //接口
 class Connector {
     constructor(type, name) {

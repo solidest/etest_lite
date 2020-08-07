@@ -1,22 +1,10 @@
 
 class RpcTask {
-    constructor(ip, port, delay, cb) {
+    constructor(net) {
+        net.on('recv', this.recvedTask);
         this._tasks = [];
         this._nextid = 0;
-        this._net = new NetWork(ip, port, delay, this, cb);
-    }
-
-    setup(on_error) {
-        this.on_error = on_error;
-        this._net.setup(on_error);
-    }
-
-    close() {
-        this.on_error = null;
-        if(this._net) {
-            this._net.close();
-            this._net = null;            
-        }
+        this._net = net;
     }
 
     sendTask(task_info, call_back) {
@@ -24,10 +12,6 @@ class RpcTask {
         this._tasks.push({info: task_info, cb: call_back});
         this._net.send(task_info);
         return task_info.id;
-    }
-
-    clear() {
-        this._tasks = [];
     }
 
     recvedTask(recv_info) {
