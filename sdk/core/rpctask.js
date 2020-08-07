@@ -6,9 +6,6 @@
  * RpcTask负责rpc调度
  */
 
-const net = require('net');
-const msgpack = require("msgpack-lite");
-const magic = 0x7777;
 
 //打包解包
 class Frame {
