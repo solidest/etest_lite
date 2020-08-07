@@ -1,4 +1,4 @@
-const RpcTask = require('./core/rpctask');
+const RpcTask = require('../../sdk/core/rpctask');
 
 class Runner {
     constructor(ip, port, on_debug, on_ask) {

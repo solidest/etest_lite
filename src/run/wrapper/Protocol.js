@@ -1,7 +1,7 @@
 
 import helper from '../../helper/helper';
-import segparser from '../../worker/helper/segParser';
-import expparser from '../../worker/helper/expParser';
+import segparser from '../../../sdk/core/parser/segParser';
+import expparser from '../../../sdk/core/parser/expParser';
 
 class Protocol {
     constructor(data, proj, name) {

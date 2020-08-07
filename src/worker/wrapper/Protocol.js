@@ -1,6 +1,6 @@
 import checker from '../helper/checker';
-import segparser from '../helper/segParser';
-import expparser from '../helper/expParser';
+import segparser from '../../../sdk/core/parser/segParser';
+import expparser from '../../../sdk/core/parser/expParser';
 
 const KIND = 'protocol';
 
@@ -193,6 +193,9 @@ class Protocol {
                 seg.parser = this._get_custom_parser(seg.parser);
             } else {
                 seg.parser = segparser.parse(seg.parser);
+                if(seg.parser && ['float', 'double'].includes(seg.parser.type)  && seg.parser.encode) {
+                    throw new Error('编码设置无效');
+                }
             }
         } catch (error) {
             this.proj.pushError('解析方式设置错误: ' + error.message, KIND, this.id, seg.id);

@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 // ETL ////////////////////////////////////////////////////////////////////////////
-let lex_main = {
+let etl_main = {
   startConditions: {
     etl: 1,
     lua: 1
@@ -118,6 +118,7 @@ let lex_segtype = {
     ["<", "return '<'"],
     ["!", "return '!'"],
     ["&", "return '&'"],
+    ["=", "return '='"],
     ["\\s+", ""],
   ],
 }
@@ -153,25 +154,26 @@ let bnf_segtype = {
   encode: [
     ["&", "$$ = 'complement'"],
     ["!", "$$ = 'inversion'"],
+    ["=", "$$ = 'primitive'"],
   ]
 }
 
 /* segment
 
   build
-  node sdk/parser/build.js && syntax-cli -m slr1 -g sdk/parser/build/segtype.g -o sdk/parser/segParser.js --loc
+  node sdk/core/parser/build.js && syntax-cli -m slr1 -g sdk/core/parser/build/segtype.g -o sdk/core/parser/segParser.js --loc
 
   语法验证
-  node sdk/parser/build.js && syntax-cli -m slr1 -g sdk/parser/build/segtype.g --validate
+  node sdk/core/parser/build.js && syntax-cli -m slr1 -g sdk/core/parser/build/segtype.g --validate
 
   不包含语法时的词法检查
-  node sdk/parser/build.js && syntax-cli --lex sdk/parser/build/segtype_lex.g --tokenize -p "int8"
+  node sdk/core/parser/build.js && syntax-cli --lex sdk/core/parser/build/segtype_lex.g --tokenize -p "int8"
 
   包含语法时的词法检查
-  node sdk/parser/build.js && syntax-cli -m slr1 -g sdk/parser/build/segtype.g --tokenize -p "double>"
+  node sdk/core/parser/build.js && syntax-cli -m slr1 -g sdk/core/parser/build/segtype.g --tokenize -p "double>"
 
   语法分析
-  node sdk/parser/build.js && syntax-cli -m slr1 -g sdk/parser/build/segtype.g -o sdk/parser/segParser.js && syntax-cli -m slr1 -g sdk/parser/build/segtype.g -p "string>"
+  node sdk/core/parser/build.js && syntax-cli -m slr1 -g sdk/core/parser/build/segtype.g -o sdk/core/parser/segParser.js && syntax-cli -m slr1 -g sdk/core/parser/build/segtype.g -p "string>"
 */
 
 
@@ -555,8 +557,8 @@ let operators = [
 
 */
 
-fs.writeFileSync(path.join(__dirname, 'build/etl_lex.g'), JSON.stringify(lex_main, null, 4));
-fs.writeFileSync(path.join(__dirname, 'build/etl.g'), JSON.stringify({lex: lex_main, bnf: bnf_main, moduleInclude: include_main}, null, 4));
+fs.writeFileSync(path.join(__dirname, 'build/etl_lex.g'), JSON.stringify(etl_main, null, 4));
+fs.writeFileSync(path.join(__dirname, 'build/etl.g'), JSON.stringify({lex: etl_main, bnf: bnf_main, moduleInclude: include_main}, null, 4));
 fs.writeFileSync(path.join(__dirname, 'build/etx_lex.g'), JSON.stringify(lex_etx, null, 4));
 fs.writeFileSync(path.join(__dirname, 'build/etx.g'), JSON.stringify({lex: lex_etx, operators: operators, bnf: bnf_etx, moduleInclude: include_etx}, null, 4));
 fs.writeFileSync(path.join(__dirname, 'build/segtype_lex.g'), JSON.stringify(lex_segtype, null, 4));
