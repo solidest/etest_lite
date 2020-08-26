@@ -9,7 +9,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <e-toolbar> </e-toolbar>
+    <e-mainbar> </e-mainbar>
     <v-main>
       <router-view></router-view>
     </v-main>
@@ -22,14 +22,14 @@
 </style>
 <script>
   import ESysBar from './components/ESysBar';
-  import EToolBar from './components/ETopBar';
+  import EMainBar from './views/MainBar/ETopBar';
 
   export default {
     name: 'App',
 
     components: {
       'e-sys-bar': ESysBar,
-      'e-toolbar': EToolBar,
+      'e-mainbar': EMainBar,
     },
 
     computed: {
