@@ -51,7 +51,7 @@
 
 <script>
     import cfg from './config';
-    import EVerticalBar from '../../components/utility/EVerticalBar';
+    import EVerticalBar from '../Utility/EVerticalBar';
     import EToolList from './Tools/EToolList';
     import ESrcMan from './SrcMan/ESrcMan';
 
