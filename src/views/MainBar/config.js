@@ -1,12 +1,12 @@
 const cfg = {
     proj_modules: [{
         icon: 'mdi-file-tree-outline',
-        title: '资源管理',
+        title: '资源管理器',
         catalog: 'program',
         subbar: true,
     }, {
         icon: 'mdi-animation-play-outline',
-        title: '用例执行',
+        title: '执行管理器',
         catalog: 'play',
         subbar: true,
     }, {
@@ -27,7 +27,7 @@ const cfg = {
         route: 'ListPublic',
     },{
         icon: 'mdi-tools',
-        title: '工具箱',
+        title: '辅助工具',
         catalog: 'tools',
         subbar: true,
     }, ]

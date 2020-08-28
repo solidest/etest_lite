@@ -53,7 +53,7 @@
     import cfg from './config';
     import EVerticalBar from '../Utility/EVerticalBar';
     import EToolList from './Tools/EToolList';
-    import ESrcMan from './SrcMan/ESrcMan';
+    import ESrcTree from './SrcTree/ESrcTree';
 
     const mini_width = 80;
 
@@ -62,7 +62,7 @@
         components: {
             'e-vertical-bar': EVerticalBar,
             'e-tool-list': EToolList,
-            'e-src-man': ESrcMan,
+            'e-src-man': ESrcTree,
         },
 
         data: () => ({

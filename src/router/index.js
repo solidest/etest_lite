@@ -25,7 +25,7 @@ const routes = [{
   }, {
     path: '/listproj',
     name: 'ListProj',
-    component: () => import( /* webpackChunkName: "e_listproj" */ '../views/EProjList'),
+    component: () => import( /* webpackChunkName: "e_listproj" */ '../views/ProjList/EProjList'),
   }, {
     path: '/listpublic',
     name: 'ListPublic',
