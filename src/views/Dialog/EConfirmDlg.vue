@@ -21,12 +21,12 @@
 
         methods: {
             cancel: function () {
-                this.$emit("closed", {
+                this.$emit("result", {
                     result: 'cancel'
                 });
             },
             ok: function () {
-                this.$emit("closed", {
+                this.$emit("result", {
                     result: 'ok'
                 });
             }

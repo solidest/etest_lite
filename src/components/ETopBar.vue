@@ -128,13 +128,11 @@
 
         watch: {
             page_route: function (v) {
-                if (v === 'TestCase') {
+                if (v === 'SrcTree') {
                     this.width = show_;
                     if (this.page !== cfg.pages[0]) {
                         this.changePage(cfg.pages[0]);
                     }
-                } else if(v && v.startsWith('tool_')) {
-                    this.width = hide_;
                 }
             }
         },

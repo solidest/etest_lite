@@ -14,6 +14,43 @@ import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
 import run from './run/run_main';
 
+import api from './api/server_api';
+
+function project_active (_, proj_id){
+  let win = wins.find(proj_id);
+  if (win) {
+    if (win.isMinimized()) {
+      win.restore();
+    }
+    win.show();
+    win.focus();
+    beginCheck(proj_id, 'active proj');
+    return {
+      result: 'ok',
+      value: win.id,
+    }
+  }
+  return {
+    result: 'nil',
+  };
+}; 
+
+function project_export(_, proj_id) {
+  console.log('TODO EXPORT', proj_id);
+  return {
+    result: 'ok',
+  };
+}
+
+function project_open_inwin(_, proj_id) {
+  console.log('TODO OPEN_INWIN', proj_id);
+  return {
+    result: 'ok',
+  };
+}
+
+api.setup(null, {project_active, project_export, project_open_inwin});
+ 
 let player = null; 
 let worker = null;
 let player_show = false;
@@ -21,7 +58,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const db_path = app.getPath('userData');
 if(isDevelopment) {
   console.log('db_path: ', db_path);
-}
+} 
 
 async function quit() {
   await ipc.close();
@@ -168,6 +205,7 @@ app.on('activate', () => {
   if (!player) {
     createPlayer();
   }
+
 })
 
 app.on('ready', async () => {
@@ -241,19 +279,7 @@ ipcMain.on('close-win', (ev) => {
   win.close();
 });
   
-ipcMain.handle('active-proj', (_, proj_id) => {
-  let win = wins.find(proj_id);
-  if (win) {
-    if (win.isMinimized()) {
-      win.restore();
-    }
-    win.show();
-    win.focus();
-    beginCheck(proj_id, 'active proj');
-    return win.id;
-  }
-  return 0;
-}); 
+
 
 ipcMain.on('check-result', (_, proj_id, version, results) => {
   let win = wins.find(proj_id);

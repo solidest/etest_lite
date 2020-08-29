@@ -11,8 +11,8 @@ const routes = [{
     name: 'Home',
     component: EEmpty
   }, {
-    path: '/testcase',
-    name: 'TestCase',
+    path: '/srctree',
+    name: 'SrcTree',
     component: EEmpty,
   }, {
     path: '/project',

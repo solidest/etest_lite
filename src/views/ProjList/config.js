@@ -40,5 +40,9 @@ const cfg = {
         value: 'result'
       },
     ],
+    version_map: {
+      '0.1.13': '2020.07',
+      '1.0.1': '2020.12'
+    },
 }
 export default cfg

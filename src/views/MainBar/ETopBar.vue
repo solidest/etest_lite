@@ -73,6 +73,7 @@
             active: null,
         }),
 
+
         computed: {
             show_subbar: function () {
                 return this.width > mini_width && this.active && this.active.subbar;
@@ -82,6 +83,23 @@
                     return this.active.catalog;
                 }
                 return '';
+            },
+            page_route: function () {
+                return this.$route.name;
+            },
+        },
+
+        
+        watch: {
+            page_route: function (v) {
+                if (v === 'SrcTree') {
+                    if(this.width === mini_width) {
+                        this.toggle_subbar();
+                    }
+                    if (this.active !== this.proj_modules[0]) {
+                        this.on_module(this.proj_modules[0]);
+                    }
+                }
             }
         },
 

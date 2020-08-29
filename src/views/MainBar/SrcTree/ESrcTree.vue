@@ -16,19 +16,15 @@
             <template v-slot:activator="{on}">
                 <v-treeview activatable dense open-on-click return-object ref="__tree" :items="items"
                     :active.sync="active">
-                    <template v-slot:prepend="{ item, open }">
-                        <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}">
+                    <template v-slot:label="{ item, open }">
+                        <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}" style="display: flex">
                             <v-icon v-if="item.kind==='dir'">
                                 {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                             </v-icon>
                             <v-icon v-else>
                                 {{ file_icons[item.kind] }}
                             </v-icon>
-                        </div>
-                    </template>
-                    <template v-slot:label="{ item }">
-                        <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}">
-                            <span> {{item.name}} </span>
+                            <span class="ml-2"> {{item.name}} </span>
                         </div>
                     </template>
                 </v-treeview>

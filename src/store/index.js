@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ipc from '../feature/ipc_render';
 
+import ProjList from './modules/ProjList';
+
 const {
   ipcRenderer
 } = window.require('electron')
@@ -9,6 +11,9 @@ const {
 Vue.use(Vuex)
 
 const _store = new Vuex.Store({
+  modules: {
+    ProjList,
+  },
   state: {
     last_tip: {
       tip: false,
@@ -90,8 +95,7 @@ const _store = new Vuex.Store({
       state.play_info = info;
     },
   },
-  actions: {},
-  modules: {},
+  actions: { },
   getters: {
     check_result: state => {
       if(state.check_result && state.proj && state.check_result.proj_id === state.proj.id) {

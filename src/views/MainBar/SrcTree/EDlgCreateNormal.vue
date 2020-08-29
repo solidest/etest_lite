@@ -6,7 +6,7 @@
                 placeholder="输入新项的名称" label="名称"></v-text-field>
             <v-sheet class="px-6">
                 <v-tabs v-model="tab" dark>
-                    <v-tab v-for="item in ['从复用库复制', '从当前项目复制']" :key="item">
+                    <v-tab v-for="(item, idx) in ['从服用库拷贝', '从当前项目拷贝']" :key="idx">
                         {{ item }}
                     </v-tab>
                 </v-tabs>
@@ -14,12 +14,12 @@
                 <v-tabs-items v-model="tab">
                     <v-tab-item>
                         <v-card outlined height="200">
-                            <v-card-text>从服用库复制</v-card-text>
+                            <v-card-text>从服用库拷贝</v-card-text>
                         </v-card>
                     </v-tab-item>
                      <v-tab-item>
                         <v-card outlined height="200">
-                            <v-card-text>从当前项目复制</v-card-text>
+                            <v-card-text>从当前项目拷贝</v-card-text>
                         </v-card>
                     </v-tab-item>
                 </v-tabs-items>
