@@ -14,9 +14,16 @@ import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
 import run from './run/run_main';
 
-import api from './api/server_api';
 
-function project_active (_, proj_id){
+///////////////////////////////////////////////////////////////////
+
+
+import srv_api from './api/server_api';
+import main_db from './db/db01';
+
+const db_path = app.getPath('userData');
+
+function project_active(_, proj_id) {
   let win = wins.find(proj_id);
   if (win) {
     if (win.isMinimized()) {
@@ -33,7 +40,7 @@ function project_active (_, proj_id){
   return {
     result: 'nil',
   };
-}; 
+};
 
 function project_export(_, proj_id) {
   console.log('TODO EXPORT', proj_id);
@@ -49,16 +56,28 @@ function project_open_inwin(_, proj_id) {
   };
 }
 
-api.setup(null, {project_active, project_export, project_open_inwin});
- 
-let player = null; 
+async function setup() {
+  let db = await main_db.open(db_path);
+  srv_api.setup(db, {
+    project_active,
+    project_export,
+    project_open_inwin
+  });
+}
+
+
+
+
+
+//////////////////////////////////////////////////////////////
+
+let player = null;
 let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const db_path = app.getPath('userData');
-if(isDevelopment) {
+if (isDevelopment) {
   console.log('db_path: ', db_path);
-} 
+}
 
 async function quit() {
   await ipc.close();
@@ -66,7 +85,7 @@ async function quit() {
   console.log('db saved, will exit');
   app.quit();
 }
-  
+
 function try_close_all() {
   if (wins.size() === 0 && !player_show) {
     if (worker) {
@@ -78,15 +97,15 @@ function try_close_all() {
       player = null;
     }
   }
-} 
-   
+}
+
 function createWorker() {
   worker = new BrowserWindow({
     show: false,
     webPreferences: {
       nodeIntegration: true
     }
-  }); 
+  });
   ipc.open(worker, db_path);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
@@ -100,7 +119,7 @@ function createWorker() {
     try_close_all();
   });
 }
-  
+
 function createPlayer() {
   player = new BrowserWindow({
     show: player_show,
@@ -159,7 +178,7 @@ function createWindow(proj_id) {
       win.reload();
     });
   }
-   
+
   let open_proj = proj_id ? '#/?proj_id=' + proj_id : '#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false');
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
@@ -179,7 +198,7 @@ function createWindow(proj_id) {
     wins.del(win);
     try_close_all();
   });
- 
+
   win.on('focus', () => {
     beginCheck(wins.search(win), 'focus');
   });
@@ -194,7 +213,7 @@ function beginCheck(proj_id, reason) {
 
 //////////////////////// app //////////////////////////////
 app.on('window-all-closed', quit)
-  
+
 app.on('activate', () => {
   if (wins.size() === 0) {
     createWindow(null);
@@ -210,7 +229,7 @@ app.on('activate', () => {
 
 app.on('ready', async () => {
   createWorker();
-  createPlayer(); 
+  createPlayer();
   createWindow(null);
 })
 
@@ -227,14 +246,16 @@ if (isDevelopment) {
     })
   }
 }
-  
-  
+
+
 /////////////////////// main ////////////////////////////////
-  
+
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   console.log('should quit');
   app.quit();
+} else {
+  setup();
 }
 
 protocol.registerSchemesAsPrivileged([{
@@ -244,14 +265,14 @@ protocol.registerSchemesAsPrivileged([{
     standard: true
   }
 }])
-  
+
 ///////////////////////// ipcMain ///////////////////////////////
 ipcMain.on('bind-proj', (ev, proj_id) => {
   let win = wins.lookup(ev.sender);
   wins.update(win, proj_id);
   beginCheck(proj_id, 'bind proj');
 })
-  
+
 ipcMain.handle('open-proj', (_, proj_id) => {
   let win = wins.find(proj_id);
   if (win) {
@@ -266,19 +287,19 @@ ipcMain.handle('open-proj', (_, proj_id) => {
   createWindow(proj_id);
   beginCheck(proj_id, 'open-proj');
 });
- 
+
 ipcMain.on('close-win', (ev) => {
-  if(ev.sender===player.webContents) {
+  if (ev.sender === player.webContents) {
     player.hide();
     player_show = false;
     try_close_all();
     return;
   }
-  
+
   let win = wins.lookup(ev.sender);
   win.close();
 });
-  
+
 
 
 ipcMain.on('check-result', (_, proj_id, version, results) => {
@@ -287,39 +308,39 @@ ipcMain.on('check-result', (_, proj_id, version, results) => {
     win.webContents.send('check-result', proj_id, results, version);
   }
 });
-      
+
 ipcMain.handle('run-case', async (_, info) => {
   let res = await run.run_case(info);
-  if(!res.$is_panel) {
+  if (!res.$is_panel) {
     return res;
   }
-  if(res.result === 'ok') {
-    setTimeout(() =>{
-      if(player_show) {
-        if(player.isMinimized()) {
+  if (res.result === 'ok') {
+    setTimeout(() => {
+      if (player_show) {
+        if (player.isMinimized()) {
           player.restore();
         }
-      } else {  
+      } else {
         player.show();
-        if(isDevelopment) {
+        if (isDevelopment) {
           player.webContents.openDevTools();
         }
-      } 
+      }
       player_show = true;
-      player.focus(); 
+      player.focus();
     }, 300);
   }
   return res;
 });
 
 ipcMain.handle('run-stop', async () => {
-  if(player_show) { 
+  if (player_show) {
     player.hide();
     player_show = false;
   }
   return await run.run_stop();
 });
- 
+
 
 // ipcMain.on('run-reply', run.reply);
 // ipcMain.on('run-cmd', run.cmd);

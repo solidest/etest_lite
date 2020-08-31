@@ -283,6 +283,7 @@
           }
           res = await api.project_open(id);
           if (res.result === 'ok') {
+            console.log(res.value)
             this.$store.commit('setProj', res.value);
           }
         }

@@ -3,7 +3,7 @@ const {
     ipcRenderer
 } = window.require('electron');
 
-export default {
+module.exports = {
     async project_list() {
         return await ipcRenderer.invoke('project_list');
     },
