@@ -1,14 +1,32 @@
-
 import {
     ipcMain,
 } from 'electron';
+import cfg from './config';
+import fs from 'fs';
 
-const src_tree = require('../views/MainBar/SrcTree/config');
 const debounce = require('throttle-debounce').debounce;
 const helper = require('../utility/helper');
 
 let _db;
-const auto_save = debounce(4000, () => {_db.saveDatabase();});
+const auto_save = debounce(4000, () => {
+    _db.saveDatabase();
+});
+
+function _clear_dir(url) {
+    var files = [];
+    if (fs.existsSync(url)) {
+        files = fs.readdirSync(url);
+        files.forEach(function (file, index) {
+            var curPath = path.join(url, file);
+            if (fs.statSync(curPath).isDirectory()) {
+                _clear_dir(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(url);
+    }
+}
 
 function project_list(_) {
     let coll = _db.getCollection('project');
@@ -39,7 +57,7 @@ function project_new(_, info) {
         memo: info.memo,
         updated: t,
         created: t,
-        tree: helper.default.deep_copy(src_tree.default_src)
+        tree: helper.default.deep_copy(cfg.default_src)
     });
     auto_save();
     return {
@@ -49,17 +67,25 @@ function project_new(_, info) {
 
 function project_del(_, id) {
     let coll = _db.getCollection('doc');
-    let items = coll.find({'proj_id': { '$eq' : id }});
-    if(items) {
-        for(let it of items) {
-            coll.remove(it);
-        };
+    let items = coll.find({
+        'proj_id': {
+            '$eq': id
+        }
+    });
+    if (items) {
+        items.forEach(it => {
+            coll.remove(it)
+            console.log(it.id)
+            _clear_dir(path.resolve(cfg.db_path, it.id));
+        });
     }
 
-    console.log('CLEAR RUNS');
-    
     coll = _db.getCollection('project');
-    proj = coll.find({'id': { '$eq' : id }})[0];
+    let proj = coll.find({
+        'id': {
+            '$eq': id
+        }
+    })[0];
     coll.remove(proj);
 
     auto_save();
@@ -70,9 +96,13 @@ function project_del(_, id) {
 
 function project_rename(_, info) {
     let coll = _db.getCollection('project');
-    let doc = coll.find({'id': { '$eq' : info.id }})[0];
+    let doc = coll.find({
+        'id': {
+            '$eq': info.id
+        }
+    })[0];
     info.updated = Date.now();
-    for(let k in info) {
+    for (let k in info) {
         doc[k] = info[k];
     }
     auto_save();
@@ -84,12 +114,16 @@ function project_rename(_, info) {
 
 function project_open(_, id) {
     let coll = _db.getCollection('project');
-    let res = coll.find({'id': { '$eq' : id }});
-    if(res && res.length === 1) {
+    let res = coll.find({
+        'id': {
+            '$eq': id
+        }
+    });
+    if (res && res.length === 1) {
         return {
             result: 'ok',
             value: res[0]
-        }        
+        }
     }
     return {
         result: 'nil',

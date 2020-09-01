@@ -3,6 +3,7 @@ const path = require('path');
 const loki = require('lokijs');
 const lfsa = require('lokijs/src/loki-fs-structured-adapter');
 const fs = require('fs');
+const cfg = require('../api/config');
 
 const db00 = require('./db00.js');
 let _db;
@@ -32,8 +33,8 @@ async function _create_from(old_db, new_db_file) {
     return db;
 }
 
-async function open(db_path) {
-    let db_file = path.resolve(db_path, 'db01.db');
+async function open() {
+    let db_file = path.resolve(cfg.db_path, 'db01.db');
     if(!fs.existsSync(db_file)) {
         let old_db = await db00.open_exit(db_path);
         let _db = old_db ? await _create_from(old_db) : await _create_db(db_file);

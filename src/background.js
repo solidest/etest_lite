@@ -14,9 +14,7 @@ import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
 import run from './run/run_main';
 
-
 ///////////////////////////////////////////////////////////////////
-
 
 import srv_api from './api/server_api';
 import main_db from './db/db01';
@@ -48,7 +46,7 @@ function project_export(_, proj_id) {
     result: 'ok',
   };
 }
-
+ 
 function project_open_inwin(_, proj_id) {
   console.log('TODO OPEN_INWIN', proj_id);
   return {
@@ -64,7 +62,6 @@ async function setup() {
     project_open_inwin
   });
 }
-
 
 
 

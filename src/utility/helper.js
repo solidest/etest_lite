@@ -61,7 +61,7 @@ function valid_name(items, n) {
     }
     for (let it of items) {
         if (it.name === n) {
-            res = '名称重复';
+            res = `名称"${n}"已经存在`;
             break;
         }
     }

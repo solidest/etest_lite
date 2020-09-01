@@ -84,11 +84,11 @@
         </template>
       </v-data-iterator>
       <div v-if="dlg">
-        <e-confirm-dlg v-if="dlg==='remove'" :dialog="dlg" title="删除确认" :text="'确定要删除项目【'+ update_item.name+'】吗？'"
+        <e-dlg-confirm v-if="dlg==='remove'" :dialog="dlg" title="删除确认" :text="'确定要删除项目【'+ update_item.name+'】吗？'"
           @result="on_remove" />
-        <e-input-dlg v-else-if="dlg==='create'" :dialog="dlg" title="新建项目" label="项目名称" placeholder="请输入新项目名称"
+        <e-dlg-input v-else-if="dlg==='create'" :dialog="dlg" title="新建项目" label="项目名称" placeholder="请输入新项目名称"
           :need_memo="true" @result="on_create" />
-        <e-input-dlg v-else-if="dlg==='update'" :dialog="dlg" title="修改项目信息" label="项目名称" :value="update_item.name"
+        <e-dlg-input v-else-if="dlg==='update'" :dialog="dlg" title="修改项目信息" label="项目名称" :value="update_item.name"
           :memo="update_item.memo" placeholder="请输入新项目名称" :need_memo="true" @result="on_update" />
       </div>
     </div>
@@ -104,8 +104,8 @@
 
   export default {
     components: {
-      'e-input-dlg': () => import( /* webpackChunkName: "e-input-dlg" */ '../Dialog/EInputDlg'),
-      'e-confirm-dlg': () => import( /* webpackChunkName: "e-confirm-dlg" */ '../Dialog/EConfirmDlg'),
+      'e-dlg-input': () => import( /* webpackChunkName: "e-dlg-input" */ '../Dialog/EDlgInput'),
+      'e-dlg-confirm': () => import( /* webpackChunkName: "e-dlg-confirm" */ '../Dialog/EDlgConfirm'),
     },
 
     mounted: async function () {
@@ -283,7 +283,6 @@
           }
           res = await api.project_open(id);
           if (res.result === 'ok') {
-            console.log(res.value)
             this.$store.commit('setProj', res.value);
           }
         }

@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="dialog" max-width="360" persistent hide-overlay>
         <v-card color="grey darken-3">
-            <v-card-title class="headline">{{title}}</v-card-title>
+            <v-card-title>{{title}}</v-card-title>
             <v-card-text class="px-6">{{text}}</v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
