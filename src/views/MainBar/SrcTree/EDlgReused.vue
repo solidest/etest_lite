@@ -7,7 +7,7 @@
             <v-text-field @keydown.enter="ok" class="px-6" v-model="memo_text" placeholder="说明" label="说明">
             </v-text-field>
             <v-sheet outlined class="ma-4">
-                <v-card-text class="px-2 mx-0">已有复用项 (共{{reusedlist.length}}项) :</v-card-text>
+                <v-card-subtitle class="px-2 mx-0">已有复用项 (共{{reusedlist.length}}项) : </v-card-subtitle>
                 <div style="height:200px; width:100%; overflow-y:scroll;">
                     <v-chip class="ma-2" v-for="(item, i) in reusedlist" :key="i">
                         {{item.name}}
