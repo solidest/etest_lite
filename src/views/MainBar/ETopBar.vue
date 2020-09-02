@@ -39,9 +39,9 @@
                 </v-list>
             </v-navigation-drawer>
             <div v-if="show_subbar" style="display: flex;">
-                <v-card tile color="grey darken-3" :width="`${width-80-6}px`" style="height: calc(100vh - 34px); overflow-y:auto">
+                <v-card tile color="grey darken-3" :width="`${width-80-6}px`">
                     <e-tool-list v-if="subbar_type==='tools'" @close="on_close"> </e-tool-list>
-                    <e-src-man v-else-if="subbar_type==='program'"> </e-src-man>
+                    <e-src-tree v-else-if="subbar_type==='program'"> </e-src-tree>
                 </v-card>
                 <e-vertical-bar :width="width" :min="200" :max="800" @resize="on_resize" />
             </div>
@@ -62,7 +62,7 @@
         components: {
             'e-vertical-bar': EVerticalBar,
             'e-tool-list': EToolList,
-            'e-src-man': ESrcTree,
+            'e-src-tree': ESrcTree,
         },
 
         data: () => ({

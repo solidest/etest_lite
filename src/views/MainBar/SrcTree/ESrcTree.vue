@@ -14,6 +14,7 @@
         </v-toolbar>
         <v-menu absolute>
             <template v-slot:activator="{on}">
+                <div style="height: calc(100vh - 84px); overflow-y:auto">
                 <v-treeview activatable dense open-on-click return-object ref="__tree" :items="tree"
                     :active.sync="active"  :open.sync="open">
                     <template v-slot:label="{ item, open }">
@@ -29,6 +30,7 @@
                         </div>
                     </template>
                 </v-treeview>
+                </div>
             </template>
             <v-list dense>
                 <v-list-item v-for="(item, index) in ctx_menus" :key="index" @click="on_domenu(item.action)"
