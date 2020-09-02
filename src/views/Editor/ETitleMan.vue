@@ -43,6 +43,9 @@
                 if (!this.by_drag) {
                     return;
                 }
+                if(item) {
+                    console.log('TODO DRAGOVER')
+                }
             },
         },
     }

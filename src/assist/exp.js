@@ -123,7 +123,7 @@ function _writefile(list, filename){
     codes.forEach(it=>{
         str = str + it + "\n"
     })
-    fs.writeFile(filename, str, function(err){
+    fs.writeFile(filename, str, function(err){
         if (err){
             return err;
         }
@@ -346,7 +346,11 @@ function _exp_protocol(clone_doc, clone_el, filename){
 
 }
 // 导出program
-function _exp_program(clone_doc, clone_el, filename){
+function _exp_program(){
+    
+}
+// 导出program
+function _exp_simu(){
     
 }
 function export_element(kind, id, path) {

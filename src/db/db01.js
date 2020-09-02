@@ -36,7 +36,7 @@ async function _create_from(old_db, new_db_file) {
 async function open() {
     let db_file = path.resolve(cfg.db_path, 'db01.db');
     if(!fs.existsSync(db_file)) {
-        let old_db = await db00.open_exit(db_path);
+        let old_db = await db00.open_exit();
         let _db = old_db ? await _create_from(old_db) : await _create_db(db_file);
         return _db;
     }

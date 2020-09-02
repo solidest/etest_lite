@@ -75,7 +75,7 @@ const language = {
         "||",
     ],
     // we include these common regular expressions
-    symbols: /[=><!~?:&|+\-*\/\^%]+/,
+    symbols: /[=><!~?:&|+\-*/^%]+/,
     escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
     // The main tokenizer for our languages
     tokenizer: {
@@ -108,7 +108,7 @@ const language = {
             // Multiline string, needs to be added before brackets
             [/\[(=*)\[/, "string", "@string_multiline"],
             // delimiters and operators
-            [/[{}()\[\]]/, "@brackets"],
+            [/[{}()[\]]/, "@brackets"],
             [
                 /@symbols/,
                 {
@@ -119,7 +119,7 @@ const language = {
                 },
             ],
             // numbers
-            [/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
+            [/\d*\.\d+([eE][-+]?\d+)?/, "number.float"],
             [/0[xX][0-9a-fA-F_]*[0-9a-fA-F]/, "number.hex"],
             [/\d+?/, "number"],
             // delimiter: after number because of .\d floats
@@ -148,7 +148,7 @@ const language = {
             // [/[^\/*]+/, "comment"],
             [/\/\*/, "comment", "@push"], // nested comment
             [/\*\//, "comment", "@pop"],
-            [/[\/*]/, "comment"],
+            [/[/*]/, "comment"],
             // [/[^\]]+/, "comment"],
             [
                 /\]([=]*)\]/,

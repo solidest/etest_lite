@@ -3,6 +3,7 @@ import {
 } from 'electron';
 import cfg from './config';
 import fs from 'fs';
+import path from 'path';
 
 const debounce = require('throttle-debounce').debounce;
 const helper = require('../utility/helper');
@@ -16,7 +17,7 @@ function _clear_dir(url) {
     var files = [];
     if (fs.existsSync(url)) {
         files = fs.readdirSync(url);
-        files.forEach(function (file, index) {
+        files.forEach(function (file) {
             var curPath = path.join(url, file);
             if (fs.statSync(curPath).isDirectory()) {
                 _clear_dir(curPath);
@@ -28,7 +29,7 @@ function _clear_dir(url) {
     }
 }
 
-function project_list(_) {
+function project_list() {
     let coll = _db.getCollection('project');
     let projs = coll.chain().simplesort('updated', true).data();
     let data = projs.map(p => {

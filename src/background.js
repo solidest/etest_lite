@@ -38,7 +38,7 @@ function project_active(_, proj_id) {
   return {
     result: 'nil',
   };
-};
+}
 
 function project_export(_, proj_id) {
   console.log('TODO EXPORT', proj_id);
@@ -168,10 +168,10 @@ function createWindow(proj_id) {
     globalShortcut.register('CommandOrControl+Q', async () => {
       await quit();
     });
-    globalShortcut.register('CommandOrControl+Alt+I', (e) => {
+    globalShortcut.register('CommandOrControl+Alt+I', () => {
       win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
     });
-    globalShortcut.register('CommandOrControl+R', (e) => {
+    globalShortcut.register('CommandOrControl+R', () => {
       win.reload();
     });
   }

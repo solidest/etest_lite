@@ -94,7 +94,7 @@ class Runner {
             });
             if (outs.result !== 'ok') {
                 self.close();
-                self.on_debug('error', outs.value, proj.id, case_id);
+                self.on_debug('error', outs.value, null, case_id);
             } else if (outs.value.length > 0) {
                 db.save_outs(case_id, outs.value);
                 if (outs.value.find(msg => msg.kind === 'stop' && msg.catalog === 'system')) {

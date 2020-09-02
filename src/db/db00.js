@@ -2,16 +2,15 @@
 const path = require('path');
 const loki = require('lokijs');
 const fs = require('fs');
-const debounce = require('throttle-debounce').debounce;
-const auto_save = debounce(4000, () => {_db.saveDatabase();});
+const cfg = require('../api/config');
 
-async function open_exit(db_path) {
-    let db_file = path.resolve(db_path, 'db01.db');
+async function open_exit() {
+    let db_file = path.resolve(cfg.db_path, 'db01.db');
     if(!fs.existsSync(db_file)) {
         return null;
     }
     return new Promise(resolve => {
-        db = new loki(f, {
+        let db = new loki(db_file, {
             autoload: true,
             autoloadCallback : () => {
                 return resolve(db);

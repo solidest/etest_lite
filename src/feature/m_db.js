@@ -130,7 +130,7 @@ function _remove_kinds(proj_id) {
         if(items) {
             for(let it of items) {
                 coll.remove(it);
-            };
+            }
         }
     });
 }

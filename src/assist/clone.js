@@ -149,7 +149,8 @@ function clone_element(kind, proj_id, id) {
                     _update_protocol(clone_doc)
                     break
                 case 'simu':
-                    _update_simu(clone_doc)
+                    _update_simu(clone_doc);
+                    break;
                 default:
                     console.error('TODO clone', kind);
                     break;
