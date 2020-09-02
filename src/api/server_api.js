@@ -1,16 +1,23 @@
-import {
+const {
     ipcMain,
-} from 'electron';
-import cfg from './config';
-import fs from 'fs';
-import path from 'path';
+} = require('electron');
+const fs = require('fs');
+const path = require('path');
+const shortid = require('shortid');
+const cfg = require('./config');
+const main_db = require('../db/db01');
+const win_api = require('./srvwin_api');
 
 const debounce = require('throttle-debounce').debounce;
 const helper = require('../utility/helper');
 
 let _db;
 const auto_save = debounce(4000, () => {
-    _db.saveDatabase();
+    _db.saveDatabase(err=>{
+        if(err) {
+            console.error(err.message);
+        }
+    });
 });
 
 function _clear_dir(url) {
@@ -28,6 +35,7 @@ function _clear_dir(url) {
         fs.rmdirSync(url);
     }
 }
+
 
 function project_list() {
     let coll = _db.getCollection('project');
@@ -88,7 +96,6 @@ function project_del(_, id) {
         }
     })[0];
     coll.remove(proj);
-
     auto_save();
     return {
         result: 'ok',
@@ -106,6 +113,7 @@ function project_rename(_, info) {
     for (let k in info) {
         doc[k] = info[k];
     }
+    coll.update(doc);
     auto_save();
     return {
         result: 'ok',
@@ -132,10 +140,73 @@ function project_open(_, id) {
     }
 }
 
+function tree_save(_, info) {
+    let coll = _db.getCollection('project');
+    let proj = coll.find({
+        'id': {
+            '$eq': info.proj_id,
+        }
+    })[0];
+    proj.tree = info.tree;
+    coll.update(proj);
+    auto_save();
+    return {
+        result: 'ok'
+    }
+}
 
-export default {
-    setup(db, win_api) {
-        _db = db;
+function doc_del(_, id) {
+    let coll = _db.getCollection('doc');
+    let items = coll.find({
+        'id': {
+            '$eq': id
+        }
+    });
+    if(!items || items.length===0) {
+        return {
+            result: 'ok'
+        }
+    }
+   
+    coll.remove(items[0]);
+    auto_save();
+    return {
+        result: 'ok',
+    }
+}
+
+function doc_reused(_, info) {
+    let coll = _db.getCollection('public');
+    console.log('TODO GET SRC', info);
+    coll.insert({
+        id: shortid.generate(),
+        name: info.name,
+        memo: info.memo,
+        src: 'demo',
+        kind: 'run'
+    });
+    auto_save();
+    return {
+        result: 'ok',
+    }
+}
+
+function reused_list(_, kind) {
+    let coll = _db.getCollection('public');
+    let items = coll.find({
+        'kind': {
+            '$eq': kind,
+        }
+    });
+    return {
+        result: 'ok',
+        value: items,
+    }
+}
+
+module.exports =  {
+    async setup() {
+        _db = await main_db.open();
         ipcMain.handle('project_list', project_list);
         ipcMain.handle('project_new', project_new);
         ipcMain.handle('project_del', project_del);
@@ -144,5 +215,13 @@ export default {
         ipcMain.handle('project_active', win_api.project_active);
         ipcMain.handle('project_export', win_api.project_export);
         ipcMain.handle('project_open_inwin', win_api.project_open_inwin);
+        ipcMain.handle('tree_save', tree_save);
+        ipcMain.handle('doc_del', doc_del);
+        ipcMain.handle('doc_reused', doc_reused);
+        ipcMain.handle('reused_list', reused_list);
+    },
+
+    async quit() {
+        await _db.save();
     }
 }

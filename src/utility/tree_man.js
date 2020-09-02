@@ -130,22 +130,21 @@ function getLeafs(item, results) {
     }
 }
 
-// //获取某种类型文件的列表
-// function getFileList(prepath, children, type, results) {
-//     if(!children) {
-//         return;
-//     }
-//     for(let fd of children) {
-//         if(fd.is_dir) {
-//             let subp = prepath + fd.name + '/';
-//             getFileList(subp, fd.children, type, results);
-//         } else if(fd.type===type) {
-//             let fpath = prepath + fd.name;
-//             fd.fullpath = fpath;
-//             results.push(fd);
-//         }
-//     }
-// }
+//获取某种类型文件的列表
+function getFileList(prepath, children, kind, results) {
+    if(!children) {
+        return;
+    }
+    for(let fd of children) {
+        if(fd.kind === 'dir') {
+            let subp = prepath + fd.name + '/';
+            getFileList(subp, fd.children, kind, results);
+        } else if(fd.kind===kind) {
+            let fpath = prepath + fd.name;
+            results.push([fpath, fd]);
+        }
+    }
+}
 
 // //获取某种类型文件夹的列表
 // function getDirList(prepath, children, type, results, self) {
@@ -256,5 +255,6 @@ export default {
     insert,
     rename,
     remove,
-    getLeafs
+    getLeafs,
+    getFileList
 }

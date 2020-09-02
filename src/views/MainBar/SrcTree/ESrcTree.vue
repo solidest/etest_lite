@@ -51,7 +51,7 @@
 <script>
     import shortid from 'shortid';
     import cfg from './config';
-    // import api from '../../../api/client_api';
+    import api from '../../../api/client_api';
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
 
@@ -125,18 +125,34 @@
                 }
             },
             _save_tree: async function() {
-
+                let res = await api.tree_save({
+                    tree: this.tree,
+                    proj_id: this.proj.id,
+                });
+                if(res.result!=='ok') {
+                    console.error(res);
+                }
             },
             _open_doc: function(it) {
                 console.log('TODO OPEN', it);
             },
             _del_doc: async function(it) {
-                console.log('TODO DEL', it);
+                let res = await api.doc_del(it.id);
+                if(res.result!=='ok') {
+                    console.error(res);
+                }
             },
             _reused_doc: async function(it, name, memo) {
-                console.log('TODO RESUED', it, name, memo)
+                let res = await api.doc_reused({id:it.id, name: name, memo: memo});
+                if(res.result!=='ok') {
+                    console.error(res);
+                }
             },
-
+            _get_srclist: function(kind) {
+                let res = [];
+                tman.getFileList('', this.tree, kind, res);
+                return res;
+            },
             on_packup: function () {
                 this.open_all = !this.open_all;
                 this.$refs.__tree.updateAll(this.open_all);
@@ -154,7 +170,8 @@
                 this.dlg_option = {
                     catalog: at.catalog,
                     value: at.name,
-                    memo: at.memo
+                    memo: at.memo,
+                    kind: at.kind,
                 }
             },
             do_reused: function(res) {
@@ -162,7 +179,6 @@
                 if(res.result!=='ok') {
                     return;
                 }
-                console.log('TODO NAME EXIST');
                 let at = this.active[0];
                 this._reused_doc(at, res.value, res.memo);
             },
@@ -207,7 +223,6 @@
                 let at = this.active[0];
                 let its = tman.findParentChildren(this.tree, at.id);
                 if(at.kind !== 'dir') {
-                    this._save_tree();
                     this._del_doc(at);
                 } else {
                     let del_its = [];
@@ -217,6 +232,7 @@
                     })
                 }
                 tman.remove(its, at.id);
+                this._save_tree();
             },
 
             action_new_dir: function() {
@@ -228,16 +244,21 @@
                     allow_clone: false,
                 }
             },
-            action_new_item: function() {
+            action_new_item: async function() {
                 this.dlg_type = 'create';
+                let ac = this.active[0];
+                let kind = ac.kind==='dir'? ac.catalog : ac.kind;
                 this.dlg_option = {
-                    catalog: this.active[0].catalog,
+                    catalog: ac.catalog,
                     value: '',
                     new_dir: false,
                     allow_clone: true,
+                    kind: kind,
+                    srclist: this._get_srclist(kind),
                 }
             },
             do_new_item: async function(res) {
+                console.log('res', res)
                 this.dlg_type = null;
                 if(res.result !== 'ok') {
                     return;

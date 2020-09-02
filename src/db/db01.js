@@ -15,6 +15,8 @@ async function _create_db(db_file) {
         let db = new loki(db_file, {
             adapter: new lfsa(),
             autoload: true,
+            // autosave: true,
+            // autosaveInterval: 3000,
             autoloadCallback : () => {
                 colls.forEach(kind => {
                     db.addCollection(kind);

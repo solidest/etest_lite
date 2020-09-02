@@ -61,4 +61,4 @@ function size() {
     return _wins.size;
 }
 
-export default { add, del, find, search, update, size, lookup }
+module.exports =  { add, del, find, search, update, size, lookup }

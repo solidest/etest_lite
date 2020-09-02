@@ -27,5 +27,17 @@ module.exports = {
     },
     async project_open_inwin(id) {
         return await ipcRenderer.invoke('project_open_inwin', id);
+    },
+    async tree_save(info) {
+        return await ipcRenderer.invoke('tree_save', info);
+    },
+    async doc_del(id) {
+        return await ipcRenderer.invoke('doc_del', id);
+    },
+    async doc_reused(info) {
+        return await ipcRenderer.invoke('doc_reused', info);
+    },
+    async reused_list(kind) {
+        return await ipcRenderer.invoke('reused_list', kind);
     }
 }

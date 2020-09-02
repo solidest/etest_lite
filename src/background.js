@@ -13,75 +13,24 @@ import {
 import ipc from './feature/ipc_main';
 import wins from './feature/m_wins';
 import run from './run/run_main';
-
-///////////////////////////////////////////////////////////////////
-
 import srv_api from './api/server_api';
-import main_db from './db/db01';
-
-const db_path = app.getPath('userData');
-
-function project_active(_, proj_id) {
-  let win = wins.find(proj_id);
-  if (win) {
-    if (win.isMinimized()) {
-      win.restore();
-    }
-    win.show();
-    win.focus();
-    beginCheck(proj_id, 'active proj');
-    return {
-      result: 'ok',
-      value: win.id,
-    }
-  }
-  return {
-    result: 'nil',
-  };
-}
-
-function project_export(_, proj_id) {
-  console.log('TODO EXPORT', proj_id);
-  return {
-    result: 'ok',
-  };
-}
- 
-function project_open_inwin(_, proj_id) {
-  console.log('TODO OPEN_INWIN', proj_id);
-  return {
-    result: 'ok',
-  };
-}
-
-async function setup() {
-  let db = await main_db.open(db_path);
-  srv_api.setup(db, {
-    project_active,
-    project_export,
-    project_open_inwin
-  });
-}
-
-
-
-
-//////////////////////////////////////////////////////////////
+import cfg from './api/config';
 
 let player = null;
 let worker = null;
 let player_show = false;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 if (isDevelopment) {
-  console.log('db_path: ', db_path);
+  console.log('db_path: ', cfg.db_path);
 }
 
 async function quit() {
   await ipc.close();
+  await srv_api.quit();
   run.close();
   console.log('db saved, will exit');
   app.quit();
-}
+} 
 
 function try_close_all() {
   if (wins.size() === 0 && !player_show) {
@@ -103,7 +52,7 @@ function createWorker() {
       nodeIntegration: true
     }
   });
-  ipc.open(worker, db_path);
+  ipc.open(worker, cfg.db_path);
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     worker.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'worker.html')
     if (!process.env.IS_TEST) worker.webContents.openDevTools()
@@ -132,7 +81,7 @@ function createPlayer() {
     frame: false,
     backgroundColor: '#000000',
   });
-  run.open(player, db_path);
+  run.open(player, cfg.db_path);
   if (isDevelopment) {
     player.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'player.html')
   } else {
@@ -252,7 +201,7 @@ if (!gotTheLock) {
   console.log('should quit');
   app.quit();
 } else {
-  setup();
+  srv_api.setup();
 }
 
 protocol.registerSchemesAsPrivileged([{
