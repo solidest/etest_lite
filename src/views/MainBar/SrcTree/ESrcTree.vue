@@ -16,17 +16,17 @@
             <template v-slot:activator="{on}">
                 <div style="height: calc(100vh - 84px); overflow-y:auto">
                 <v-treeview activatable dense open-on-click return-object ref="__tree" :items="tree"
-                    :active.sync="active"  :open.sync="open">
+                    :active.sync="active"  :open.sync="open" @update:active="on_active">
                     <template v-slot:label="{ item, open }">
-                        <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}" style="display: flex">
+                        <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}" style="display: flex; height: 40px;" >
                             <v-icon v-if="item.kind==='dir'">
                                 {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                             </v-icon>
                             <v-icon v-else>
                                 {{ file_icons[item.kind] }}
                             </v-icon>
-                            <span class="ml-2"> {{item.name}} </span>
-                            <span class="ml-2 grey--text" v-if="item.memo"> {{item.memo}} </span>
+                            <span class="ml-2 align-self-center"> {{item.name}} </span>
+                            <span class="ml-2 grey--text align-self-center" v-if="item.memo"> {{item.memo}} </span>
                         </div>
                     </template>
                 </v-treeview>
@@ -136,7 +136,10 @@
                 }
             },
             _open_doc: function(it) {
-                console.log('TODO OPEN', it);
+                this.$store.commit('Editor/open', it);                
+                if(this.$route.name !== 'Editor') {
+                    this.$router.push({name: 'Editor'});
+                }
             },
             _del_doc: async function(it) {
                 let res = await api.doc_del(it.id);
@@ -155,6 +158,9 @@
                 tman.getFileList('', this.tree, kind, res);
                 return res;
             },
+            _clone_doc: function(item, info) {
+                console.log('TODO CLONE FROM', item, info);
+            },
             on_packup: function () {
                 this.open_all = !this.open_all;
                 this.$refs.__tree.updateAll(this.open_all);
@@ -164,6 +170,16 @@
             },
             on_domenu: function(ac) {
                 this[`action_${ac}`]();
+            },
+            on_active: function(its) {
+                if(!its || its.length===0) {
+                    return;
+                }
+                let it = its[0];
+                if(it.kind === 'dir') {
+                    return;
+                }
+               this._open_doc(it);
             },
 
             action_reused: function() {
@@ -260,7 +276,6 @@
                 }
             },
             do_new_item: async function(res) {
-                console.log('res', res)
                 this.dlg_type = null;
                 if(res.result !== 'ok') {
                     return;
@@ -290,6 +305,9 @@
                 this._expand_sel();
                 this.active = [it];
                 await this._save_tree();
+                if(res.clone) {
+                    this._clone_doc(it, res.clone)
+                }
                 if(it.kind!=='dir') {
                     this._open_doc(it);
                 }

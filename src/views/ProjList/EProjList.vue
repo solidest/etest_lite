@@ -286,6 +286,7 @@
             this.$store.commit('setProj', res.value);
           }
         }
+        this.$store.commit('Editor/reset');
         return this.$router.push({
           name: 'SrcTree'
         });

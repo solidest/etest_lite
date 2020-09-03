@@ -66,7 +66,7 @@ async function test(ip, port) {
         return false;
     }
     let res = _xfn('ping');
-    console.log('res', res);
+    // console.log('res', res);
     return true;
 }
 

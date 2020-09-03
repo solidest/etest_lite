@@ -36,8 +36,7 @@ export default {
 
     computed: {
       title: function() {
-        let proj = this.$store.state.proj;
-        return proj ? proj.name : 'www.kiyun.com';
+        return 'www.kiyun.com';
       }
     },
 

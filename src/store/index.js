@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import ipc from '../feature/ipc_render';
 
 import ProjList from './modules/ProjList';
+import Editor from './modules/Editor';
 
 const {
   ipcRenderer
@@ -13,6 +14,7 @@ Vue.use(Vuex)
 const _store = new Vuex.Store({
   modules: {
     ProjList,
+    Editor,
   },
   state: {
     last_tip: {
