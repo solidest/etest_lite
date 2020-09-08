@@ -14,7 +14,7 @@
             <template v-slot:activator="{ on }">
                 <v-btn icon small v-on="on" class="mx-1" @click="emit(item)"
                     :disabled="item.disabled ? item.disabled() : false" >
-                    <v-icon :color="item.selected() ? 'primary':'grey lighten-1'">{{item.icon}}</v-icon>
+                    <v-icon :color="(item.selected && item.selected()) ? 'primary':'grey lighten-1'">{{item.icon}}</v-icon>
                 </v-btn>
             </template>
             <span>{{item.text}}</span>

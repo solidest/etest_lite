@@ -64,6 +64,10 @@
             'e-outs': EOuts,
         },
         mounted: function () {
+            this.$emit('active', {
+                    right_tools: [],
+                    left_tools: [],
+                })
             this.$store.commit('clearEditor');
             this.doc_id = this.$route.params.doc_id;
             if (!this.doc_id) {
@@ -115,6 +119,10 @@
             }
         },
         computed: {
+            active: function () {
+                return this.$store.state.Editor.active;
+            },
+
             is_check_error: function () {
                 return this.check_result.line >= -1;
             },
@@ -188,17 +196,13 @@
                 return this.$store.state.play_info;
             }
         },
+        watch: {
+            active: function() {
+                console.log('TODO')
+            }
+        },
         methods: {
-            get_tools_left: function() {
-                return [
-                    {id:1, icon: 'mdi-file', text: '测试1'}
-                ]
-            },
-            get_tools_right: function() {
-                return [
-                    {id: 2, icon: 'mdi-file', text: '测试2', selected: () => {return true}}
-                ]
-            },
+            
             do_play: async function() {
                 this.try_run_times++;
                 if(this.try_run_times>10){

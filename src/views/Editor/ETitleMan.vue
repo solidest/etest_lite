@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 100%; white-space: nowrap; overflow-x: auto;">
+    <div style="width: 100%;">
         <v-chip v-for="item in items" :key="item.id" class= "rounded-t-lg px-4"
             :style="{height: '38px', borderRadius:'0px'}" :color="active===item?'grey darken-4':'grey darken-3'"
             :ripple="false"  @click="click(item)"

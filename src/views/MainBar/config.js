@@ -5,9 +5,9 @@ const cfg = {
         catalog: 'program',
         subbar: true,
     }, {
-        icon: 'mdi-animation-play-outline',
-        title: '执行管理器',
-        catalog: 'play',
+        icon: 'mdi-monitor-edit',
+        title: '面板设计器',
+        catalog: 'panel',
         subbar: true,
     }, {
         icon: 'mdi-cog-outline',
@@ -20,12 +20,12 @@ const cfg = {
         title: '项目管理',
         catalog: 'projlist',
         route: 'ListProj',
-    },  {
+    }, {
         icon: 'mdi-view-dashboard-outline',
         title: '复用库管理',
         catalog: 'reused',
         route: 'ListPublic',
-    },{
+    }, {
         icon: 'mdi-tools',
         title: '辅助工具',
         catalog: 'tools',

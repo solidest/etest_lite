@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        props: ['width', 'min', 'max'],
+        props: ['width', 'min', 'max', 'right'],
         mounted: function () {
             this.width_ = this.width;
         },
@@ -19,7 +19,7 @@
         methods: {
             on_move: function (client_x) {
                 let dx = client_x - this.start_x;
-                let new_width = this.width_ + dx;
+                let new_width = this.right ? (this.width_ - dx) : (this.width_ + dx);
                 if (Math.abs(dx) > 10 && new_width >= this.min && new_width <= this.max) {
                     this.$emit("resize", new_width);
                     this.width_ = new_width;
