@@ -30,7 +30,7 @@
             <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
               <v-card :loading="item===doing_item">
                 <v-card-title class="subheading font-weight-bold blue--text" style="cursor: pointer"
-                  @click.stop="open_proj(item.id)">
+                  @click.stop="open_proj(item.$proj)">
                   {{item.name}}
                 </v-card-title>
                 <v-divider></v-divider>
@@ -55,7 +55,7 @@
                   </v-tooltip>
                   <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
-                      <v-btn class="mx-2" v-on="on" small icon @click="on_open_inwin(item.id)">
+                      <v-btn class="mx-2" v-on="on" small icon @click="on_open_inwin(item.$proj)">
                         <v-icon color="grey">mdi-folder-multiple-outline</v-icon>
                       </v-btn>
                     </template>
@@ -63,7 +63,7 @@
                   </v-tooltip>
                   <v-tooltip bottom open-delay="300">
                     <template v-slot:activator="{ on }">
-                      <v-btn class="mx-2" v-on="on" small icon @click="on_export(item.id)">
+                      <v-btn class="mx-2" v-on="on" small icon @click="on_export(item.$proj)">
                         <v-icon color="grey">mdi-export</v-icon>
                       </v-btn>
                     </template>
@@ -98,9 +98,10 @@
 <script>
   import pkg from '../../../package.json';
   import helper from '../../utility/helper';
-  import api from '../../api/client_api';
   import cfg from './config';
-  import shortid from 'shortid';
+  import main_db from '../../doc/maindb';
+  import proj_db from '../../doc/projdb';
+  import api from '../../api/client/client_api';
 
   export default {
     components: {
@@ -109,12 +110,12 @@
     },
 
     mounted: async function () {
-      let res = await api.project_list();
-      if (res && res.result === 'ok') {
-        this.load_data(res.data);
-      } else {
-        this.$store.commit('setMsgError', res.result);
-      }
+      let self = this;
+      main_db.open().then(() => {
+        self.load_data(main_db.list());
+      }).catch(err => {
+        self.$store.commit('setMsgError', err.message);
+      })
     },
 
     data: () => ({
@@ -160,19 +161,8 @@
         if (this.projs.find(p => p.name === name)) {
           return this.$store.commit('setMsgError', `项目【${name}】已经存在`);
         }
-        let self = this;
-        let id = shortid.generate();
-        api.project_new({
-          id: id,
-          name: res.value,
-          memo: res.memo,
-        }).then(r => {
-          if (r.result !== 'ok') {
-            self.$store.commit('setMsgError', r.result);
-          } else {
-            self.open_proj(id);
-          }
-        });
+        let proj = main_db.create(res.value, res.memo);
+        this.open_proj(proj);
       },
 
       on_update: function (res) {
@@ -187,66 +177,58 @@
         if (this.projs.find(p => (p.name === name && p.id !== this.update_item.id))) {
           return this.$store.commit('setMsgError', `项目【${name}】已经存在`);
         }
-        api.project_rename({
-          id: this.update_item.id,
-          name: res.value,
-          memo: res.memo,
-        }).then(r => {
-          if (r.result !== 'ok') {
-            self.$store.commit('setMsgError', r.result);
-          } else {
-            this.update_item.name = res.value;
-            this.update_item.memo = res.memo;
-            let proj = this.$store.state.proj;
-            if (proj && proj.id === this.update_item.id) {
-              proj.name = res.value;
-              proj.memo = res.memo;
-            }
-          }
-        });
+        this.update_item.name = res.value;
+        this.update_item.memo = res.memo;
+        this.update_item.$proj.name = res.value;
+        this.update_item.$proj.memo = res.memo;
+        main_db.save();
       },
 
       on_remove: function (res) {
         this.dlg = null;
-        let self = this;
         if (res.result != 'ok') {
           return;
         }
-        let id = this.update_item.id;
-        api.project_del(id).then(r => {
-          if (r.result !== 'ok') {
-            self.$store.commit('setMsgError', r.result);
-          } else {
-            let idx = this.projs.findIndex(p => p.id === id);
-            this.projs.splice(idx, 1);
-            let proj = this.$store.state.proj;
-            if (proj && proj.id === id) {
-              this.$store.commit('setProj', null);
+        let proj = this.update_item.$proj;
+        if(this.$store.state.proj === proj) {
+          this.open_proj(null);
+        }
+        var req = indexedDB.deleteDatabase(`etestdev_${proj.id}.db`);
+        let self = this;
+        let it = self.update_item;
+        req.onsuccess = function () {
+            main_db.remove(proj);
+            let idx = self.projs.findIndex(i => i === it);
+            if(idx<0) {
+              console.error('ERR2');
+              return;
             }
-          }
-        });
+            self.projs.splice(idx, 1);
+        };
+        req.onerror = function (err) {
+            console.error('INDEXEDDB ERROR', err.message);
+        };
+        req.onblocked = function () {
+            console.error('LOCKED');
+        };
       },
 
-      on_open_inwin: async function (id) {
-        let gp = this.$store.state.proj;
-        if (!gp || id === gp.id) {
-          return this.open_proj(id);
+      on_open_inwin: async function (proj) {
+        let old_proj = this.$store.state.proj;
+        if (!old_proj || proj === old_proj) {
+          return this.open_proj(proj);
         }
-        let res = await api.project_active(id);
-        if (res.result === 'ok') {
-          return;
-        }
-
-        api.project_open_inwin(id);
-        this.doing_item = this.projs.find(p => p.id === id);
+       
+        api.project_open_inwin(proj.id);
+        this.doing_item = proj;
         let self = this;
         setTimeout(() => {
           self.doing_item = null;
         }, 2000);
       },
 
-      on_export: function(id) {
-        api.project_export(id);
+      on_export: function (proj) {
+        api.project_export(proj.id);
       },
 
       load_data: function (proj_list) {
@@ -267,27 +249,19 @@
             supdated: helper.date_fmt("YYYY-mm-dd HH:MM", new Date(d.updated)),
             scount: d.count || 0,
             sresult: d.result ? (Math.floor(d.result * 100) + '%') : '',
+            $proj: d,
           }
         });
       },
 
-      open_proj: async function (id) {
-        if (!id) {
+      open_proj: async function (proj) {
+        this.$store.commit('setProj', proj);
+        this.$store.commit('Editor/reset');
+        if(!proj) {
           return;
         }
-        let proj = this.$store.state.proj;
-        if (!proj || id !== proj.id) {
-          let res = await api.project_active(id);
-          if (res.result === 'ok') {
-            return;
-          }
-          res = await api.project_open(id);
-          if (res.result === 'ok') {
-            this.$store.commit('setProj', res.value);
-          }
-        }
-        this.$store.commit('Editor/reset');
-        return this.$router.push({
+        await proj_db.open(proj.id);
+        this.$router.push({
           name: 'SrcTree'
         });
       },

@@ -19,20 +19,28 @@
                     :active.sync="active"  :open.sync="open" @update:active="on_active">
                     <template v-slot:label="{ item, open }">
                         <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}" style="display: flex; height: 40px;" >
-                            <v-icon v-if="file_icons[item.id]">
-                                {{ file_icons[item.id] }}
-                            </v-icon>
-                            <v-icon v-else-if="item.kind==='dir'">
-                                {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-                            </v-icon>                            
-                            <v-icon v-else>
+                            <v-icon v-if="item.kind!=='dir'">
                                 {{ file_icons[item.kind] }}
                             </v-icon>
-
-
+                            <template v-else>
+                                <v-icon v-if="file_icons[item.id]">
+                                    {{ file_icons[item.id] }}
+                                </v-icon>                            
+                                <v-icon v-else>
+                                    {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                                </v-icon>                                
+                            </template>
                             <span class="ml-2 align-self-center"> {{item.name}} </span>
                             <span class="ml-2 grey--text align-self-center" v-if="item.memo"> {{item.memo}} </span>
+                            
                         </div>
+                    </template>
+                    <template v-slot:append="{ item }">
+                        <v-btn small icon @click.stop="on_default(item)">
+                        <v-icon small v-if="item.default_action" color="grey lighten-1">
+                            mdi-plus-thick
+                        </v-icon>
+                        </v-btn>
                     </template>
                 </v-treeview>
                 </div>
@@ -58,9 +66,9 @@
 <script>
     import shortid from 'shortid';
     import cfg from './config';
-    import api from '../../../api/client_api';
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
+    import db from '../../../doc/projdb';
 
     export default {
         components: {
@@ -70,7 +78,9 @@
             'e-dlg-confirm': () => import( /* webpackChunkName: "e-dlg-confirm" */ '../../Dialog/EDlgConfirm'),
         },
         mounted: function (){
-            this.tree = this.proj ? this.proj.tree : [];
+            if(this.proj) {
+                this.tree = db.get_tree();
+            }
         },
         data: () => ({
             active: [],
@@ -100,7 +110,7 @@
                     return cur.actions;
                 }
                 let acs = ['new_item', 'rename', 'remove'];
-                if(cur.catalog === 'run') {
+                if(['run', 'libs'].includes(cur.catalog)) {
                     acs.push('new_dir');
                 }
                 if(cur.kind !== 'dir') {
@@ -131,31 +141,10 @@
                     }
                 }
             },
-            _save_tree: async function() {
-                let res = await api.tree_save({
-                    tree: this.tree,
-                    proj_id: this.proj.id,
-                });
-                if(res.result!=='ok') {
-                    console.error(res);
-                }
-            },
             _open_doc: function(it) {
                 this.$store.commit('Editor/open', it);                
                 if(this.$route.name !== 'Editor') {
                     this.$router.push({name: 'Editor'});
-                }
-            },
-            _del_doc: async function(it) {
-                let res = await api.doc_del(it.id);
-                if(res.result!=='ok') {
-                    console.error(res);
-                }
-            },
-            _reused_doc: async function(it, name, memo) {
-                let res = await api.doc_reused({id:it.id, name: name, memo: memo});
-                if(res.result!=='ok') {
-                    console.error(res);
                 }
             },
             _get_srclist: function(kind) {
@@ -186,6 +175,10 @@
                 }
                this._open_doc(it);
             },
+            on_default: function(it) {
+                this.active = [it];
+                this.on_domenu(it.default_action);                    
+            },
 
             action_reused: function() {
                 this.dlg_type = 'reused';
@@ -202,8 +195,8 @@
                 if(res.result!=='ok') {
                     return;
                 }
-                let at = this.active[0];
-                this._reused_doc(at, res.value, res.memo);
+                // let at = this.active[0];
+                // this._reused_doc(at, res.value, res.memo);
             },
 
             action_rename: function() {
@@ -226,7 +219,7 @@
                 if(this._valid_name(its.filter(i => i!==it), n)) {
                     tman.rename(this.tree, it.id, n.trim());
                     it.memo = res.memo;
-                    await this._save_tree();
+                    db.set_tree(this.tree);
                 }
             },
 
@@ -246,16 +239,17 @@
                 let at = this.active[0];
                 let its = tman.findParentChildren(this.tree, at.id);
                 if(at.kind !== 'dir') {
-                    this._del_doc(at);
+                    tman.remove(its, at.id);
+                    this.db.set_tree(this.tree);
                 } else {
                     let del_its = [];
                     tman.getLeafs(at, del_its);
                     del_its.forEach(it => {
-                        this._del_doc(it);
+                        db.del_doc(it.id);
                     })
                 }
                 tman.remove(its, at.id);
-                this._save_tree();
+                db.set_tree(this.tree);
             },
 
             action_new_dir: function() {
@@ -309,7 +303,7 @@
                 tman.insert(pit.children, it);
                 this._expand_sel();
                 this.active = [it];
-                await this._save_tree();
+                db.set_tree(this.tree);
                 if(res.clone) {
                     this._clone_doc(it, res.clone)
                 }

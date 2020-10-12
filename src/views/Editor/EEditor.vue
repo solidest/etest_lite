@@ -64,6 +64,7 @@
                 });
             },
             update: function (ac) {
+                if(!ac || !['device'].includes(ac.kind)) return null;
                 this.type = ac ? `e-${ac.kind}-editor` : null;
             },
             on_active: function(ieditor) {

@@ -40,8 +40,7 @@
             </v-navigation-drawer>
             <div v-if="show_subbar" style="display: flex;">
                 <v-card tile color="grey darken-3" :width="`${width-80-6}px`">
-                    <e-tool-list v-if="subbar_type==='tools'" @close="on_close"> </e-tool-list>
-                    <e-src-tree v-else-if="subbar_type==='program'"> </e-src-tree>
+                    <e-src-tree v-if="subbar_type==='program'"> </e-src-tree>
                 </v-card>
                 <e-vertical-bar :width="width" :min="200" :max="800" @resize="on_resize" />
             </div>
@@ -52,7 +51,6 @@
 <script>
     import cfg from './config';
     import EVerticalBar from '../Components/EVerticalBar';
-    import EToolList from './Tools/EToolList';
     import ESrcTree from './SrcTree/ESrcTree';
 
     const mini_width = 80;
@@ -61,7 +59,6 @@
 
         components: {
             'e-vertical-bar': EVerticalBar,
-            'e-tool-list': EToolList,
             'e-src-tree': ESrcTree,
         },
 

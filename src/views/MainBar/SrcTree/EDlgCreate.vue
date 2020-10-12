@@ -62,7 +62,7 @@
 </template>
 <script>
     import cfg from './config';
-    import api from '../../../api/client_api';
+    import api from '../../../api/client/client_api';
     export default {
         props: ['dialog', 'option'],
 
