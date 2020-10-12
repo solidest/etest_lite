@@ -51,7 +51,7 @@
 
 <script>
     import cfg from './config';
-    import EVerticalBar from '../../Utility/EVerticalBar';
+    import EVerticalBar from '../../Components/EVerticalBar';
 
     export default {
         props: ['top_height'],

@@ -19,12 +19,17 @@
                     :active.sync="active"  :open.sync="open" @update:active="on_active">
                     <template v-slot:label="{ item, open }">
                         <div @contextmenu="e=>{on_ctxmenu(item); on.click(e);}" style="display: flex; height: 40px;" >
-                            <v-icon v-if="item.kind==='dir'">
-                                {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                            <v-icon v-if="file_icons[item.id]">
+                                {{ file_icons[item.id] }}
                             </v-icon>
+                            <v-icon v-else-if="item.kind==='dir'">
+                                {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                            </v-icon>                            
                             <v-icon v-else>
                                 {{ file_icons[item.kind] }}
                             </v-icon>
+
+
                             <span class="ml-2 align-self-center"> {{item.name}} </span>
                             <span class="ml-2 grey--text align-self-center" v-if="item.memo"> {{item.memo}} </span>
                         </div>

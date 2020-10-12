@@ -22,7 +22,7 @@ const default_src = [{
     children: []
 }, {
     id: 'LB',
-    name: '共享程序',
+    name: '脚本库',
     kind: 'dir',
     fixed: true,
     actions: ['new_item'],
@@ -30,7 +30,7 @@ const default_src = [{
     children: []
 }, {
     id: 'EN',
-    name: '环境设置',
+    name: '环境配置',
     kind: 'dir',
     fixed: true,
     actions: [],

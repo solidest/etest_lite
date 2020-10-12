@@ -21,6 +21,7 @@
                 let dx = client_x - this.start_x;
                 let new_width = this.right ? (this.width_ - dx) : (this.width_ + dx);
                 if (Math.abs(dx) > 10 && new_width >= this.min && new_width <= this.max) {
+                console.log('client_x', client_x, 'dx', dx, 'new_width', new_width);
                     this.$emit("resize", new_width);
                     this.width_ = new_width;
                     this.start_x = client_x;
