@@ -86,11 +86,14 @@ function list() {
     return coll.find();
 }
 
-function save(close) {
-    _base_db.save(() => {
-        if (close) {
-            _base_db = null;
-        }        
+async function save(close) {
+    return new Promise((resolve) => {
+        _base_db.save(() => {
+            if (close) {
+                _base_db = null;
+            }
+            return resolve();
+        });        
     });
 }
 

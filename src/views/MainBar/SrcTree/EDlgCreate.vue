@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="dialog" max-width="560" persistent overlay-color="grey darken-2" internal-activator>
+    <v-dialog :value="dialog" max-width="660" persistent overlay-color="grey darken-2" internal-activator>
         <v-card class="pa-2">
             <v-card-title>{{title}}</v-card-title>
             <v-text-field @keydown.enter="ok" ref="input_component" class="px-6" v-model="input_text"
@@ -15,7 +15,7 @@
                 <v-tabs-items v-model="tab">
                     <v-tab-item>
                         <v-card outlined>
-                            <div style="height:200px; width:100%; overflow-y:scroll;">
+                            <div style="height:400px; width:100%; overflow-y:scroll;">
                                 <v-list-item-group v-model="clone_reused" color="primary">
                                     <v-list-item dense v-for="(item, i) in reusedlist" :key="i">
                                         <v-list-item-content>
@@ -31,7 +31,7 @@
                     </v-tab-item>
                     <v-tab-item>
                         <v-card outlined>
-                            <div style="height:200px; width:100%; overflow-y:scroll;">
+                            <div style="height:400px; width:100%; overflow-y:scroll;">
                                 <v-list-item-group v-model="clone_src" color="primary">
                                     <v-list-item dense v-for="(item, i) in option.srclist" :key="i">
                                         <v-list-item-content>

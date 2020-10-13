@@ -1,4 +1,8 @@
 let left_tools = [{
+        text: '单选/多选',
+        value: 'toggle_select',
+        icon: 'mdi-check-all'
+    }, {
         text: '向后添加接口',
         value: 'new_item_after',
         icon: 'mdi-table-row-plus-after'
@@ -27,6 +31,10 @@ let left_tools = [{
         value: 'paste',
         icon: 'mdi-content-paste'
     }, {
+        text: '批量粘贴',
+        value: 'multi_paste',
+        icon: 'mdi-content-duplicate'
+    }, {
         text: '撤销',
         value: 'undo',
         icon: 'mdi-undo'
@@ -43,12 +51,45 @@ let left_tools = [{
 let right_tools = [{
     text: 'ETL代码',
     value: 'etl_code',
-    icon: 'mdi-script-text-outline'
+    icon: 'mdi-code-json'
 }];
 
+let intf_types = [
+    {value: 'di', text: '数字输入'},
+    {value: 'do', text: '数字输出'},
+    {value: 'ai', text: '模拟输入'},
+    {value: 'ao', text: '模拟输出'},
+    {value: 'serial_232', text: '232串口'},
+    {value: 'serial_422', text: '422串口'},
+    {value: 'serial_485', text: '485串口'},
+    {value: 'serial_ttl', text: 'UART'},
+    {value: 'can', text: 'can总线接口'},
+    {value: 'udp', text: 'UDP协议'},
+    {value: 'tcp_client', text: 'TCP客户端'},
+    {value: 'tcp_server', text: 'TCP服务器'},
+];
+
+let headers = [{width: 48}, {
+        text: '接口类型',
+        align: 'start',
+        value: 'kind',
+    },
+    {
+        text: '接口名称',
+        value: 'name'
+    },
+    {
+        text: '说明',
+        value: 'memo'
+    },
+];
+
 let cfg = {
+    kind: 'device',
     left_tools,
     right_tools,
+    headers,
+    intf_types,
 }
 
 export default cfg;

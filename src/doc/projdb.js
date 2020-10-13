@@ -75,27 +75,50 @@ function get_tree() {
 
 function set_tree(tree) {
     let coll = _proj_db.getCollection('config');
-    coll.findAndUpdate({id: 'tree'}, it=>it.value=tree);
+    return coll.findAndUpdate({id: 'tree'}, it=>it.value=tree);
 }
 
-function save(close) {
-    _proj_db.save(()=>{
-        if (close) {
-            _proj_id = null;
-            _proj_db = null;
-        }
-    });
-}
 
 function del_doc(id) {
     let coll = _proj_db.getCollection('src');
-    coll.findAndRemove({id: id});
+    return coll.findAndRemove({id});
+}
+
+function get_doc(id) {
+    let coll = _proj_db.getCollection('src');
+    return coll.findOne({id: id});
+}
+
+function set_doc(doc) {
+    let coll = _proj_db.getCollection('src');
+    return coll.update(doc);
+}
+
+function put_doc(doc) {
+    let coll = _proj_db.getCollection('src');
+    return coll.insert(doc);
+}
+
+
+async function save(close) {
+    return new Promise((resolve) => {
+        _proj_db.save(()=>{
+            if (close) {
+                _proj_id = null;
+                _proj_db = null;
+            }
+            return resolve();
+        });
+    });
 }
 
 export default {
     open,
     get_tree,
     set_tree,
+    get_doc,
+    set_doc,
+    put_doc,
     del_doc,
     save,
 }

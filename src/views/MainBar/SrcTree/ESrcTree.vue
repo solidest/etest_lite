@@ -142,6 +142,7 @@
                 }
             },
             _open_doc: function(it) {
+                if(!['device'].includes(it.kind)) return;
                 this.$store.commit('Editor/open', it);                
                 if(this.$route.name !== 'Editor') {
                     this.$router.push({name: 'Editor'});
@@ -238,10 +239,7 @@
                 }
                 let at = this.active[0];
                 let its = tman.findParentChildren(this.tree, at.id);
-                if(at.kind !== 'dir') {
-                    tman.remove(its, at.id);
-                    this.db.set_tree(this.tree);
-                } else {
+                if(at.kind === 'dir') {
                     let del_its = [];
                     tman.getLeafs(at, del_its);
                     del_its.forEach(it => {

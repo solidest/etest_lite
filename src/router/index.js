@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import EEmpty from '../components/EEmpty.vue'
+import EEmpty from '../views/EEmpty.vue'
 import ELuaEditor from '../views/ELuaEditor'
 import ETcgEditor from '../views/ETcgEditor'
 import EEditor from '../views/Editor/EEditor'

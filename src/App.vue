@@ -21,7 +21,7 @@
   }
 </style>
 <script>
-  import ESysBar from './components/ESysBar';
+  import ESysBar from './views/Components/ESysBar';
   import EMainBar from './views/MainBar/ETopBar';
 
   export default {
@@ -60,12 +60,15 @@
           return 1500;
         }
       },
-      editor_route: function() {
+      editor_route: function () {
         let ed = this.$store.state.edit_doc;
-        if(!ed){
+        if (!ed) {
           return null;
         }
-        let res = { id: ed.doc.id, kind: ed.kind }
+        let res = {
+          id: ed.doc.id,
+          kind: ed.kind
+        }
         switch (ed.kind) {
           case 'device':
             res.route_name = 'Device';
@@ -91,7 +94,7 @@
           case 'tools':
             res.route_name = ed.doc.value;
             break;
-            
+
           default:
             console.log('TODO editor:', ed.kind);
             return null;
@@ -101,20 +104,30 @@
     },
 
     watch: {
-      editor_route: function(vn, vo) {
-        if(!vn || !this.$store.state.proj) {
-          this.$router.push({name: 'Home'});
+      editor_route: function (vn, vo) {
+        if (!vn || !this.$store.state.proj) {
+          this.$router.push({
+            name: 'Home'
+          });
           return;
         }
-        if(this.$route.name === vn.route_name) {
-          if(vn.id === vo.id) {
+        if (this.$route.name === vn.route_name) {
+          if (vn.id === vo.id) {
             return;
           }
-          this.$router.push({name: 'Home'});
+          this.$router.push({
+            name: 'Home'
+          });
         }
         let self = this;
-        this.$nextTick(()=>{
-          self.$router.push({name: vn.route_name, params: {doc_id: vn.id, kind: vn.kind}});
+        this.$nextTick(() => {
+          self.$router.push({
+            name: vn.route_name,
+            params: {
+              doc_id: vn.id,
+              kind: vn.kind
+            }
+          });
         })
       }
     },
