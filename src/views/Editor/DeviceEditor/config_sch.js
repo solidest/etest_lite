@@ -1,38 +1,49 @@
 let serial_schema = [{
+    name: 'name',
+    type: 'text',
+    label: '名称'
+}, {
+    name: 'memo',
+    type: 'text',
+    label: '备注'
+}, {
     name: 'baudrate',
     type: 'combobox',
-    cols: 4,
     items: [2400, 4800, 7200, 9600, 14400, 19200, 28800, 57600, 76800, 38400, 115200],
     label: '波特率'
 }, {
     name: 'bytesize',
     type: 'select',
-    cols: 2,
     items: [5, 6, 7, 8],
     label: '数据位'
 }, {
     name: 'stopbits',
     type: 'select',
-    cols: 2,
     items: [1, 2, 1.5],
     label: '停止位'
 }, {
     name: 'parity',
     type: 'select',
-    cols: 2,
     items: ['none', 'odd', 'event', 'mark', 'space'],
     label: '校验方式'
 }, {
     name: 'flowcontrol',
     type: 'select',
-    cols: 2,
     items: ['none', 'software', 'hardware'],
     label: '流控方式'
 }];
 
 let ad_da_schema = [{
+    name: 'name',
+    type: 'text',
+    label: '名称'
+}, {
+    name: 'memo',
+    type: 'text',
+    label: '备注'
+}, {
     name: 'ratio',
-    type: 'select',
+    type: 'combobox',
     cols: 12,
     items: [8, 16, 32, 64],
     label: '分辨率',
@@ -53,32 +64,44 @@ let di_do_schema = [{
 }];
 
 let udp_schema = [{
+        name: 'name',
+        type: 'text',
+        label: '名称'
+    }, {
+        name: 'memo',
+        type: 'text',
+        label: '备注'
+    }, {
         name: 'ip',
         type: 'text',
-        cols: 4,
         label: '地址'
     },
     {
         name: 'port',
         type: 'number',
-        cols: 2,
         label: '端口'
     },
     {
         name: 'ttl',
         type: 'number',
-        cols: 2,
         label: '存活周期'
     },
     {
         name: 'reuseaddr',
         type: 'checkbox',
-        cols: 4,
         label: '复用地址端口'
     },
 ];
 
 let tcp_client_schema = [{
+        name: 'name',
+        type: 'text',
+        label: '名称'
+    }, {
+        name: 'memo',
+        type: 'text',
+        label: '备注'
+    }, {
         name: 'ip',
         type: 'text',
         cols: 8,
@@ -111,6 +134,14 @@ let tcp_client_schema = [{
 ];
 
 let tcp_server_schema = [{
+        name: 'name',
+        type: 'text',
+        label: '名称'
+    }, {
+        name: 'memo',
+        type: 'text',
+        label: '备注'
+    }, {
         name: 'ip',
         type: 'text',
         cols: 8,

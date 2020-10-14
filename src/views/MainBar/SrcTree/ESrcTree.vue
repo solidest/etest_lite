@@ -80,6 +80,11 @@
         mounted: function (){
             if(this.proj) {
                 this.tree = db.get_tree();
+                this._active_editing();
+                let self = this;
+                this.$nextTick(() => {
+                    self.on_packup();
+                })
             }
         },
         data: () => ({
@@ -117,10 +122,26 @@
                     acs.push('reused');
                 }
                 return acs;
+            },
+            editing_id: function() {
+                let ac = this.$store.state.Editor.active;
+                return ac ? ac.id : null;
+            },
+        },
+
+        watch: {
+            editing_id: function() {
+                this._active_editing();
             }
         },
 
         methods: {
+            _active_editing: function() {
+                let it = tman.findItem(this.tree, this.editing_id);
+                if(it) {
+                    this.active = [it];
+                }
+            },
             _valid_name: function (items, n) {
                 let res = helper.valid_name(items, n);
                 if (res !== 'ok') {
@@ -248,6 +269,7 @@
                 }
                 tman.remove(its, at.id);
                 db.set_tree(this.tree);
+                this.$store.commit('Editor/close', at);
             },
 
             action_new_dir: function() {

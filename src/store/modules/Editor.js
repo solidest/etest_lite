@@ -9,12 +9,24 @@ const mutations = {
     reset(state) {
         state.items = [];
         state.active = null;
+        state.doc_states = {};
     },
     open(state, item) {
         if (!state.items.find(it => it === item)) {
             state.items.push(item);
         }
         state.active = item;
+        let ss = state.doc_states;
+        let rms = [];
+        for(let key in ss) {
+            if(state.items.find(it => it.id===key)) {
+                continue;
+            }
+            rms.push(key);
+        }
+        rms.forEach(k => {
+            delete ss[k];
+        })
     },
     close(state, item) {
         let idx = state.items.findIndex(it => it === item);
@@ -35,7 +47,7 @@ const mutations = {
     },
     set_state_disbar(state, state_disbar) {
         state.state_disbar = state_disbar;
-    }
+    },
 };
 
 const getters = {

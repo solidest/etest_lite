@@ -4,7 +4,7 @@ import ipc from '../feature/ipc_render';
 
 import ProjList from './modules/ProjList';
 import Editor from './modules/Editor';
-import Device from './modules/Device';
+import api from '../api/client/client_api';
 
 const {
   ipcRenderer
@@ -16,7 +16,6 @@ const _store = new Vuex.Store({
   modules: {
     ProjList,
     Editor,
-    Device,
   },
   state: {
     last_tip: {
@@ -30,8 +29,11 @@ const _store = new Vuex.Store({
     redo_count: 0,
     undo_count: 0,
     proj: null,
-    copys: { device: '', protocol: '', panel: ''},
-    check_result: {version: 0, proj_id: 0},
+    copyed: null,
+    check_result: {
+      version: 0,
+      proj_id: 0
+    },
     play_info: null,
   },
   mutations: {
@@ -54,55 +56,52 @@ const _store = new Vuex.Store({
       state.last_tip.tip_msg = '$'
       state.last_tip.tip = false
     },
-    setProj: function(state, proj) {
-      if(proj && state.proj && proj.id===state.proj.id) {
+    setProj: function (state, proj) {
+      if (proj && state.proj && proj.id === state.proj.id) {
         return;
       }
       state.proj = proj;
       ipc.bind_proj(proj ? proj.id : null);
       state.edit_doc = null;
     },
-    setEditDoc: function(state, info) {
+    setEditDoc: function (state, info) {
       // console.log('open doc', info.doc.id);
       state.edit_doc = info;
     },
-    setSeleDoc: function(state, info) {
+    setSeleDoc: function (state, info) {
       state.sele_doc = info;
     },
-    setSeleCount: function(state, count) {
+    setSeleCount: function (state, count) {
       state.sele_count = count;
     },
-    setCopyObject: function(state, info) {
-      if(!info.kind || !info.obj){
-        return;
-      }
-      state.copys[info.kind] = JSON.stringify(info.obj);
+    setCopyed: function (state, copyed) {
+      state.copyed = copyed;
     },
-    setRedoUndo: function(state, info) {
+    setRedoUndo: function (state, info) {
       state.redo_count = info.redo_count;
       state.undo_count = info.undo_count;
     },
-    clearEditor: function(state) {
+    clearEditor: function (state) {
       state.sele_count = 0;
       state.undo_count = 0;
       state.redo_count = 0;
     },
-    deletedDoc: function(state, id) {
-      if(state.edit_doc && state.edit_doc.doc.id === id) {
+    deletedDoc: function (state, id) {
+      if (state.edit_doc && state.edit_doc.doc.id === id) {
         state.edit_doc = null;
       }
     },
-    setCheckResult: function(state, info) {
+    setCheckResult: function (state, info) {
       state.check_result = info;
     },
-    setPlayInfo: function(state, info) {
+    setPlayInfo: function (state, info) {
       state.play_info = info;
     },
   },
-  actions: { },
+  actions: {},
   getters: {
     check_result: state => {
-      if(state.check_result && state.proj && state.check_result.proj_id === state.proj.id) {
+      if (state.check_result && state.proj && state.check_result.proj_id === state.proj.id) {
         return state.check_result.results;
       }
       return null;
@@ -110,19 +109,10 @@ const _store = new Vuex.Store({
   }
 })
 
-ipcRenderer.on('check-result', (_, proj_id, results, version) => {
-  _store.commit('setCheckResult', {proj_id: proj_id, results: results, version: version});
+ipcRenderer.on('copyed', (_, format) => {
+  _store.commit('setCopyed', format);
 });
 
-
-ipcRenderer.on('debug', (_, kind, info, proj_id, case_id) => {
-  if(kind === 'play') {
-    _store.commit('setPlayInfo', info);
-  } else if(kind === 'error' && info) {
-    _store.commit('setMsgError', info);
-  } else {
-    console.log('debug', kind, info, proj_id, case_id);
-  }
-});
+api.clipboard_read().then(res => _store.commit('setCopyed', res ? res.format : null));
 
 export default _store

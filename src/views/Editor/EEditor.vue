@@ -31,7 +31,7 @@
                 titleman_height: 0,
                 left_tools:[],
                 right_tools: [],
-                do_action: null
+                ieditor: {}
             }
         },
         computed: {
@@ -44,12 +44,22 @@
             editor_type: function() {
                 let ac = this.$store.state.Editor.active;
                 return ac ? `e-${ac.kind}-editor` : null;
+            },
+            allow_paste: function() {
+                let ac = this.$store.state.Editor.active;
+                if(!ac) {
+                    return false;
+                }
+                return this.$store.state.copyed === ac.kind;
             }
         },
         watch: {
             titles: function() {
                 this.update_size();
-            }
+            },
+            allow_paste: function() {
+                this.update_state();
+            },
         },
         methods: {
             update_size: function() {
@@ -59,13 +69,19 @@
                     self.titleman_height = r ? r.$el.offsetHeight : 0;
                 });
             },
+            update_state: function() {
+                let s = this.ieditor.get_state();
+                this.$store.commit('Editor/set_state_disbar', s);
+            },
             on_active: function(ieditor) {
                 this.left_tools = ieditor.left_tools;
                 this.right_tools = ieditor.right_tools;
-                this.do_action = ieditor.do_action;
+                this.ieditor = ieditor;
+                this.update_state();
             },
             on_action: function(ac) {
-                this.do_action(ac);
+                this.ieditor.do_action(ac);
+                this.update_state();
             }
         }
 

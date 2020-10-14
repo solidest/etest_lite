@@ -32,7 +32,7 @@ let left_tools = [{
         icon: 'mdi-content-paste'
     }, {
         text: '批量粘贴',
-        value: 'multi_paste',
+        value: 'paste_batch',
         icon: 'mdi-content-duplicate'
     }, {
         text: '撤销',
@@ -73,15 +73,16 @@ let headers = [{width: 48}, {
         text: '接口类型',
         align: 'start',
         value: 'kind',
-    },
-    {
+    }, {
         text: '接口名称',
         value: 'name'
-    },
-    {
+    }, {
         text: '说明',
         value: 'memo'
-    },
+    }, {
+        text: '设置',
+        value: 'config'
+    }
 ];
 
 let cfg = {

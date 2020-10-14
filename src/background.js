@@ -11,9 +11,9 @@ import {
   createProtocol,
 } from 'vue-cli-plugin-electron-builder/lib';
 import ipc from './feature/ipc_main';
-import wins from './feature/m_wins';
+import wins from './api/server/wins';
 import run from './run/run_main';
-import srv_api from './api/server_api';
+import srv_api from './api/server/index';
 import cfg from './api/config';
 
 let player = null;

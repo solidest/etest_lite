@@ -18,6 +18,9 @@
         components: {
             'e-text-widget': () => import( /* webpackChunkName: "etextwidget" */ './widgets/ETextWidget'),
             'e-number-widget': () => import( /* webpackChunkName: "enumberwidget" */ './widgets/ENumberWidget'),
+            'e-combobox-widget': () => import( /* webpackChunkName: "ecomboboxwidget" */ './widgets/EComboboxWidget'),
+            'e-select-widget': () => import( /* webpackChunkName: "eselectwidget" */ './widgets/ESelectWidget'),
+            'e-checkbox-widget': () => import( /* webpackChunkName: "echeckboxwidget" */ './widgets/ECheckboxWidget'),
         },
         methods: {
             on_changed: function(k, v) {

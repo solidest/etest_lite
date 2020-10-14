@@ -1,8 +1,12 @@
 <template>
     <div class="d-flex">
-        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}">
+        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" ref="__intf_list">
             <v-data-table :headers="headers" :items="items" no-data-text="空" disable-sort hide-default-footer
-                disable-pagination show-select v-model="selected" :single-select="single_select">
+                disable-pagination show-select v-model="selected" :single-select="single_select"
+                @item-selected="on_selected" @toggle-select-all="on_selected">
+                <template v-slot:item.config="{item}">
+                    <span>{{format_cfg(item)}}</span>
+                </template>
             </v-data-table>
         </div>
         <e-vertical-bar :width="prop_width" :min="200" :max="800" :right="true" @resize="on_resize" />
@@ -12,41 +16,34 @@
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_new_item" :dialog="dlg_opt.type"
                 :title="dlg_opt.title" :items="dlg_opt.data" />
+            <e-number-dlg v-else-if="dlg_opt.type==='number'" @result="do_paste_batch" :dialog="dlg_opt.type"
+                :title="dlg_opt.title" :value="dlg_opt.data" :label="dlg_opt.tag.label" />
         </div>
     </div>
 </template>
 
 <script>
+    import shortid from 'shortid';
+    import api from '../../../api/client/client_api';
+    import helper from '../../../utility/helper';
     import cfg from './config';
     import schemas from './config_sch';
     import db from '../../../doc/projdb';
-    import helper from '../../../utility/helper';
-    import shortid from 'shortid';
     import EVerticalBar from '../../Components/EVerticalBar';
     import EPorpertyPanel from '../../Components/EPropertyPanel';
+    import BatchName from '../../../utility/BatchName';
 
     export default {
         props: ['top_height'],
         components: {
             'e-vertical-bar': EVerticalBar,
             'e-property-panel': EPorpertyPanel,
-            'e-select-dlg': () => import( /* webpackChunkName: "eselectdlg" */ '../../Dialog/ESelectDlg'),
+            'e-select-dlg': () => import( /* webpackChunkName: "eselectonedlg" */ '../../Dialog/EDlgSelectOne'),
+            'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ '../../Dialog/EDlgNumber'),
         },
         mounted: function () {
-            let self = this;
-            let ieditor = {
-                right_tools: cfg.right_tools,
-                left_tools: cfg.left_tools,
-                do_action: (ac) => {
-                    let do_ac = self[`action_${ac}`];
-                    if (do_ac) {
-                        return do_ac();
-                    }
-                    console.log('TODO', `action_${ac}`);
-                }
-            }
-            this.$emit('active', ieditor);
             this._reset_doc(this.doc_id);
+            this.$emit('active', this._get_ieditor());
         },
         beforeDestroy: function() {
             this._save_doc_state(this.doc_id);
@@ -57,26 +54,19 @@
                 items: [],
                 selected: [],
                 single_select: true,
+                prop_width: 300,
                 dlg_opt: {
                     type: null,
                     title: '',
                     data: null,
                     tag: null,
-                }
+                },
             }
         },
         computed: {
             doc_id: function () {
                 let ac = this.$store.state.Editor.active;
                 return ac ? ac.id : '';
-            },
-            prop_width: {
-                get: function () {
-                    return this.$store.state.Device.prop_width;
-                },
-                set: function (v) {
-                    this.$store.commit('Device/set_prop_width', v);
-                }
             },
             current: function() {
                 if(this.selected.length === 1) {
@@ -95,22 +85,24 @@
                     this._save_doc_state(oid);
                 }
                 this._reset_doc(nid);
+                this._update_state();
             },
-            selected: function() {
-                this.update_state();
-            }
         },
         methods: {
-            _temp: function () {
-                let res = [];
-                for (let index = 0; index < 100; index++) {
-                    res.push({
-                        id: index,
-                        name: this.doc_id + index,
-                        config: {},
-                    })
+            _get_ieditor: function () {
+                let self = this;
+                return {
+                    right_tools: cfg.right_tools,
+                    left_tools: cfg.left_tools,
+                    get_state: () => { return self._get_state();},
+                    do_action: (ac) => {
+                        let do_ac = self[`action_${ac}`];
+                        if (do_ac) {
+                            return do_ac();
+                        }
+                        console.log('TODO', `action_${ac}`);
+                    },
                 }
-                return res;
             },
             _get_newdoc: function () {
                 return {
@@ -146,18 +138,23 @@
             },
             _save_doc_state: function(doc_id) {
                 let s = {
-                    selected: helper.deep_copy(this.selected),
+                    selected: this.selected,
                     single_select: this.single_select,
                     prop_width: this.prop_width,
+                    list_top: this.$refs.__intf_list.scrollTop,
                 }
                 this.$store.getters['Editor/put_doc_state'](doc_id, s);
             },
             _reset_doc: function (id) {
                 let s = this.$store.getters['Editor/get_doc_state'](id);
                 if(s) {
-                    this.selected = helper.deep_copy(s.selected);
+                    this.selected = s.selected;
                     this.single_select = s.single_select;
                     this.prop_width = s.prop_width;
+                    if(s.list_top>0) {
+                        let self = this;
+                        this.$nextTick(()=>{self.$refs.__intf_list.scrollTop = s.list_top;})
+                    }
                 } else {
                     this.selected = [];
                 }
@@ -169,16 +166,21 @@
                     this.items = [];
                     this.$doc = db.put_doc(this._get_newdoc());
                 }
-                this.update_state();
             },
-            update_state: function () {
+            _update_state: function() {
+                let s = this._get_state();
+                this.$store.commit('Editor/set_state_disbar', s);
+            },
+            _get_state: function() {
                 let len = this.selected.length;
+                let allow_paste = this.$store.state.copyed === cfg.kind;
                 let dis = {
                     move_up: false,
                     move_down: false,
                     cut: false,
                     copy: false,
-                    paste: false,
+                    paste: !allow_paste,
+                    paste_batch: !allow_paste,
                     undo: false,
                     redo: false,
                     del_item: false,
@@ -195,15 +197,40 @@
                     dis.move_up = true;
                     dis.move_down = true;
                     dis.multi_insert = true;
+                } else {
+                    len = this.items.length;
+                    let sel = this.selected[0];
+                    let idx = this.items.findIndex(it => it === sel);
+                    dis.move_up = len===1 || idx===0;
+                    dis.move_down = len===1 || idx===len-1;
                 }
-                this.$store.commit('Editor/set_state_disbar', dis);
+                return dis;
             },
-
+            format_cfg: function(obj) {
+                    if (!obj) {
+                        return '';
+                    }
+                    let res = [];
+                    for (let key in obj) {
+                        if(['name', 'memo', 'id'].includes(key)) {
+                            continue;
+                        }
+                        let v = isNaN(obj[key]) ? `'${obj[key]}'` : obj[key]
+                        res.push(key + ': ' + v);
+                    }
+                    return res.join(', ');
+            },
             on_resize: function (width) {
                 this.prop_width = width;
             },
             on_prop_changed: function() {
                 db.set_doc(this.$doc);
+            },
+            on_selected: function() {
+                let self = this;
+                this.$nextTick(() => {
+                    self._update_state();
+                });
             },
             action_new_item_after: function () {
                 this.dlg_opt.type = 'select';
@@ -225,6 +252,34 @@
                     }
                 } 
             },
+            action_move_up: function() {
+                let sel = this.selected[0];
+                if(!sel) {
+                    return;
+                }
+                let items = this.items;
+                let idx = items.findIndex(it => it === sel);
+                if(idx<=0) {
+                    return;
+                }
+                items.splice(idx, 1);
+                items.splice(idx-1, 0, sel);
+                db.set_doc(this.$doc);
+            },
+            action_move_down: function() {
+                let sel = this.selected[0];
+                if(!sel) {
+                    return;
+                }
+                let items = this.items;
+                let idx = items.findIndex(it => it === sel);
+                if(idx<0 || idx === this.items.length-1) {
+                    return;
+                }
+                items.splice(idx, 1);
+                items.splice(idx+1, 0, sel);
+                db.set_doc(this.$doc);
+            },
             action_del_item: function() {
                 let items = this.items;
                 this.selected.forEach(it => {
@@ -233,7 +288,71 @@
                         items.splice(idx, 1);
                     }
                 });
+                this.selected.splice(0, this.selected.length);
                 db.set_doc(this.$doc);
+            },
+            action_copy: function() {
+                if(this.selected.length===0) {
+                    return;
+                }
+                api.clipboard_write(cfg.kind, this.selected);
+            },
+            action_cut: function() {
+                this.action_copy();
+                this.action_del_item();
+            },
+            action_paste: function() {
+                let self = this;
+                api.clipboard_read().then(info => {
+                    if(!info || info.format!==cfg.kind) {
+                        return;
+                    }
+                    self.do_paste(info.data);
+                });
+            },
+            action_paste_batch: function() {
+                this.dlg_opt.type = 'number';
+                this.dlg_opt.title = '批量粘贴';
+                this.dlg_opt.data = 2;
+                this.dlg_opt.tag = {label: '数量'};
+            },
+            do_paste: function(res) {
+                if(res && res.length>0) {
+                    res.forEach(r => r.id = shortid.generate());
+                } else {
+                    return;
+                }
+                this.items.splice(this._idx_last(), 0, ...res);
+                if(this.selected.length>0) {
+                    this.selected.splice(0, this.selected.length);
+                }
+                this.selected.push(...res);
+                db.set_doc(this.$doc);
+                this._update_state();
+            },
+            do_paste_batch: function(res) {
+                this.dlg_opt.type = null;
+                if(res.result!=='ok') {
+                    return;
+                }
+                let count = res.value;
+                if(count>500 || count<0) {
+                    count = 2;
+                }
+                let self = this;
+                api.clipboard_read().then(info => {
+                    if(!info || info.format!==cfg.kind || !info.data) {
+                        return;
+                    }
+                    let res = [];
+                    let bn = new BatchName(info.data.map(i=>i.name));
+                    for (let index = 0; index < count; index++) {
+                        let data = helper.deep_copy(info.data);
+                        bn.rename(data, index);
+                        res.push(...data);
+                    }
+                    self.do_paste(res);
+                });
             },
             do_new_item: function (res) {
                 this.dlg_opt.type = null;
@@ -259,6 +378,7 @@
                 }
                 this.selected.push(newi);
                 db.set_doc(this.$doc);
+                this._update_state();
             }
 
         }

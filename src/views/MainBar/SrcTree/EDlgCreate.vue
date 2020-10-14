@@ -62,7 +62,7 @@
 </template>
 <script>
     import cfg from './config';
-    import api from '../../../api/client/client_api';
+    // import api from '../../../api/client/client_api';
     export default {
         props: ['dialog', 'option'],
 
@@ -73,8 +73,9 @@
             setTimeout(() => {
                 self.$refs.input_component.focus();
             }, 200);
-            let res = await api.reused_list(this.option.kind);
-            self.reusedlist = res.value;
+            // let res = await api.reused_list(this.option.kind);
+            //TODO
+            self.reusedlist = []; //res.value;
         },
 
         data: () => ({
