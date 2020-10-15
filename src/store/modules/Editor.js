@@ -1,9 +1,13 @@
+
+import redoundo from '../../doc/redoundo';
+
 const state = () => ({
     items: [],
     active: null,
     state_disbar: {},
     doc_states: {}
 });
+
 
 const mutations = {
     reset(state) {
@@ -14,24 +18,16 @@ const mutations = {
     open(state, item) {
         if (!state.items.find(it => it === item)) {
             state.items.push(item);
+            redoundo.put_ru(item.id);
         }
         state.active = item;
-        let ss = state.doc_states;
-        let rms = [];
-        for(let key in ss) {
-            if(state.items.find(it => it.id===key)) {
-                continue;
-            }
-            rms.push(key);
-        }
-        rms.forEach(k => {
-            delete ss[k];
-        })
     },
     close(state, item) {
         let idx = state.items.findIndex(it => it === item);
         if (idx >= 0) {
             state.items.splice(idx, 1);
+            delete state.doc_states[item.id];
+            redoundo.del_ru(item.id);
         }
         if (state.active === item) {
             if (state.items.length > 0) {
@@ -51,11 +47,10 @@ const mutations = {
 };
 
 const getters = {
-    del_doc_state: (state) => (id) => {
-        delete state.doc_states[id];
-    },
     put_doc_state: (state) => (id, doc_state) => {
-        state.doc_states[id] = doc_state;
+        if(state.items.find(it => it.id === id)) {
+            state.doc_states[id] = doc_state;
+        }
     },
     get_doc_state: (state) => (id) => {
         return state.doc_states[id];

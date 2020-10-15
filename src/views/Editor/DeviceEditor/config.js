@@ -44,12 +44,12 @@ let left_tools = [{
         icon: 'mdi-redo',
     }, {
         text: '删除',
-        value: 'del_item',
+        value: 'remove',
         icon: 'mdi-delete-outline'
     }, ];
 
 let right_tools = [{
-    text: 'ETL代码',
+    text: 'ETL代码编辑',
     value: 'etl_code',
     icon: 'mdi-code-json'
 }];
@@ -77,13 +77,25 @@ let headers = [{width: 48}, {
         text: '接口名称',
         value: 'name'
     }, {
-        text: '说明',
-        value: 'memo'
-    }, {
         text: '设置',
         value: 'config'
     }
 ];
+
+let intf_alias = {
+    di: 'DI',
+    do: 'DO',
+    ai: 'AI',
+    ao: 'AO',
+    serial_232: '232',
+    serial_422: '422',
+    serial_485: '485',
+    serial_ttl: 'UART',
+    can: 'CAN',
+    udp: 'UDP',
+    tcp_client: 'TCPC',
+    tcp_server: 'TCPS',
+}
 
 let cfg = {
     kind: 'device',
@@ -91,6 +103,7 @@ let cfg = {
     right_tools,
     headers,
     intf_types,
+    intf_alias,
 }
 
 export default cfg;

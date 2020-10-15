@@ -1,9 +1,9 @@
 <template>
     <v-sheet class="d-flex flex-column" color="grey darken-3">
-        <v-card-text class="ml-2 h6 py-3 grey--text text--lighten-1">{{title}}</v-card-text>
+        <v-card-text class="ml-2 body-2 py-3">{{title}}</v-card-text>
         <v-divider />
         <div style="min-height: 100px; width: 100%">
-            <v-row v-if="item && schema" class="pa-4">
+            <v-row v-if="item && schema" class="ma-3">
                 <v-col v-for="(cfg, idx) in schema" :key="idx" :cols="cfg.cols||12">
                     <component v-bind:is="`e-${cfg.type}-widget`" :config="cfg" :model="item" @changed="on_changed"></component>
                 </v-col>

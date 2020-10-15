@@ -1,5 +1,5 @@
 <template>
-    <v-checkbox :label="config.label"  v-model="value_" dense hide-details @change="on_changed" class="pa-0">
+    <v-checkbox :label="config.label"  v-model="value_" dense hide-details @change="on_changed" class="pa-0 ma-0">
     </v-checkbox>
 </template>
 <script>

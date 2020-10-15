@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mx-auto" color="grey darken-3" flat v-if="proj">
+    <v-sheet class="mx-auto" color="grey darken-3" flat v-if="proj" @click="on_click">
         <v-toolbar dense >
             <span class="text--secondary">{{title}}</span>
             <v-spacer></v-spacer>
@@ -61,7 +61,7 @@
             <e-dlg-confirm v-else-if="dlg_type==='remove'" :dialog="true" :title="dlg_option.title" :text="dlg_option.text" @result="do_remove" />
             <e-dlg-reused v-else-if="dlg_type==='reused'" :dialog="true" :option="dlg_option" @result="do_reused" />
         </div>
-    </v-card>
+    </v-sheet>
 </template>
 <script>
     import shortid from 'shortid';
@@ -140,6 +140,8 @@
                 let it = tman.findItem(this.tree, this.editing_id);
                 if(it) {
                     this.active = [it];
+                } else {
+                    this.active = [];
                 }
             },
             _valid_name: function (items, n) {
@@ -183,6 +185,7 @@
             },
             on_ctxmenu: function (it) {
                 this.active = [it];
+                this.on_click();
             },
             on_domenu: function(ac) {
                 this[`action_${ac}`]();
@@ -200,6 +203,9 @@
             on_default: function(it) {
                 this.active = [it];
                 this.on_domenu(it.default_action);                    
+            },
+            on_click: function() {
+                // console.log('click on tree');
             },
 
             action_reused: function() {

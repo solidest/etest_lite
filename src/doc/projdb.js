@@ -1,6 +1,5 @@
 import loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-// import shortid from 'shortid';
 import cfg from './config';
 import helper from '../utility/helper';
 
@@ -78,7 +77,6 @@ function set_tree(tree) {
     return coll.findAndUpdate({id: 'tree'}, it=>it.value=tree);
 }
 
-
 function del_doc(id) {
     let coll = _proj_db.getCollection('src');
     return coll.findAndRemove({id});
@@ -98,7 +96,6 @@ function put_doc(doc) {
     let coll = _proj_db.getCollection('src');
     return coll.insert(doc);
 }
-
 
 async function save(close) {
     return new Promise((resolve) => {

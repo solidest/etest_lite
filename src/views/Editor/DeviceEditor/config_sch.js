@@ -1,7 +1,7 @@
-let serial_schema = [{
+const serial_schema = [{
     name: 'name',
     type: 'text',
-    label: '名称'
+    label: '接口名称'
 }, {
     name: 'memo',
     type: 'text',
@@ -33,10 +33,10 @@ let serial_schema = [{
     label: '流控方式'
 }];
 
-let ad_da_schema = [{
+const ad_da_schema = [{
     name: 'name',
     type: 'text',
-    label: '名称'
+    label: '接口名称'
 }, {
     name: 'memo',
     type: 'text',
@@ -49,10 +49,10 @@ let ad_da_schema = [{
     label: '分辨率',
 }];
 
-let di_do_schema = [{
+const di_do_schema = [{
     name: 'name',
     type: 'text',
-    label: '名称'
+    label: '接口名称'
 }, {
     name: 'memo',
     type: 'text',
@@ -63,10 +63,10 @@ let di_do_schema = [{
     label: '最大工作电压'
 }];
 
-let udp_schema = [{
+const udp_schema = [{
         name: 'name',
         type: 'text',
-        label: '名称'
+        label: '接口名称'
     }, {
         name: 'memo',
         type: 'text',
@@ -93,10 +93,10 @@ let udp_schema = [{
     },
 ];
 
-let tcp_client_schema = [{
+const tcp_client_schema = [{
         name: 'name',
         type: 'text',
-        label: '名称'
+        label: '接口名称'
     }, {
         name: 'memo',
         type: 'text',
@@ -104,39 +104,34 @@ let tcp_client_schema = [{
     }, {
         name: 'ip',
         type: 'text',
-        cols: 8,
         label: '地址'
     },
     {
         name: 'port',
         type: 'number',
-        cols: 4,
         label: '端口'
     },
     {
         name: 'keepalive',
         type: 'checkbox',
-        cols: 4,
         label: '长连接'
     },
     {
         name: 'nodelay',
         type: 'checkbox',
-        cols: 4,
         label: '禁用Nagle'
     },
     {
         name: 'autoconnect',
         type: 'checkbox',
-        cols: 4,
         label: '自动连接'
     },
 ];
 
-let tcp_server_schema = [{
+const tcp_server_schema = [{
         name: 'name',
         type: 'text',
-        label: '名称'
+        label: '接口名称'
     }, {
         name: 'memo',
         type: 'text',
@@ -144,33 +139,40 @@ let tcp_server_schema = [{
     }, {
         name: 'ip',
         type: 'text',
-        cols: 8,
         label: '地址'
     },
     {
         name: 'port',
         type: 'number',
-        cols: 4,
         label: '端口'
     },
     {
         name: 'keepalive',
         type: 'checkbox',
-        cols: 4,
         label: '长连接'
     },
     {
         name: 'nodelay',
         type: 'checkbox',
-        cols: 4,
         label: '禁用Nagle'
     },
     {
         name: 'acceptany',
         type: 'checkbox',
-        cols: 4,
         label: '接收所有请求'
     },
+];
+
+const can_schema = [
+    {
+        name: 'name',
+        type: 'text',
+        label: '接口名称'
+    }, {
+        name: 'memo',
+        type: 'text',
+        label: '备注'
+    }, 
 ];
 
 export default {
@@ -185,4 +187,5 @@ export default {
     serial_422: serial_schema,
     serial_485: serial_schema,
     serial_ttl: serial_schema,
+    can: can_schema,
 }

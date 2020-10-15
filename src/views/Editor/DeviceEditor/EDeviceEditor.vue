@@ -4,8 +4,15 @@
             <v-data-table :headers="headers" :items="items" no-data-text="空" disable-sort hide-default-footer
                 disable-pagination show-select v-model="selected" :single-select="single_select"
                 @item-selected="on_selected" @toggle-select-all="on_selected">
+                <template v-slot:item.kind="{item}">
+                    <v-chip color="light-blue darken-3">{{alias[item.kind]}}</v-chip>
+                </template>
+                <template v-slot:item.name="{item}">
+                    <span class="font-weight-bold">{{item.name}}</span>
+                    <span class="pl-2 grey--text text--lighten-1">{{item.memo}}</span>
+                </template>
                 <template v-slot:item.config="{item}">
-                    <span>{{format_cfg(item)}}</span>
+                    <span class="grey--text text--lighten-2">{{format_cfg(item)}}</span>
                 </template>
             </v-data-table>
         </div>
@@ -28,7 +35,9 @@
     import helper from '../../../utility/helper';
     import cfg from './config';
     import schemas from './config_sch';
+    import defaults from './config_default';
     import db from '../../../doc/projdb';
+    import redoundo from '../../../doc/redoundo';
     import EVerticalBar from '../../Components/EVerticalBar';
     import EPorpertyPanel from '../../Components/EPropertyPanel';
     import BatchName from '../../../utility/BatchName';
@@ -51,6 +60,7 @@
         data() {
             return {
                 headers: cfg.headers,
+                alias: cfg.intf_alias,
                 items: [],
                 selected: [],
                 single_select: true,
@@ -61,6 +71,7 @@
                     data: null,
                     tag: null,
                 },
+                redoundo: null,
             }
         },
         computed: {
@@ -95,13 +106,44 @@
                     right_tools: cfg.right_tools,
                     left_tools: cfg.left_tools,
                     get_state: () => { return self._get_state();},
-                    do_action: (ac) => {
-                        let do_ac = self[`action_${ac}`];
-                        if (do_ac) {
-                            return do_ac();
-                        }
-                        console.log('TODO', `action_${ac}`);
-                    },
+                    do_action: (ac) => { return self[`action_${ac}`](); }
+                }
+            },
+            _get_ru_version: function() {
+                let sels = [];
+                this.selected.forEach(it => {sels.push(it.id)});
+                return {
+                    
+                    pos: this.$refs.__intf_list.scrollTop,
+                    sel_ids: sels,
+                }
+            },
+            _set_ru_version: function(vo) {
+                if(!vo) {
+                    return;
+                }
+                this.selected.splice(0, this.selected.length);
+                let self = this;
+                vo.sel_ids.forEach(id => {self.selected.push(self.items.find( i => i.id === id))});
+                this.$nextTick(() => {
+                    self.$refs.__intf_list.scrollTop = vo.pos;
+                })
+            },
+            _update_change: function(reason) {
+                db.set_doc(this.$doc);
+                switch (reason) {
+                    case 'action':
+                        this.redoundo.pushChange(this.items, this._get_ru_version());
+                        break;
+                    case 'modify':
+                        this.redoundo.pushChange(this.items, this._get_ru_version());
+                        this._update_state();
+                        break;
+                    case 'redoundo':
+                        break;
+                    default:
+                        console.error('UNKNOW REASON', reason);
+                        break;
                 }
             },
             _get_newdoc: function () {
@@ -166,6 +208,10 @@
                     this.items = [];
                     this.$doc = db.put_doc(this._get_newdoc());
                 }
+                this.redoundo = redoundo.get_ru(id);
+                if(this.redoundo.isEmpty) {
+                    this.redoundo.pushChange(this.items, this._get_ru_version());
+                }
             },
             _update_state: function() {
                 let s = this._get_state();
@@ -181,9 +227,9 @@
                     copy: false,
                     paste: !allow_paste,
                     paste_batch: !allow_paste,
-                    undo: false,
-                    redo: false,
-                    del_item: false,
+                    undo: this.redoundo.undoCount===0,
+                    redo: this.redoundo.redoCount===0,
+                    remove: false,
                     multi_insert: false,
                 }
                 if(len===0) {
@@ -191,7 +237,7 @@
                     dis.move_down = true;
                     dis.cut = true;
                     dis.copy = true;
-                    dis.del_item = true;
+                    dis.remove = true;
                     dis.multi_insert = true;
                 } else if(len>1) {
                     dis.move_up = true;
@@ -224,13 +270,28 @@
                 this.prop_width = width;
             },
             on_prop_changed: function() {
-                db.set_doc(this.$doc);
+                this._update_change('modify');
             },
             on_selected: function() {
                 let self = this;
                 this.$nextTick(() => {
                     self._update_state();
                 });
+                this.$emit('action_click');
+            },
+            action_redo: function() {
+                let ov = this.redoundo.popRedo();
+                this.items = ov.doc;
+                this.$doc.content = this.items;
+                this._set_ru_version(ov.tag);
+                this._update_change('redoundo');
+            },
+            action_undo: function() {
+                let ov = this.redoundo.popUndo();
+                this.items = ov.doc;
+                this.$doc.content = this.items;
+                this._set_ru_version(ov.tag);
+                this._update_change('redoundo');
             },
             action_new_item_after: function () {
                 this.dlg_opt.type = 'select';
@@ -264,7 +325,7 @@
                 }
                 items.splice(idx, 1);
                 items.splice(idx-1, 0, sel);
-                db.set_doc(this.$doc);
+                this._update_change('action');
             },
             action_move_down: function() {
                 let sel = this.selected[0];
@@ -278,9 +339,10 @@
                 }
                 items.splice(idx, 1);
                 items.splice(idx+1, 0, sel);
-                db.set_doc(this.$doc);
+                this._update_change('action');
             },
-            action_del_item: function() {
+            action_remove: function() {
+                this.redoundo.updateTag(this._get_ru_version());
                 let items = this.items;
                 this.selected.forEach(it => {
                     let idx = items.findIndex(i => i === it);
@@ -289,7 +351,7 @@
                     }
                 });
                 this.selected.splice(0, this.selected.length);
-                db.set_doc(this.$doc);
+                this._update_change('action');
             },
             action_copy: function() {
                 if(this.selected.length===0) {
@@ -299,7 +361,7 @@
             },
             action_cut: function() {
                 this.action_copy();
-                this.action_del_item();
+                this.action_remove();
             },
             action_paste: function() {
                 let self = this;
@@ -327,8 +389,7 @@
                     this.selected.splice(0, this.selected.length);
                 }
                 this.selected.push(...res);
-                db.set_doc(this.$doc);
-                this._update_state();
+                this._update_change('modify');
             },
             do_paste_batch: function(res) {
                 this.dlg_opt.type = null;
@@ -359,12 +420,12 @@
                 if(res.result!=='ok') {
                     return;
                 }
-                let newi = {
-                    id: shortid.generate(),
-                    name: '',
-                    memo: '',
-                    kind: res.selected,
-                }
+                let kind = res.selected;
+                let newi = JSON.parse(JSON.stringify(defaults[kind]));
+                newi.id = shortid.generate();
+                newi.name = '';
+                newi.memo = '';
+                newi.kind = kind;
                 switch(this.dlg_opt.tag) {
                     case 'after':
                         this.items.splice(this._idx_last(), 0, newi);
@@ -377,8 +438,7 @@
                     this.selected.splice(0, this.selected.length);
                 }
                 this.selected.push(newi);
-                db.set_doc(this.$doc);
-                this._update_state();
+                this._update_change('modify');
             }
 
         }
