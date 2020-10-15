@@ -25,10 +25,10 @@ if (isDevelopment) {
 }
 
 async function quit() {
-  await ipc.close();
-  await srv_api.quit();
-  run.close();
-  console.log('db saved, will exit');
+  // await ipc.close();
+  // await srv_api.quit();
+  // run.close();
+  console.log('TODO QUIT');
   app.quit();
 } 
 
