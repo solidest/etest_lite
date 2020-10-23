@@ -28,7 +28,7 @@
         <template v-slot:default="props">
           <v-row>
             <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
-              <v-card :loading="item===doing_item">
+              <v-card :loading="item.$proj.id===doing_id">
                 <v-card-title class="subheading font-weight-bold blue--text" style="cursor: pointer"
                   @click.stop="open_proj(item.$proj)">
                   {{item.name}}
@@ -96,13 +96,13 @@
 </template>
 
 <script>
-  import pkg from '../../../package.json';
   import cfg from './config';
   import mcfg from '../config';
+  import pkg from '../../../package.json';
+  import ver from '../../doc/version';
   import helper from '../../utility/helper';
-  import main_db from '../../doc/maindb';
   import proj_db from '../../doc/workerdb';
-  import api from '../../api/client/client_api';
+  import api from '../../api/client/';
 
   export default {
     components: {
@@ -112,8 +112,8 @@
 
     mounted: async function () {
       let self = this;
-      main_db.open().then(() => {
-        self.load_data(main_db.list());
+      api.projdb_list().then((res) => {
+        self.load_data(res);
       }).catch(err => {
         self.$store.commit('setMsgError', err.message);
       })
@@ -124,13 +124,17 @@
       version: mcfg.version_map[pkg.version],
       projs: [],
       dlg: null,
-      doing_item: null,
+      doing_id: null,
       sort_keys: cfg.sort_keys,
       headers: cfg.headers,
       update_item: null,
     }),
 
     computed: {
+      opened_projid: function () {
+        let proj = this.$store.state.proj;
+        return proj ? proj.id : null;
+      },
       sort_by: {
         get: function () {
           return this.$store.state.ProjList.sort_by;
@@ -150,7 +154,7 @@
     },
 
     methods: {
-      on_create: function (res) {
+      on_create: async function (res) {
         this.dlg = null;
         if (res.result !== 'ok') {
           return;
@@ -162,7 +166,7 @@
         if (this.projs.find(p => p.name === name)) {
           return this.$store.commit('setMsgError', `项目【${name}】已经存在`);
         }
-        let proj = main_db.create(res.value, res.memo);
+        let proj = await api.projdb_create(res.value, res.memo);
         this.open_proj(proj);
       },
 
@@ -182,7 +186,10 @@
         this.update_item.memo = res.memo;
         this.update_item.$proj.name = res.value;
         this.update_item.$proj.memo = res.memo;
-        main_db.save();
+        if (this.opened_projid === this.update_item.$proj.id) {
+          this.$store.state.proj.name = res.value;
+        }
+        api.projdb_udpate(this.update_item.$proj);
       },
 
       on_remove: function (res) {
@@ -191,45 +198,31 @@
           return;
         }
         let proj = this.update_item.$proj;
-        if(this.$store.state.proj === proj) {
-          this.open_proj(null);
+        if (this.opened_projid === proj.id) {
+          this._doopen_proj(null);
         }
         var req = indexedDB.deleteDatabase(`etestdev_${proj.id}.db`);
         let self = this;
         let it = self.update_item;
-        req.onsuccess = function () {
-            main_db.remove(proj);
-            let idx = self.projs.findIndex(i => i === it);
-            if(idx<0) {
-              console.error('ERR2');
-              return;
-            }
-            self.projs.splice(idx, 1);
+        req.onsuccess = async function () {
+          await api.projdb_remove(proj.id);
+          let idx = self.projs.findIndex(i => i === it);
+          if (idx < 0) {
+            console.error('ERR2');
+            return;
+          }
+          self.projs.splice(idx, 1);
         };
         req.onerror = function (err) {
-            console.error('INDEXEDDB ERROR', err.message);
+          console.error('INDEXEDDB ERROR', err.message);
         };
         req.onblocked = function () {
-            console.error('LOCKED');
+          console.error('LOCKED');
         };
-      },
-
-      on_open_inwin: async function (proj) {
-        let old_proj = this.$store.state.proj;
-        if (!old_proj || proj === old_proj) {
-          return this.open_proj(proj);
-        }
-       
-        api.project_open_inwin(proj.id);
-        this.doing_item = proj;
-        let self = this;
-        setTimeout(() => {
-          self.doing_item = null;
-        }, 2000);
       },
 
       on_export: function (proj) {
-        api.project_export(proj.id);
+        console.error('TODO export', proj);
       },
 
       load_data: function (proj_list) {
@@ -255,17 +248,47 @@
         });
       },
 
-      open_proj: async function (proj) {
+      _doopen_proj: function (proj) {
         this.$store.commit('setProj', proj);
         this.$store.commit('Editor/reset');
-        if(!proj) {
+        api.project_bind(proj ? proj.id : null);
+        if (proj) {
+          this.$router.push({
+            name: 'SrcTree'
+          });
+        }
+      },
+
+      on_open_inwin: async function (proj) {
+        if (!this.opened_projid || proj.id === this.opened_projid) {
+          return this._doopen_proj(proj);
+        }
+        if (await api.project_tryopen(proj.id)) {
+          return;
+        }
+        api.project_open(proj.id);
+        this.doing_id = proj.id;
+        let self = this;
+        setTimeout(() => {
+          self.doing_id = null;
+        }, 3000);
+      },
+
+      open_proj: async function (proj) {
+        if (!proj || proj.id === this.opened_projid) {
+          return this._doopen_proj(proj);
+        }
+        if (await api.project_tryopen(proj.id)) {
           return;
         }
         await proj_db.close();
         await proj_db.open(proj.id, mcfg.proj_colls);
-        this.$router.push({
-          name: 'SrcTree'
-        });
+        let res = await ver.check_proj();
+        if (res !== 'ok') {
+          this.$store.commit('setMsgError', res);
+          return this._doopen_proj(null);
+        }
+        return this._doopen_proj(proj);
       },
     }
 

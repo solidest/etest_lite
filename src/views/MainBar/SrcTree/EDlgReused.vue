@@ -28,7 +28,7 @@
 </template>
 <script>
     import cfg from './config';
-    import api from '../../../api/client/client_api';
+    import api from '../../../api/client/';
     import helper from '../../../utility/helper';
 
     export default {

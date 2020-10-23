@@ -4,6 +4,7 @@ const cfg = {
         title: '资源管理器',
         catalog: 'program',
         subbar: true,
+        route: 'SrcTree'
     }, {
         icon: 'mdi-monitor-edit',
         title: '面板设计器',

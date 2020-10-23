@@ -31,7 +31,7 @@
 
 <script>
     import shortid from 'shortid';
-    import api from '../../../api/client/client_api';
+    import api from '../../../api/client/';
     import helper from '../../../utility/helper';
     import cfg from './config';
     import schemas from './config_sch';

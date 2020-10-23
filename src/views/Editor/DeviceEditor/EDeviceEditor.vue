@@ -31,7 +31,7 @@
 
 <script>
     import shortid from 'shortid';
-    import api from '../../../api/client/client_api';
+    import api from '../../../api/client/';
     import helper from '../../../utility/helper';
     import cfg from './config';
     import schemas from './config_sch';
@@ -88,6 +88,9 @@
                     }
                 }
                 return {title: '属性编辑器'};
+            },
+            proj_id: function() {
+                return this.$store.state.proj.id;
             }
         },
         watch: {
@@ -131,6 +134,7 @@
             },
             _update_change: function(reason) {
                 db.update('src', this.$doc);
+                api.projdb_changed(this.proj_id);
                 switch (reason) {
                     case 'action':
                         this.redoundo.pushChange(this.items, this._get_ru_version());
@@ -209,6 +213,7 @@
                     await db.insert('src', {id, content: []});
                     this.$doc =  await db.get('src', id);
                     this.items = this.$doc.content;
+                    api.projdb_changed(this.proj_id);
                 }
                 if(this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.items, this._get_ru_version());

@@ -69,6 +69,7 @@
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
     import db from '../../../doc/workerdb';
+    import api from '../../../api/client';
 
     export default {
         components: {
@@ -141,11 +142,13 @@
                 if(!t) {
                     await db.insert('config', {id: 'tree', value: cfg.default_tree});
                     t = await db.get('config', 'tree');
+                    api.projdb_changed(this.proj.id);
                 }
                 return t.value;
             },
             _save_tree: async function() {
                 await db.update('config', {id: 'tree', value: this.tree});
+                api.projdb_changed(this.proj.id);
             },
             _active_editing: function() {
                 let it = tman.findItem(this.tree, this.editing_id);

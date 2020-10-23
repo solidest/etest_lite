@@ -14,9 +14,10 @@
     /**
      *  空组件
      */
-    import main_db from '../doc/maindb';
+    import api from '../api/client';
     import proj_db from '../doc/workerdb';
     import cfg from './config';
+    import ver from '../doc/version';
 
     export default {
         props: ['tip'],
@@ -24,8 +25,7 @@
             if(this.$route.query.autoopen || this.$route.query.proj_id) {
                 let self = this;
                 let pid = this.$route.query.proj_id;
-                main_db.open().then(() => {
-                    let res = main_db.list();
+                api.projdb_list().then((res) => {
                     if(res && res.length > 0) {
                         let p = pid ? (res.find(it=>it.id===pid)):res[0]
                         self.open_proj(p);
@@ -38,12 +38,16 @@
         },
         methods: {
             open_proj: async function (proj) {
-                this.$store.commit('setProj', proj);
-                this.$store.commit('Editor/reset');
                 if(!proj) {
                     return;
                 }
                 await proj_db.open(proj.id, cfg.proj_colls);
+                let res = await ver.check_proj();
+                if (res !== 'ok') {
+                    this.$store.commit('setMsgError', res);
+                    return;
+                }
+                this.$store.commit('setProj', proj);
                 this.$router.push({
                     name: 'SrcTree'
                 });

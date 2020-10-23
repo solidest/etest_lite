@@ -4,7 +4,7 @@ import ipc from '../feature/ipc_render';
 
 import ProjList from './modules/ProjList';
 import Editor from './modules/Editor';
-import api from '../api/client/client_api';
+import api from '../api/client/';
 
 const {
   ipcRenderer

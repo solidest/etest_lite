@@ -23,8 +23,8 @@
 </style>
 <script>
 
-const { ipcRenderer, remote  } = window.require('electron');
-import main_db from '../../doc/maindb';
+const { remote  } = window.require('electron');
+import api from '../../api/client/';
 import proj_db from '../../doc/workerdb';
 
 export default {
@@ -66,9 +66,8 @@ export default {
             window.minimize();
         },
         onClose: async function() {
-          await main_db.save();
           await proj_db.close();
-          ipcRenderer.send('close-win');
+          api.win_close();
         }
     }
 

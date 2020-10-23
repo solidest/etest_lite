@@ -15,7 +15,7 @@ function read(_) {
 }
 
 module.exports = {
-    async setup() {
+    setup() {
         ipcMain.handle('clipboard_read', read);
         ipcMain.on('clipboard_write', write);
     },
