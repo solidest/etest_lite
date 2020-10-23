@@ -25,7 +25,7 @@
 
 const { ipcRenderer, remote  } = window.require('electron');
 import main_db from '../../doc/maindb';
-import proj_db from '../../doc/projdb';
+import proj_db from '../../doc/workerdb';
 
 export default {
     props: ['header', 'stop_run'],
@@ -67,7 +67,7 @@ export default {
         },
         onClose: async function() {
           await main_db.save();
-          await proj_db.save();
+          await proj_db.close();
           ipcRenderer.send('close-win');
         }
     }

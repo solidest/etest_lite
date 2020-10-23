@@ -83,7 +83,7 @@ function remove(proj) {
 
 function list() {
     let coll = _base_db.getCollection('project');
-    return coll.find();
+    return coll.chain().find().simplesort('updated', true).data();
 }
 
 async function save(close) {

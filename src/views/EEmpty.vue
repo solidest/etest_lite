@@ -14,17 +14,18 @@
     /**
      *  空组件
      */
-    import db from '../doc/maindb';
-    import proj_db from '../doc/projdb';
+    import main_db from '../doc/maindb';
+    import proj_db from '../doc/workerdb';
+    import cfg from './config';
 
     export default {
         props: ['tip'],
-        created: async function () {
+        created: function () {
             if(this.$route.query.autoopen || this.$route.query.proj_id) {
                 let self = this;
                 let pid = this.$route.query.proj_id;
-                db.open().then(() => {
-                    let res = db.list();
+                main_db.open().then(() => {
+                    let res = main_db.list();
                     if(res && res.length > 0) {
                         let p = pid ? (res.find(it=>it.id===pid)):res[0]
                         self.open_proj(p);
@@ -42,7 +43,7 @@
                 if(!proj) {
                     return;
                 }
-                await proj_db.open(proj.id);
+                await proj_db.open(proj.id, cfg.proj_colls);
                 this.$router.push({
                     name: 'SrcTree'
                 });

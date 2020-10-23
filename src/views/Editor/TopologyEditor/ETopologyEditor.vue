@@ -36,7 +36,7 @@
     import cfg from './config';
     import schemas from './config_sch';
     import defaults from './config_default';
-    import db from '../../../doc/workerdb';
+    import db from '../../../../discard/projdb';
     import redoundo from '../../../doc/redoundo';
     import EVerticalBar from '../../Components/EVerticalBar';
     import EPorpertyPanel from '../../Components/EPropertyPanel';
@@ -130,7 +130,7 @@
                 })
             },
             _update_change: function(reason) {
-                db.update('src', this.$doc);
+                db.set_doc(this.$doc);
                 switch (reason) {
                     case 'action':
                         this.redoundo.pushChange(this.items, this._get_ru_version());
@@ -187,8 +187,7 @@
                 }
                 this.$store.getters['Editor/put_doc_state'](doc_id, s);
             },
-            _reset_doc: async function (id) {
-                this.redoundo = redoundo.get_ru(id);
+            _reset_doc: function (id) {
                 let s = this.$store.getters['Editor/get_doc_state'](id);
                 if(s) {
                     this.selected = s.selected;
@@ -201,15 +200,15 @@
                 } else {
                     this.selected = [];
                 }
-                let doc = await db.get('src', id);
+                let doc = db.get_doc(id);
                 if (doc) {
                     this.items = doc.content;
                     this.$doc = doc;
                 } else {
-                    await db.insert('src', {id, content: []});
-                    this.$doc =  await db.get('src', id);
-                    this.items = this.$doc.content;
+                    this.items = [];
+                    this.$doc = db.put_doc(this._get_newdoc());
                 }
+                this.redoundo = redoundo.get_ru(id);
                 if(this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.items, this._get_ru_version());
                 }

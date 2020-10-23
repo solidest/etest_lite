@@ -172,20 +172,7 @@ const can_schema = [
         name: 'memo',
         type: 'text',
         label: '备注'
-    }, {
-        name: 'baudrate',
-        type: 'combobox',
-        items: [2400, 4800, 7200, 9600, 14400, 19200, 28800, 57600, 76800, 38400, 115200],
-        label: '波特率'
-    }, {
-        name: 'accept_mask',
-        type: 'text',
-        label: '过滤验收码'
-    }, {
-        name: 'shield_mask',
-        type: 'text',
-        label: '过滤屏蔽码'
-    }
+    }, 
 ];
 
 export default {

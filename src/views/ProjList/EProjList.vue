@@ -97,10 +97,11 @@
 
 <script>
   import pkg from '../../../package.json';
-  import helper from '../../utility/helper';
   import cfg from './config';
+  import mcfg from '../config';
+  import helper from '../../utility/helper';
   import main_db from '../../doc/maindb';
-  import proj_db from '../../doc/projdb';
+  import proj_db from '../../doc/workerdb';
   import api from '../../api/client/client_api';
 
   export default {
@@ -120,7 +121,7 @@
 
     data: () => ({
       search: '',
-      version: cfg.version_map[pkg.version],
+      version: mcfg.version_map[pkg.version],
       projs: [],
       dlg: null,
       doing_item: null,
@@ -260,7 +261,8 @@
         if(!proj) {
           return;
         }
-        await proj_db.open(proj.id);
+        await proj_db.close();
+        await proj_db.open(proj.id, mcfg.proj_colls);
         this.$router.push({
           name: 'SrcTree'
         });

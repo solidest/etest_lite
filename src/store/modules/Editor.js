@@ -16,20 +16,24 @@ const mutations = {
         state.doc_states = {};
     },
     open(state, item) {
-        if (!state.items.find(it => it === item)) {
-            state.items.push(item);
+        let fi = state.items.find(it => it.id === item.id);
+        if (!fi) {
+            fi = {id: item.id, name: item.name, kind: item.kind}
+            state.items.push(fi);
             redoundo.put_ru(item.id);
+        }  else {
+            fi.name = item.name;
         }
-        state.active = item;
+        state.active = fi;
     },
     close(state, item) {
-        let idx = state.items.findIndex(it => it === item);
+        let idx = state.items.findIndex(it => it.id === item.id);
         if (idx >= 0) {
             state.items.splice(idx, 1);
             delete state.doc_states[item.id];
             redoundo.del_ru(item.id);
         }
-        if (state.active === item) {
+        if (state.active && state.active.id === item.id) {
             if (state.items.length > 0) {
                 if (idx >= 0 && idx < state.items.length) {
                     state.active = state.items[idx];
@@ -39,6 +43,12 @@ const mutations = {
             } else {
                 state.active = null;
             }
+        }
+    },
+    update(state, item) {
+        let fi = state.items.find(it => it.id === item.id);
+        if (fi) {
+            fi.name = item.name;
         }
     },
     set_state_disbar(state, state_disbar) {

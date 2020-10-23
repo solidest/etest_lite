@@ -22,6 +22,7 @@
             'e-title-man': ETitleMan,
             'e-run-editor': ELuaEditor,
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
+            'e-topology-editor': () => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
             'e-empty': () => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
         },
         mounted: function () {

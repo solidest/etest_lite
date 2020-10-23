@@ -43,8 +43,6 @@ export default {
     serial_485: default_serial,
     serial_ttl: default_serial,
     can: {
-        baudrate: 115200,
-        accept_mask: '0x000000',
-        shield_mask: '0xFFFFFF',
+        
     }
 }

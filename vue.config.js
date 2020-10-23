@@ -4,6 +4,11 @@ module.exports = {
   "transpileDependencies": [
     "vuetify"
   ],
+  chainWebpack: config => {
+    config
+      .plugin('worker-plugin')
+      .use(require('worker-plugin'))
+  },
   configureWebpack: {
     plugins: [
       new MonacoWebpackPlugin(),

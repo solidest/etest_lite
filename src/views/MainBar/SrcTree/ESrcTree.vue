@@ -68,7 +68,7 @@
     import cfg from './config';
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
-    import db from '../../../doc/projdb';
+    import db from '../../../doc/workerdb';
 
     export default {
         components: {
@@ -77,9 +77,9 @@
             'e-dlg-reused': () => import( /* webpackChunkName: "e-dlg-reused" */ './EDlgReused'),
             'e-dlg-confirm': () => import( /* webpackChunkName: "e-dlg-confirm" */ '../../Dialog/EDlgConfirm'),
         },
-        mounted: function (){
+        mounted: async function (){
             if(this.proj) {
-                this.tree = db.get_tree();
+                this.tree = await this._load_tree();
                 this._active_editing();
                 let self = this;
                 this.$nextTick(() => {
@@ -136,6 +136,17 @@
         },
 
         methods: {
+            _load_tree: async function() {
+                let t = await db.get('config', 'tree');
+                if(!t) {
+                    await db.insert('config', {id: 'tree', value: cfg.default_tree});
+                    t = await db.get('config', 'tree');
+                }
+                return t.value;
+            },
+            _save_tree: async function() {
+                await db.update('config', {id: 'tree', value: this.tree});
+            },
             _active_editing: function() {
                 let it = tman.findItem(this.tree, this.editing_id);
                 if(it) {
@@ -165,7 +176,7 @@
                 }
             },
             _open_doc: function(it) {
-                if(!['device'].includes(it.kind)) return;
+                if(!['device', 'topology'].includes(it.kind)) return;
                 this.$store.commit('Editor/open', it);                
                 if(this.$route.name !== 'Editor') {
                     this.$router.push({name: 'Editor'});
@@ -236,7 +247,7 @@
                     memo: at.memo,
                 }
             },
-            do_rename: async function(res) {
+            do_rename: function(res) {
                 this.dlg_type = null;
                 if(res.result!=='ok') {
                     return;
@@ -247,7 +258,8 @@
                 if(this._valid_name(its.filter(i => i!==it), n)) {
                     tman.rename(this.tree, it.id, n.trim());
                     it.memo = res.memo;
-                    db.set_tree(this.tree);
+                    this.$store.commit('Editor/update', it);                
+                    this._save_tree();
                 }
             },
 
@@ -270,11 +282,11 @@
                     let del_its = [];
                     tman.getLeafs(at, del_its);
                     del_its.forEach(it => {
-                        db.del_doc(it.id);
+                        db.remove('src', it.id);
                     })
                 }
                 tman.remove(its, at.id);
-                db.set_tree(this.tree);
+                this._save_tree();
                 this.$store.commit('Editor/close', at);
             },
 
@@ -329,7 +341,7 @@
                 tman.insert(pit.children, it);
                 this._expand_sel();
                 this.active = [it];
-                db.set_tree(this.tree);
+                this._save_tree();
                 if(res.clone) {
                     this._clone_doc(it, res.clone)
                 }
