@@ -2,7 +2,7 @@
 const path = require('path');
 const loki = require('lokijs');
 const fs = require('fs');
-const cfg = require('../api/config');
+const cfg = require('../../src/api/config');
 
 async function open_exit() {
     let db_file = path.resolve(cfg.db_path, 'db01.db');

@@ -1,6 +1,6 @@
 import loki from 'lokijs';
 import LokiIndexedAdapter from 'lokijs/src/loki-indexed-adapter.js';
-import cfg from '../src/doc/config';
+import cfg from './config';
 import helper from '../src/utility/helper';
 
 let _proj_id;

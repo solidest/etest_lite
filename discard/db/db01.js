@@ -3,7 +3,7 @@ const path = require('path');
 const loki = require('lokijs');
 const lfsa = require('lokijs/src/loki-fs-structured-adapter');
 const fs = require('fs');
-const cfg = require('../api/config');
+const cfg = require('../../src/api/config');
 
 const db00 = require('./db00.js');
 let _db;
