@@ -28,12 +28,12 @@
         mounted: function () {
             this.update_size();
             let self = this;
-            Mousetrap.bind('ctrl+x', () => {self.quick_action('cut')});
-            Mousetrap.bind('ctrl+c', () => {self.quick_action('copy')});
-            Mousetrap.bind('ctrl+v', () => {self.quick_action('paste')});
-            Mousetrap.bind('ctrl+z', () => {self.quick_action('undo')});
-            Mousetrap.bind('ctrl+y', () => {self.quick_action('redo')});
-            Mousetrap.bind('del', () => {self.quick_action('remove')});
+            Mousetrap.bind('ctrl+x', () => {if(self.is_normal) self.quick_action('cut')});
+            Mousetrap.bind('ctrl+c', () => {if(self.is_normal) self.quick_action('copy')});
+            Mousetrap.bind('ctrl+v', () => {if(self.is_normal) self.quick_action('paste')});
+            Mousetrap.bind('ctrl+z', () => {if(self.is_normal) self.quick_action('undo')});
+            Mousetrap.bind('ctrl+y', () => {if(self.is_normal) self.quick_action('redo')});
+            Mousetrap.bind('del', () => {if(self.is_normal) self.quick_action('remove')});
         },
         beforeDestroy: function() {
             Mousetrap.bind('ctrl+x', ()=>{});
@@ -52,6 +52,9 @@
             }
         },
         computed: {
+            is_normal: function() {
+                return this.$store.state.win_mode === 'normal'; 
+            },
             titles: function () {
                 return this.$store.state.Editor.items;
             },

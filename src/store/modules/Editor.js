@@ -49,6 +49,7 @@ const mutations = {
         let fi = state.items.find(it => it.id === item.id);
         if (fi) {
             fi.name = item.name;
+            fi.memo = item.memo;
         }
     },
     set_state_disbar(state, state_disbar) {

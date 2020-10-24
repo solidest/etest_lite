@@ -17,7 +17,7 @@ export default {
     di: default_dio,
     do: default_dio,
     ai: default_aio,
-    da: default_aio,
+    ao: default_aio,
     udp: {
         ip: '0.0.0.0',
         port: 0,

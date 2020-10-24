@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <e-sys-bar header="ETestDev" />
+    <e-sys-bar v-if="win_mode!=='fullscreen'" header="ETestDev" />
     <v-snackbar top :timeout="touts" :color="tip_color" v-model="tip">
       {{ tip_msg }}
       <template v-slot:action="{ attrs }">
@@ -33,6 +33,9 @@
     },
 
     computed: {
+      win_mode: function() {
+        return this.$store.state.win_mode; 
+      },
       tip: {
         get: function () {
           return this.$store.state.last_tip.tip;

@@ -133,7 +133,11 @@
         watch: {
             editing_id: function() {
                 this._active_editing();
-            }
+            },
+            dlg_type: function(d) {
+                let mode = d ? 'dialog' : 'normal';
+                this.$store.commit('setWinMode', mode);
+            },
         },
 
         methods: {

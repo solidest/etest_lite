@@ -25,12 +25,15 @@
                 :title="dlg_opt.title" :items="dlg_opt.data" />
             <e-number-dlg v-else-if="dlg_opt.type==='number'" @result="do_paste_batch" :dialog="dlg_opt.type"
                 :title="dlg_opt.title" :value="dlg_opt.data" :label="dlg_opt.tag.label" />
+            <e-etl-dlg v-else-if="dlg_opt.type==='etl'" @result="do_etl_code" :dialog="dlg_opt.type"
+                :title="dlg_opt.title" :etl_code="dlg_opt.data" :kind="kind" />
         </div>
     </div>
 </template>
 
 <script>
     import shortid from 'shortid';
+    import {sdk} from '../../../../sdk/sdk'
     import api from '../../../api/client/';
     import helper from '../../../utility/helper';
     import cfg from './config';
@@ -49,6 +52,7 @@
             'e-property-panel': EPorpertyPanel,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectonedlg" */ '../../Dialog/EDlgSelectOne'),
             'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ '../../Dialog/EDlgNumber'),
+            'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
         },
         mounted: function () {
             this._reset_doc(this.doc_id);
@@ -72,6 +76,7 @@
                     tag: null,
                 },
                 redoundo: null,
+                kind: cfg.kind
             }
         },
         computed: {
@@ -91,6 +96,9 @@
             },
             proj_id: function() {
                 return this.$store.state.proj.id;
+            },
+            dialog: function() {
+                return this.dlg_opt.type;
             }
         },
         watch: {
@@ -101,8 +109,46 @@
                 this._reset_doc(nid);
                 this._update_state();
             },
+            dialog: function(d) {
+                let mode = d ? (d==='etl'?'fullscreen':'dialog') : 'normal';
+                this.$store.commit('setWinMode', mode);
+            },
         },
         methods: {
+            _reset_doc: async function (id, reset_state=false) {
+                this.redoundo = redoundo.get_ru(id);
+                if(reset_state) {
+                    this.redoundo.reset();
+                    this.selected = [];
+                } else {
+                    let s = this.$store.getters['Editor/get_doc_state'](id);
+                    if(s) {
+                        this.selected = s.selected;
+                        this.single_select = s.single_select;
+                        this.prop_width = s.prop_width;
+                        if(s.list_top>0) {
+                            let self = this;
+                            this.$nextTick(()=>{self.$refs.__intf_list.scrollTop = s.list_top;})
+                        }
+                    } else {
+                        this.selected = [];
+                    }                    
+                }
+
+                let doc = await db.get('src', id);
+                if (doc) {
+                    this.items = doc.content;
+                    this.$doc = doc;
+                } else {
+                    await db.insert('src', {id, content: []});
+                    this.$doc =  await db.get('src', id);
+                    this.items = this.$doc.content;
+                    api.projdb_changed(this.proj_id);
+                }
+                if(this.redoundo.isEmpty) {
+                    this.redoundo.pushChange(this.items, this._get_ru_version());
+                }
+            },
             _get_ieditor: function () {
                 let self = this;
                 return {
@@ -191,34 +237,6 @@
                 }
                 this.$store.getters['Editor/put_doc_state'](doc_id, s);
             },
-            _reset_doc: async function (id) {
-                this.redoundo = redoundo.get_ru(id);
-                let s = this.$store.getters['Editor/get_doc_state'](id);
-                if(s) {
-                    this.selected = s.selected;
-                    this.single_select = s.single_select;
-                    this.prop_width = s.prop_width;
-                    if(s.list_top>0) {
-                        let self = this;
-                        this.$nextTick(()=>{self.$refs.__intf_list.scrollTop = s.list_top;})
-                    }
-                } else {
-                    this.selected = [];
-                }
-                let doc = await db.get('src', id);
-                if (doc) {
-                    this.items = doc.content;
-                    this.$doc = doc;
-                } else {
-                    await db.insert('src', {id, content: []});
-                    this.$doc =  await db.get('src', id);
-                    this.items = this.$doc.content;
-                    api.projdb_changed(this.proj_id);
-                }
-                if(this.redoundo.isEmpty) {
-                    this.redoundo.pushChange(this.items, this._get_ru_version());
-                }
-            },
             _update_state: function() {
                 let s = this._get_state();
                 this.$store.commit('Editor/set_state_disbar', s);
@@ -264,7 +282,7 @@
                     }
                     let res = [];
                     for (let key in obj) {
-                        if(['name', 'memo', 'id'].includes(key)) {
+                        if(['name', 'memo', 'id', 'kind'].includes(key)) {
                             continue;
                         }
                         let v = isNaN(obj[key]) ? `'${obj[key]}'` : obj[key]
@@ -383,6 +401,24 @@
                 this.dlg_opt.title = '批量粘贴';
                 this.dlg_opt.data = 2;
                 this.dlg_opt.tag = {label: '数量'};
+            },
+            action_etl_code: function() {
+                let dev = this.$store.state.Editor.active;
+                let etl_code = sdk.converter.device_dev2etl(this.items, dev.name, dev.memo);
+                this.dlg_opt.type = 'etl';
+                this.dlg_opt.title = dev.name;
+                this.dlg_opt.data = etl_code;
+            },
+            do_etl_code: function(res) {
+                this.dlg_opt.type = null;
+                if(res.result!=='ok') {
+                    return;
+                }
+                let doc = sdk.converter.device_etl2dev(res.value);
+                this.$doc.content = doc.content;
+                db.update('src', this.$doc);
+                this._reset_doc(this.doc_id, true);
+                this._update_state();
             },
             do_paste: function(res) {
                 if(res && res.length>0) {

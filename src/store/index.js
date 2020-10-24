@@ -23,18 +23,9 @@ const _store = new Vuex.Store({
       tip_msg: '',
       tip_type: 'info'
     },
-    edit_doc: null,
-    sele_doc: null,
-    sele_count: 0,
-    redo_count: 0,
-    undo_count: 0,
     proj: null,
     copyed: null,
-    check_result: {
-      version: 0,
-      proj_id: 0
-    },
-    play_info: null,
+    win_mode: 'normal'
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -64,49 +55,14 @@ const _store = new Vuex.Store({
       ipc.bind_proj(proj ? proj.id : null);
       state.edit_doc = null;
     },
-    setEditDoc: function (state, info) {
-      // console.log('open doc', info.doc.id);
-      state.edit_doc = info;
-    },
-    setSeleDoc: function (state, info) {
-      state.sele_doc = info;
-    },
-    setSeleCount: function (state, count) {
-      state.sele_count = count;
-    },
     setCopyed: function (state, copyed) {
       state.copyed = copyed;
     },
-    setRedoUndo: function (state, info) {
-      state.redo_count = info.redo_count;
-      state.undo_count = info.undo_count;
-    },
-    clearEditor: function (state) {
-      state.sele_count = 0;
-      state.undo_count = 0;
-      state.redo_count = 0;
-    },
-    deletedDoc: function (state, id) {
-      if (state.edit_doc && state.edit_doc.doc.id === id) {
-        state.edit_doc = null;
-      }
-    },
-    setCheckResult: function (state, info) {
-      state.check_result = info;
-    },
-    setPlayInfo: function (state, info) {
-      state.play_info = info;
+    setWinMode: function (state, mode) {
+      state.win_mode = mode;
     },
   },
   actions: {},
-  getters: {
-    check_result: state => {
-      if (state.check_result && state.proj && state.check_result.proj_id === state.proj.id) {
-        return state.check_result.results;
-      }
-      return null;
-    },
-  }
 })
 
 ipcRenderer.on('copyed', (_, format) => {
