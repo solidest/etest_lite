@@ -65,6 +65,7 @@
 </template>
 <script>
     import shortid from 'shortid';
+    import {sdk} from '../../../../sdk/sdk';
     import cfg from './config';
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
@@ -197,6 +198,18 @@
             _clone_doc: function(item, info) {
                 console.log('TODO CLONE FROM', item, info);
             },
+            _get_etlcode: async function(id, name, memo) {
+                let doc = await db.get('src', id);
+                if(!doc || !doc.content) {
+                    return null;
+                } else {
+                    switch (doc.kind) {
+                        case 'device':
+                            return sdk.converter.device_dev2etl(doc.content, name, memo);                    
+                    }
+                }
+                return null;
+            },
             on_packup: function () {
                 this.open_all = !this.open_all;
                 this.$refs.__tree.updateAll(this.open_all);
@@ -236,13 +249,29 @@
                     kind: at.kind,
                 }
             },
-            do_reused: function(res) {
+            do_reused: async function(res) {
                 this.dlg_type = null;
                 if(res.result!=='ok') {
                     return;
                 }
-                // let at = this.active[0];
-                // this._reused_doc(at, res.value, res.memo);
+                let at = this.active[0];
+                let code;
+                try {
+                    code = await this._get_etlcode(at.id, at.name, at.memo);
+                } catch (error) {
+                    console.error(error.message);
+                }
+                if(!code) {
+                    this.$store.commit('setMsgError', '无效的复用内容');
+                    return;
+                }
+                let doc = {
+                    kind: this.dlg_option.kind,
+                    name: res.value,
+                    memo: res.memo,
+                    code: code,
+                }
+                await api.tpl_add(doc);
             },
 
             action_rename: function() {

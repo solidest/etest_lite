@@ -106,6 +106,18 @@ function projdb_changed(_, proj_id) {
     return main_db.changed(proj_id);
 }
 
+function tpl_add(_, doc) {
+    return main_db.tpl_add(doc);
+}
+
+function tpl_del(_, id) {
+    return main_db.tpl_del(id);
+}
+
+function tpl_list(_, kind) {
+    return main_db.tpl_list(kind);
+}
+
 module.exports = {
     async setup() {
         await main_db.open();
@@ -121,6 +133,9 @@ module.exports = {
         ipcMain.handle('projdb_remove', projdb_remove);
         ipcMain.handle('projdb_udpate', projdb_update);
         ipcMain.on('projdb_changed', projdb_changed);
+        ipcMain.handle('tpl_add', tpl_add);
+        ipcMain.handle('tpl_del', tpl_del);
+        ipcMain.handle('tpl_list', tpl_list);
     },
     async close() {
         await main_db.close();

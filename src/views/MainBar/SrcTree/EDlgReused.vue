@@ -8,7 +8,7 @@
             </v-text-field>
             <v-sheet outlined class="ma-4">
                 <v-card-subtitle class="px-2 mx-0">已有复用项 (共{{reusedlist.length}}项) : </v-card-subtitle>
-                <div style="height:200px; width:100%; overflow-y:scroll;">
+                <div style="height:300px; width:100%; overflow-y:scroll;">
                     <v-chip class="ma-2" v-for="(item, i) in reusedlist" :key="i">
                         {{item.name}}
                     </v-chip>
@@ -41,8 +41,7 @@
             setTimeout(() => {
                 self.$refs.input_component.focus();
             }, 200);
-            let res = await api.reused_list(this.option.kind);
-            self.reusedlist = res.value;
+            self.reusedlist = await api.tpl_list(this.option.kind);
         },
 
         data: () => ({

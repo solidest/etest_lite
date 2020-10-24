@@ -15,7 +15,7 @@
                 <v-tabs-items v-model="tab">
                     <v-tab-item>
                         <v-card outlined>
-                            <div style="height:400px; width:100%; overflow-y:scroll;">
+                            <div style="height:330px; width:100%; overflow-y:scroll;">
                                 <v-list-item-group v-model="clone_reused" color="primary">
                                     <v-list-item dense v-for="(item, i) in reusedlist" :key="i">
                                         <v-list-item-content>
@@ -31,7 +31,7 @@
                     </v-tab-item>
                     <v-tab-item>
                         <v-card outlined>
-                            <div style="height:400px; width:100%; overflow-y:scroll;">
+                            <div style="height:330px; width:100%; overflow-y:scroll;">
                                 <v-list-item-group v-model="clone_src" color="primary">
                                     <v-list-item dense v-for="(item, i) in option.srclist" :key="i">
                                         <v-list-item-content>
@@ -62,7 +62,7 @@
 </template>
 <script>
     import cfg from './config';
-    // import api from '../../../api/client/';
+    import api from '../../../api/client/';
     export default {
         props: ['dialog', 'option'],
 
@@ -73,9 +73,7 @@
             setTimeout(() => {
                 self.$refs.input_component.focus();
             }, 200);
-            // let res = await api.reused_list(this.option.kind);
-            //TODO
-            self.reusedlist = []; //res.value;
+            this.reusedlist = await api.tpl_list(this.option.kind);
         },
 
         data: () => ({

@@ -11,7 +11,7 @@
             let self = this;
             this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
                 value: this.script || '',
-                language: 'etlua',
+                language: 'etl',
                 automaticLayout: true,
                 fontSize: "18px",
                 theme: 'vs-dark',

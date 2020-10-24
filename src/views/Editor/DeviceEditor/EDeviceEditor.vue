@@ -5,7 +5,7 @@
                 disable-pagination show-select v-model="selected" :single-select="single_select"
                 @item-selected="on_selected" @toggle-select-all="on_selected">
                 <template v-slot:item.kind="{item}">
-                    <v-chip color="light-blue darken-3">{{alias[item.kind]}}</v-chip>
+                    <v-chip small color="light-blue darken-3">{{alias[item.kind]}}</v-chip>
                 </template>
                 <template v-slot:item.name="{item}">
                     <span class="font-weight-bold">{{item.name}}</span>
@@ -140,7 +140,7 @@
                     this.items = doc.content;
                     this.$doc = doc;
                 } else {
-                    await db.insert('src', {id, content: []});
+                    await db.insert('src', {id, content: [], kind: this.kind});
                     this.$doc =  await db.get('src', id);
                     this.items = this.$doc.content;
                     api.projdb_changed(this.proj_id);

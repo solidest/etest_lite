@@ -37,10 +37,8 @@
                 <v-list dense>
                   <v-list-item v-for="(h, index) in headers" :key="index" dense>
                     <v-list-item-content class="grey--text">
-                      {{ h.text }}:
+                      {{ `${h.text}: ${item[h.value]}` }}
                     </v-list-item-content>
-                    <v-list-item-content class="align-end grey--text">
-                      {{ item[h.value] }}</v-list-item-content>
                   </v-list-item>
                 </v-list>
                 <v-toolbar flat dense>

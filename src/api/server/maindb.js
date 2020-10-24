@@ -115,6 +115,24 @@ function close() {
     });
 }
 
+function tpl_add(doc) {
+    let coll = _base_db.getCollection('public');
+    doc.id = shortid.generate();
+    coll.insert(doc);
+    _base_db.saveDatabase();
+}
+
+function tpl_list(kind) {
+    let coll = _base_db.getCollection('public');
+    return coll.chain().find({kind}).simplesort('name').data();
+}
+
+function tpl_del(id) {
+    let coll = _base_db.getCollection('public');
+    _base_db.saveDatabase();
+    coll.findAndRemove({id});
+}
+
 module.exports = {
     open,
     close,
@@ -123,4 +141,7 @@ module.exports = {
     list,
     update,
     changed,
+    tpl_add,
+    tpl_list,
+    tpl_del
 }
