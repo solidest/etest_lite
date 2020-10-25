@@ -404,7 +404,7 @@
             },
             action_etl_code: function() {
                 let dev = this.$store.state.Editor.active;
-                let etl_code = sdk.converter.device_dev2etl(this.items, dev.name, dev.memo);
+                let etl_code = '// 此代码由ETestDev自动生成\n// 请勿修改设备名称\n\n' + sdk.converter.device_dev2etl(this.items, dev.name, dev.memo);
                 this.dlg_opt.type = 'etl';
                 this.dlg_opt.title = dev.name;
                 this.dlg_opt.data = etl_code;

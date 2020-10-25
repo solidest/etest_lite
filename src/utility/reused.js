@@ -16,7 +16,7 @@ async function _get_etlcode(id, name, memo) {
     return null;
 }
 
-function _get_devobj(kind, code) {
+function get_devobj(kind, code) {
     let ast = sdk.parser.parse_etl(code)[0];
     switch (kind) {
         case 'device':
@@ -28,7 +28,7 @@ function _get_devobj(kind, code) {
 async function get_reused(id, kind, name, memo) {
     try {
         let code = await _get_etlcode(id, name, memo);
-        let obj = _get_devobj(kind, code);
+        let obj = get_devobj(kind, code);
         return obj ? {
             kind,
             name,
@@ -40,6 +40,8 @@ async function get_reused(id, kind, name, memo) {
     }
 }
 
+
 export default {
     get_reused,
+    get_devobj,
 }

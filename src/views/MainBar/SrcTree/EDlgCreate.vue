@@ -20,8 +20,9 @@
                                     <v-list-item dense v-for="(item, i) in reusedlist" :key="i">
                                         <v-list-item-content>
                                             <v-list-item-title>
-                                                <span v-text="item.name"></span>
-                                                <span v-text="item.memo" class="ml-2 grey--text"></span>
+                                                <v-icon small color="grey lighten-2" class="mr-1">mdi-view-dashboard-outline</v-icon>
+                                                <span v-text="item.name" class="grey--text text--lighten-2"></span>
+                                                <span v-text="item.memo" class="ml-3 grey--text"></span>
                                             </v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
@@ -36,9 +37,10 @@
                                     <v-list-item dense v-for="(item, i) in option.srclist" :key="i">
                                         <v-list-item-content>
                                             <v-list-item-title>
-                                                <span v-text="item[1].name"></span>
-                                                <span v-text="item[1].memo" class="ml-2 grey--text"></span>
+                                                <v-icon small color="grey lighten-2" class="mr-1">mdi-file-tree-outline</v-icon>
+                                                <span v-text="item[1].name" class="grey--text text--lighten-2"></span>
                                                 <span v-text="item[0]" class="ml-2 grey--text"></span>
+                                                <span v-text="item[1].memo" class="ml-2 grey--text"></span>
                                             </v-list-item-title>
                                         </v-list-item-content>
                                     </v-list-item>
@@ -106,16 +108,18 @@
                     value: this.input_text,
                     memo: this.memo_text,
                 };
-                if (this.tab === 1 && this.option.srclist[this.clone_src]) {
-                    res.clone = {
-                        type: 'src',
-                        id: this.option.srclist[this.clone_src][1].id
-                    }
-                } else if(this.reusedlist[this.clone_reused]) {
-                    res.clone = {
-                        type: 'reused',
-                        id: this.reusedlist[this.clone_reused].id,
-                    }
+                if(this.option.allow_clone) {
+                    if (this.tab === 1 && this.option.srclist[this.clone_src]) {
+                        res.clone = {
+                            type: 'src',
+                            id: this.option.srclist[this.clone_src][1].id
+                        }
+                    } else if(this.tab === 0 && this.reusedlist[this.clone_reused]) {
+                        res.clone = {
+                            type: 'reused',
+                            code: this.reusedlist[this.clone_reused].code,
+                        }
+                    }                    
                 }
                 this.$emit("result", res);
             }

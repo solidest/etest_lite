@@ -195,8 +195,18 @@
                 tman.getFileList('', this.tree, kind, res);
                 return res;
             },
-            _clone_doc: function(item, info) {
-                console.log('TODO CLONE FROM', item, info);
+            _clone_doc: async function(item, info) {
+                let doc;
+                if(info.type === 'src') {
+                    doc = await db.get('src', info.id);
+                } else if(info.type === 'reused') {
+                    doc = reused.get_devobj(item.kind, info.code);
+                }
+                await db.insert('src', {
+                    id: item.id,
+                    kind: item.kind,
+                    content: doc.content
+                });
             },
             on_packup: function () {
                 this.open_all = !this.open_all;
@@ -348,14 +358,14 @@
                 } else {
                     it.kind = pit.catalog;
                 }
+                if(res.clone) {
+                    await this._clone_doc(it, res.clone)
+                }
 
                 tman.insert(pit.children, it);
                 this._expand_sel();
                 this.active = [it];
                 this._save_tree();
-                if(res.clone) {
-                    this._clone_doc(it, res.clone)
-                }
                 if(it.kind!=='dir') {
                     this._open_doc(it);
                 }
