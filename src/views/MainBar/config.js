@@ -9,7 +9,12 @@ const cfg = {
         icon: 'mdi-monitor-edit',
         title: '面板设计器',
         catalog: 'panel',
-        subbar: true,
+        route: 'PanelDesigner'
+    }, {
+        icon: 'mdi-tools',
+        title: '工具箱',
+        catalog: 'tools',
+        route: 'ToolsBox',
     }, {
         icon: 'mdi-cog-outline',
         title: '运行时设置',
@@ -23,14 +28,9 @@ const cfg = {
         route: 'ListProj',
     }, {
         icon: 'mdi-view-dashboard-outline',
-        title: '复用库管理',
+        title: '复用资源管理',
         catalog: 'reused',
         route: 'ListReused',
-    }, {
-        icon: 'mdi-tools',
-        title: '辅助工具',
-        catalog: 'tools',
-        subbar: true,
     }, ]
 }
 export default cfg

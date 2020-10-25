@@ -1,9 +1,17 @@
 <template>
     <v-container fluid>
-        <v-toolbar class="mb-1">
-            <v-select class="mx-2" v-model="kind" flat solo-inverted hide-details :items="kind_keys"
+        <v-toolbar dense class="mb-1">
+            <v-select dense class="mx-2" v-model="kind" flat solo-inverted hide-details :items="kind_keys"
                 prepend-inner-icon="mdi-view-dashboard-outline" title="复用项类型"></v-select>
+            <v-spacer />
             <span class="grey--text">{{`共: ${items.length}项`}}</span>
+            <v-spacer />
+            <v-btn color='grey darken-3' @click="onExport">
+                <v-icon left>mdi-export</v-icon>导出
+            </v-btn>
+            <v-btn  class="ml-2" color='grey darken-3' @click="onImport">
+                <v-icon left>mdi-import</v-icon>导入
+            </v-btn>
         </v-toolbar>
         <div style="height: calc(100vh - 126px);  overflow-y:auto">
             <v-tooltip bottom right v-for="item in items" :key="item.id">
@@ -26,6 +34,8 @@
 <script>
     import cfg from './config';
     import api from '../../api/client/';
+    import wf from '../../utility/web_file'
+import reused from '../../utility/reused';
 
     export default {
         components: {
@@ -78,6 +88,42 @@
             onRemove: async function (item) {
                 await api.tpl_del(item.id);
                 this._load_data(this.kind);
+            },
+            onExport: async function() {
+                let docs = [];
+                for(let k of this.kind_keys) {
+                    let its = await api.tpl_list(k.value);
+                    if(its && its.length>0) {
+                        docs.push(...its);
+                    } 
+                }
+                wf.save_json(docs, 'template');
+            },
+            onImport: async function() {
+                let res = await wf.open_json();
+                if(res.result === 'ok') {
+                    try {
+                        for(let r of res.value) {
+                            if(reused.valid_code(r.code, r.kind)) {
+                                api.tpl_add({
+                                    name: r.name,
+                                    memo: r.memo,
+                                    kind: r.kind,
+                                    code: r.code,
+                                });
+                            }
+                        }
+                        this._load_data(this.kind);
+                        return;
+                    } catch (error) {
+                        res.result = 'error';
+                        res.value = '遇到无效的内容';
+                    }
+                }
+                if(res.result==='error') {
+                    this.$store.commit('setMsgError', '导入失败,' + res.value);
+                    return;
+                }
             },
         }
 

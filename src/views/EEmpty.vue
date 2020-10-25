@@ -20,7 +20,6 @@
     import ver from '../doc/version';
 
     export default {
-        props: ['tip'],
         created: function () {
             if(this.$route.query.autoopen || this.$route.query.proj_id) {
                 let self = this;

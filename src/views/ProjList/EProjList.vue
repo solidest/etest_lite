@@ -1,11 +1,11 @@
 <template>
   <v-container fluid>
-    <v-toolbar class="mb-1">
-      <v-text-field class="mx-2" v-model="search" clearable flat solo-inverted hide-details
+    <v-toolbar dense class="mb-1">
+      <v-text-field dense class="mx-2" v-model="search" clearable flat solo-inverted hide-details
         prepend-inner-icon="mdi-folder-search-outline" label="搜索"></v-text-field>
-      <v-select class="mx-2" v-model="sort_by" flat solo-inverted hide-details :items="sort_keys"
+      <v-select dense class="mx-2" v-model="sort_by" flat solo-inverted hide-details :items="sort_keys"
         prepend-inner-icon="mdi-sort" label="排序"></v-select>
-      <v-btn-toggle class="mx-2" v-model="sort_desc" mandatory>
+      <v-btn-toggle dense class="mx-2" v-model="sort_desc" mandatory>
         <v-btn depressed :value="false">
           <v-icon>mdi-arrow-up</v-icon>
         </v-btn>
@@ -16,7 +16,10 @@
       <v-spacer></v-spacer>
       <span class="grey--text">{{`版本: ${version}`}}</span>
       <v-spacer></v-spacer>
-      <v-btn large color='grey darken-3' @click="dlg='create'">
+      <v-btn color="grey darken-3" @click="on_import">
+        <v-icon left>mdi-import</v-icon>导入
+      </v-btn>
+      <v-btn color="grey darken-3" class="ml-2" @click="dlg='create'">
         <v-icon left>mdi-plus-thick</v-icon>新建
       </v-btn>
     </v-toolbar>
@@ -101,6 +104,7 @@
   import helper from '../../utility/helper';
   import proj_db from '../../doc/workerdb';
   import api from '../../api/client/';
+  import wf from '../../utility/web_file';
 
   export default {
     components: {
@@ -219,10 +223,6 @@
         };
       },
 
-      on_export: function (proj) {
-        console.error('TODO export', proj);
-      },
-
       load_data: function (proj_list) {
         if (!proj_list) {
           this.projs = [];
@@ -287,6 +287,15 @@
           return this._doopen_proj(null);
         }
         return this._doopen_proj(proj);
+      },
+
+      on_export: function (proj) {
+        wf.save_json(proj, proj.name);
+        console.log('TODO export');
+      },
+      on_import: async function () {
+        let res = await wf.open_json();
+        console.log('TODO import', res);
       },
     }
 

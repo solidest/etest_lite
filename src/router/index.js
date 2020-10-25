@@ -25,7 +25,15 @@ const routes = [{
     path: '/listreused',
     name: 'ListReused',
     component: () => import( /* webpackChunkName: "e_listreused" */ '../views/ReusedList/EReusedList'),
-  }, 
+  }, {
+    path: '/toolsbox',
+    name: 'ToolsBox',
+    component: () => import( /* webpackChunkName: "e_toolsbox" */ '../views/ToolsBox/EToolsBox'),
+  }, {
+    path: '/paneldesigner',
+    name: 'PanelDesigner',
+    component: () => import( /* webpackChunkName: "e_paneldesigner" */ '../views/PanelDesigner/EEmpty'),
+  },
 ]
 
 const router = new VueRouter({

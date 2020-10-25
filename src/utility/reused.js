@@ -40,8 +40,17 @@ async function get_reused(id, kind, name, memo) {
     }
 }
 
+function valid_code(code, kind) {
+    if(!code || !kind) {
+        return false;
+    }
+    let ast = sdk.parser.parse_etl(code)[0];
+    return ast.kind === kind;
+}
+
 
 export default {
     get_reused,
     get_devobj,
+    valid_code,
 }
