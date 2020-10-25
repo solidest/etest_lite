@@ -7,11 +7,16 @@
             <v-text-field @keydown.enter="ok" class="px-6" v-model="memo_text" placeholder="说明" label="说明">
             </v-text-field>
             <v-sheet outlined class="ma-4">
-                <v-card-subtitle class="px-2 mx-0">已有复用项 (共{{reusedlist.length}}项) : </v-card-subtitle>
+                <v-card-subtitle class="px-2 mx-0">已有同类复用项 (共{{reusedlist.length}}项) : </v-card-subtitle>
                 <div style="height:300px; width:100%; overflow-y:scroll;">
-                    <v-chip class="ma-2" v-for="(item, i) in reusedlist" :key="i">
-                        {{item.name}}
-                    </v-chip>
+                    <v-tooltip bottom right v-for="item in reusedlist" :key="item.id">
+                        <template v-slot:activator="{ on }">
+                            <v-chip class="ma-2" v-on="on" color="grey lighten-1" outlined>
+                                {{item.name}}
+                            </v-chip>
+                        </template>
+                        <span>{{`${item.memo||'无备注'}`}}</span>
+                    </v-tooltip>
                 </div>
             </v-sheet>
             <v-card-actions>
@@ -53,10 +58,10 @@
 
         computed: {
             title: function () {
-                return `添加至复用库 - ${cfg.dict[this.option.catalog]}`;
+                return `添加至复用库 - ${cfg.dict[this.option.kind]}`;
             },
-            allow_ok: function() {
-                return helper.valid_name(this.reusedlist, this.input_text)==='ok';
+            allow_ok: function () {
+                return helper.valid_name(this.reusedlist, this.input_text) === 'ok';
             }
         },
 

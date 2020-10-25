@@ -4,7 +4,9 @@
             <v-card-title class="headline">{{title}}</v-card-title>
             <v-text-field @keydown.enter="ok" ref="input_component" class="px-6" v-model="input_value" :label="label" :placeholder="placeholder">
             </v-text-field>
-            <v-textarea v-if="need_memo" v-model="input_memo"  class="px-6" no-resize outlined placeholder="备注">
+            <v-textarea v-if="need_memo" v-model="input_memo" class="px-6" rows="3" no-resize outlined label="备注">
+            </v-textarea>
+            <v-textarea v-if="readonly_text" :value="readonly_text" class="px-6" rows="10" no-resize outlined readonly>
             </v-textarea>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -20,7 +22,7 @@
 </template>
 <script>
     export default {
-        props: ['dialog', 'title', 'label', 'placeholder', 'value', 'memo', 'need_memo'],
+        props: ['dialog', 'title', 'label', 'placeholder', 'value', 'memo', 'need_memo', 'readonly_text'],
 
         data: () => ({
             input_value: '',

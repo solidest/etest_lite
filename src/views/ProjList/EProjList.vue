@@ -35,8 +35,8 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-list dense>
-                  <v-list-item v-for="(h, index) in headers" :key="index" dense>
-                    <v-list-item-content class="grey--text">
+                  <v-list-item v-for="(h, index) in headers" :key="index" dense class="py-0 my-0">
+                    <v-list-item-content class="grey--text py-0 my-0">
                       {{ `${h.text}: ${item[h.value]}` }}
                     </v-list-item-content>
                   </v-list-item>

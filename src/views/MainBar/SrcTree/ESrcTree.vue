@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="mx-auto" color="grey darken-3" flat v-if="proj" @click="on_click">
+    <v-sheet class="mx-auto" color="grey darken-3" flat v-if="proj">
         <v-toolbar dense >
             <span class="text--secondary">{{title}}</span>
             <v-spacer></v-spacer>
@@ -36,8 +36,8 @@
                         </div>
                     </template>
                     <template v-slot:append="{ item }">
-                        <v-btn small icon @click.stop="on_default(item)">
-                        <v-icon small v-if="item.default_action" color="grey lighten-1">
+                        <v-btn small icon @click.stop="on_default(item)" v-if="item.default_action">
+                        <v-icon small  color="grey lighten-1">
                             mdi-plus-thick
                         </v-icon>
                         </v-btn>
@@ -65,12 +65,12 @@
 </template>
 <script>
     import shortid from 'shortid';
-    import {sdk} from '../../../../sdk/sdk';
     import cfg from './config';
     import tman from '../../../utility/tree_man';
     import helper from '../../../utility/helper';
     import db from '../../../doc/workerdb';
     import api from '../../../api/client';
+    import reused from '../../../utility/reused';
 
     export default {
         components: {
@@ -198,25 +198,12 @@
             _clone_doc: function(item, info) {
                 console.log('TODO CLONE FROM', item, info);
             },
-            _get_etlcode: async function(id, name, memo) {
-                let doc = await db.get('src', id);
-                if(!doc || !doc.content) {
-                    return null;
-                } else {
-                    switch (doc.kind) {
-                        case 'device':
-                            return sdk.converter.device_dev2etl(doc.content, name, memo);                    
-                    }
-                }
-                return null;
-            },
             on_packup: function () {
                 this.open_all = !this.open_all;
                 this.$refs.__tree.updateAll(this.open_all);
             },
             on_ctxmenu: function (it) {
                 this.active = [it];
-                this.on_click();
             },
             on_domenu: function(ac) {
                 this[`action_${ac}`]();
@@ -235,18 +222,20 @@
                 this.active = [it];
                 this.on_domenu(it.default_action);                    
             },
-            on_click: function() {
-                // console.log('click on tree');
-            },
 
-            action_reused: function() {
-                this.dlg_type = 'reused';
+            action_reused: async function() {
                 let at = this.active[0];
+                let obj = await reused.get_reused(at.id, at.kind, at.name, at.memo);
+                if(!obj) {
+                    this.$store.commit('setMsgError', '复用内容内部存在错误，请更正');
+                    return;
+                }
+                this.dlg_type = 'reused';
                 this.dlg_option = {
-                    catalog: at.catalog,
                     value: at.name,
                     memo: at.memo,
                     kind: at.kind,
+                    obj,
                 }
             },
             do_reused: async function(res) {
@@ -254,24 +243,10 @@
                 if(res.result!=='ok') {
                     return;
                 }
-                let at = this.active[0];
-                let code;
-                try {
-                    code = await this._get_etlcode(at.id, at.name, at.memo);
-                } catch (error) {
-                    console.error(error.message);
-                }
-                if(!code) {
-                    this.$store.commit('setMsgError', '无效的复用内容');
-                    return;
-                }
-                let doc = {
-                    kind: this.dlg_option.kind,
-                    name: res.value,
-                    memo: res.memo,
-                    code: code,
-                }
-                await api.tpl_add(doc);
+                let obj = this.dlg_option.obj;
+                obj.name = res.value;
+                obj.memo = res.memo;
+                await api.tpl_add(obj);
             },
 
             action_rename: function() {

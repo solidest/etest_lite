@@ -25,7 +25,7 @@ const cfg = {
         icon: 'mdi-view-dashboard-outline',
         title: '复用库管理',
         catalog: 'reused',
-        route: 'ListPublic',
+        route: 'ListReused',
     }, {
         icon: 'mdi-tools',
         title: '辅助工具',
