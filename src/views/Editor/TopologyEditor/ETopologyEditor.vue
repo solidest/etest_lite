@@ -1,11 +1,11 @@
 <template>
     <div class="d-flex">
         <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" ref="__intf_list">
-            <e-linking-editor />
+            <e-linking-editor :map="map" />
         </div>
- <div v-if="dlg_opt.type">
-            <e-select-dlg v-if="dlg_opt.type==='select'" @result="on_select_devs" :dialog="dlg_opt.type"
-                 :items="raw_devs" />
+        <div v-if="dlg_opt.type">
+            <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
+                :items="raw_devs" />
             <!-- <e-number-dlg v-else-if="dlg_opt.type==='number'" @result="do_paste_batch" :dialog="dlg_opt.type"
                 :title="dlg_opt.title" :value="dlg_opt.data" :label="dlg_opt.tag.label" />
             <e-etl-dlg v-else-if="dlg_opt.type==='etl'" @result="do_etl_code" :dialog="dlg_opt.type"
@@ -40,15 +40,16 @@
             'e-select-dlg': () => import( /* webpackChunkName: "eselectdevdlg" */ './EDlgSelectDev'),
             // 'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ '../../Dialog/EDlgNumber'),
         },
-        mounted: function () {
-            this._reset_doc(this.doc_id);
+        mounted: async function () {
+            await this._reset_doc(this.active_doc_id);
             this.$emit('active', this._get_ieditor());
         },
         beforeDestroy: function () {
-            // this._save_doc_state(this.doc_id);
+            this._save_docstate();
         },
         data() {
             return {
+                doc_id: null,
                 content: {},
                 raw_devs: [],
                 map: null,
@@ -68,29 +69,20 @@
             }
         },
         computed: {
-            doc_id: function () {
+            active_doc_id: function () {
                 let ac = this.$store.state.Editor.active;
-                return ac ? ac.id : '';
+                return (ac && ac.kind===cfg.kind) ? ac.id : null;
             },
-            // current: function() {
-            //     if(this.selected.length === 1) {
-            //         return {
-            //             item: this.selected[0],
-            //             schema: schemas[this.selected[0].kind],
-            //             title: `接口类型: ${this.selected[0].kind}`,
-            //         }
-            //     }
-            //     return {title: '属性编辑器'};
-            // }
+            proj_id: function () {
+                return this.$store.state.proj.id;
+            },
         },
         watch: {
-            // doc_id: function (nid, oid) {
-            //     if(oid) {
-            //         this._save_doc_state(oid);
-            //     }
-            //     this._reset_doc(nid);
-            //     this._update_state();
-            // },
+            active_doc_id: async function (nid) {
+                await this._save_docstate(this.doc_id);
+                this._reset_doc(nid);
+                this._update_state();
+            },
         },
         methods: {
             _get_ieditor() {
@@ -106,6 +98,37 @@
                         if (fn) fn();
                     }
                 }
+            },
+            _save_docstate: function () {
+                if(!this.doc_id) {
+                    return;
+                }
+                let s = {
+                    selected: this.selected,
+                }
+                this.$store.commit('Editor/put_doc_state', {id: this.doc_id, doc_state: s});
+            },
+            _load_docstate: function() {
+                if(!this.doc_id) {
+                    return;
+                }
+                let s = this.$store.getters['Editor/get_doc_state'](this.doc_id);
+                if (s) {
+                    this.selected = s.selected;
+                } else {
+                    this.selected = null;
+                }
+            },
+            async _save_doc() {
+                let content = topo_map.create_dbcontent(this.raw_devs, this.map);
+                content.binds = this.content.binds;
+                this.content = content;
+                await db.update('src', {
+                    id: this.doc_id,
+                    content,
+                    kind: cfg.kind
+                });
+                api.projdb_changed(this.proj_id);
             },
             async _load_rawdata() {
                 let tree = await db.get('config', 'tree');
@@ -130,11 +153,11 @@
                 });
                 this.raw_devs = odevs;
             },
-            _udpate_bydb (db_devs, bus_links, pp_links) {
-                if(db_devs) {
+            _update_bydb(db_devs, bus_links, pp_links) {
+                if (db_devs) {
                     for (const db_dev of db_devs) {
-                        let dev = this.raw_devs.find(it => (it.id===db_dev.id || it.name===db_dev.name));
-                        if(dev) {
+                        let dev = this.raw_devs.find(it => (it.id === db_dev.id || it.name === db_dev.name));
+                        if (dev) {
                             dev.kind = db_dev.kind || 'none';
                             dev.pos = db_dev.pos;
                         }
@@ -143,32 +166,35 @@
                 this.map = topo_map.create_map_bydb(this.raw_devs, bus_links, pp_links);
             },
             async _reset_doc(id, reset_state = false) {
+                this.doc_id = id;
+                if(!id) {
+                    return;
+                }
                 this.redoundo = redoundo.get_ru(id);
                 if (reset_state) {
                     this.redoundo.reset();
                     this.selected = null;
-                } 
-                else {
-                    let s = this.$store.getters['Editor/get_doc_state'](id);
-                    if (s) {
-                        this.selected = s.selected;
-                    } else {
-                        this.selected = null;
-                    }
-                }   
+                } else {
+                    this._load_docstate();
+                }
                 await this._load_rawdata();
                 let doc = await db.get('src', id);
                 if (!doc) {
                     await db.insert('src', {
                         id,
-                        content: {devs: [], bus_links: [], pp_links: [], binds:{}},
-                        kind: this.kind
+                        content: {
+                            devs: [],
+                            bus_links: [],
+                            pp_links: [],
+                            binds: {}
+                        },
+                        kind: cfg.kind
                     });
-                    doc = await db.get('src', id);
                     api.projdb_changed(this.proj_id);
+                    doc = await db.get('src', id);
                 }
                 this.content = doc.content;
-                this._udpate_bydb(doc.devs, doc.bus_links, doc.pp_links);
+                this._update_bydb(this.content.devs, this.content.bus_links, this.content.pp_links);
                 if (this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.content, this.selected);
                 }
@@ -186,48 +212,29 @@
                     remove: false,
                     multi_insert: false,
                 }
-                // let len = this.selected.length;
-                // let allow_paste = this.$store.state.copyed === cfg.kind;
-                // let dis = {
-                //     move_up: false,
-                //     move_down: false,
-                //     cut: false,
-                //     copy: false,
-                //     paste: !allow_paste,
-                //     paste_batch: !allow_paste,
-                //     undo: this.redoundo.undoCount===0,
-                //     redo: this.redoundo.redoCount===0,
-                //     remove: false,
-                //     multi_insert: false,
-                // }
-                // if(len===0) {
-                //     dis.move_up = true;
-                //     dis.move_down = true;
-                //     dis.cut = true;
-                //     dis.copy = true;
-                //     dis.remove = true;
-                //     dis.multi_insert = true;
-                // } else if(len>1) {
-                //     dis.move_up = true;
-                //     dis.move_down = true;
-                //     dis.multi_insert = true;
-                // } else {
-                //     len = this.items.length;
-                //     let sel = this.selected[0];
-                //     let idx = this.items.findIndex(it => it === sel);
-                //     dis.move_up = len===1 || idx===0;
-                //     dis.move_down = len===1 || idx===len-1;
-                // }
                 return dis;
+            },
+            _update_state: function() {
+                let s = this._get_state();
+                this.$store.commit('Editor/set_state_disbar', s);
             },
             action_select_dev() {
                 this.dlg_opt.type = 'select';
             },
-            on_select_devs(res) {
+            do_select_devs(res) {
                 this.dlg_opt.type = null;
-                if(res.result !== 'ok') {
+                if (res.result !== 'ok') {
                     return;
                 }
+                for (const item of res.value) {
+                    let raw_item = this.raw_devs.find(it => it.id === item.id);
+                    raw_item.kind = item.kind;
+                    if (item.kind === 'none') {
+                        raw_item.pos = null;
+                    }
+                }
+                this.map = topo_map.create_map_byold(this.raw_devs, this.map);
+                this._save_doc();
             },
 
             //     _set_ru_version: function(vo) {
@@ -290,20 +297,7 @@
             //         }
             //         return 0;
             //     },
-            //     _save_doc_state: function(doc_id) {
-            //         let s = {
-            //             selected: this.selected,
-            //             single_select: this.single_select,
-            //             prop_width: this.prop_width,
-            //             list_top: this.$refs.__intf_list.scrollTop,
-            //         }
-            //         this.$store.getters['Editor/put_doc_state'](doc_id, s);
-            //     },
-            //     _update_state: function() {
-            //         let s = this._get_state();
-            //         this.$store.commit('Editor/set_state_disbar', s);
-            //     },
-            
+
             //     format_cfg: function(obj) {
             //             if (!obj) {
             //                 return '';

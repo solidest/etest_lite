@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex">
-        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" ref="__intf_list">
+        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" ref="__intf_list" @scroll="on_scroll">
             <v-data-table :headers="headers" :items="items" no-data-text="空" disable-sort hide-default-footer
                 disable-pagination show-select v-model="selected" :single-select="single_select"
                 @item-selected="on_selected" @toggle-select-all="on_selected">
@@ -54,12 +54,12 @@
             'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ '../../Dialog/EDlgNumber'),
             'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
         },
-        mounted: function () {
-            this._reset_doc(this.doc_id);
+        mounted: async function () {
+            await this._reset_doc(this.active_doc_id);
             this.$emit('active', this._get_ieditor());
         },
         beforeDestroy: function() {
-            this._save_doc_state(this.doc_id);
+            this._save_docstate();
         },
         data() {
             return {
@@ -76,13 +76,14 @@
                     tag: null,
                 },
                 redoundo: null,
-                kind: cfg.kind
+                kind: cfg.kind,
+                doc_id: null,
             }
         },
         computed: {
-            doc_id: function () {
+            active_doc_id: function () {
                 let ac = this.$store.state.Editor.active;
-                return ac ? ac.id : '';
+                return (ac && ac.kind===cfg.kind) ? ac.id : null;
             },
             current: function() {
                 if(this.selected.length === 1) {
@@ -102,11 +103,9 @@
             }
         },
         watch: {
-            doc_id: function (nid, oid) {
-                if(oid) {
-                    this._save_doc_state(oid);
-                }
-                this._reset_doc(nid);
+            active_doc_id: async function (nid) {
+                this._save_docstate();
+                await this._reset_doc(nid);
                 this._update_state();
             },
             dialog: function(d) {
@@ -115,26 +114,48 @@
             },
         },
         methods: {
-            _reset_doc: async function (id, reset_state=false) {
-                this.redoundo = redoundo.get_ru(id);
-                if(reset_state) {
-                    this.redoundo.reset();
-                    this.selected = [];
-                } else {
-                    let s = this.$store.getters['Editor/get_doc_state'](id);
-                    if(s) {
-                        this.selected = s.selected;
-                        this.single_select = s.single_select;
-                        this.prop_width = s.prop_width;
-                        if(s.list_top>0) {
-                            let self = this;
-                            this.$nextTick(()=>{self.$refs.__intf_list.scrollTop = s.list_top;})
-                        }
-                    } else {
-                        this.selected = [];
-                    }                    
+            _save_docstate () {
+                if(!this.doc_id) {
+                    return;
                 }
-
+                let s = {
+                    selected: this.selected.map(sel => sel.id),
+                    single_select: this.single_select,
+                    prop_width: this.prop_width,
+                    list_top: this.scroll_top,
+                }
+                this.$store.commit('Editor/put_doc_state', {id: this.doc_id, doc_state: s});
+            },
+            _load_docstate() {
+                if(!this.doc_id) {
+                    return;
+                }
+                let s = this.$store.getters['Editor/get_doc_state'](this.doc_id);
+                if(s) {
+                    let sels = s.selected||[];
+                    this.selected = [];
+                    for (let index = 0; index < sels.length; index++) {
+                        let sel = this.items.find(it => it.id === sels[index])
+                        if(sel) {
+                            this.selected.push(sel);
+                        }
+                    }
+                    this.single_select = s.single_select;
+                    this.prop_width = s.prop_width;
+                    if(s.list_top>=0) {
+                        let self = this;
+                        this.$nextTick(()=>{self.$refs.__intf_list.scrollTop = s.list_top;})
+                    }
+                } else {
+                    this.selected = [];
+                }   
+            },
+            _reset_doc: async function (id, reset_state=false) {
+                this.doc_id = id;
+                if(!id) {
+                    return;
+                }
+                this.redoundo = redoundo.get_ru(id);
                 let doc = await db.get('src', id);
                 if (doc) {
                     this.items = doc.content;
@@ -144,6 +165,12 @@
                     this.$doc =  await db.get('src', id);
                     this.items = this.$doc.content;
                     api.projdb_changed(this.proj_id);
+                }
+                if(reset_state) {
+                    this.redoundo.reset();
+                    this.selected = [];
+                } else {
+                    this._load_docstate();                 
                 }
                 if(this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.items, this._get_ru_tag());
@@ -167,7 +194,7 @@
                     sel_ids: sels,
                 }
             },
-            _set_ru_version: function(vo) {
+            _set_ru_tag: function(vo) {
                 if(!vo) {
                     return;
                 }
@@ -196,13 +223,6 @@
                         break;
                 }
             },
-            _get_newdoc: function () {
-                return {
-                    id: this.doc_id,
-                    content: this.items,
-                    kind: cfg.kind,
-                }
-            },
             _idx_last: function() {
                 if(this.selected.length === 0) {
                     if(this.items.length === 0) {
@@ -227,15 +247,6 @@
                     }
                 }
                 return 0;
-            },
-            _save_doc_state: function(doc_id) {
-                let s = {
-                    selected: this.selected,
-                    single_select: this.single_select,
-                    prop_width: this.prop_width,
-                    list_top: this.$refs.__intf_list.scrollTop,
-                }
-                this.$store.getters['Editor/put_doc_state'](doc_id, s);
             },
             _update_state: function() {
                 let s = this._get_state();
@@ -293,6 +304,9 @@
             on_resize: function (width) {
                 this.prop_width = width;
             },
+            on_scroll: function() {
+                this.scroll_top = this.$refs.__intf_list.scrollTop;
+            },
             on_prop_changed: function() {
                 this._update_change('modify');
             },
@@ -307,14 +321,14 @@
                 let ov = this.redoundo.popRedo();
                 this.items = ov.doc;
                 this.$doc.content = this.items;
-                this._set_ru_version(ov.tag);
+                this._set_ru_tag(ov.tag);
                 this._update_change('redoundo');
             },
             action_undo: function() {
                 let ov = this.redoundo.popUndo();
                 this.items = ov.doc;
                 this.$doc.content = this.items;
-                this._set_ru_version(ov.tag);
+                this._set_ru_tag(ov.tag);
                 this._update_change('redoundo');
             },
             action_new_item_after: function () {
@@ -409,7 +423,7 @@
                 this.dlg_opt.title = dev.name;
                 this.dlg_opt.data = etl_code;
             },
-            do_etl_code: function(res) {
+            do_etl_code: async function(res) {
                 this.dlg_opt.type = null;
                 if(res.result!=='ok') {
                     return;
@@ -417,7 +431,7 @@
                 let doc = sdk.converter.device_etl2dev(res.value);
                 this.$doc.content = doc.content;
                 db.update('src', this.$doc);
-                this._reset_doc(this.doc_id, true);
+                await this._reset_doc(this.doc_id, true);
                 this._update_state();
             },
             do_paste: function(res) {

@@ -4,23 +4,21 @@
             <v-card-title>选择设备</v-card-title>
             <v-divider></v-divider>
             <v-card-text style="height: 560px;">
-                <v-data-table :headers="headers" :items="items" no-data-text="暂时还没有设备" disable-sort hide-default-footer
-                    disable-pagination>
-                    <template v-slot:item.used_="{item}">
-                        <v-icon v-if="item.used==='uut'" :color="get_color(item)"> mdi-checkbox-blank-circle-outline
-                        </v-icon>
-                        <v-icon v-else-if="item.used==='etest'" :color="get_color(item)"> mdi-checkbox-marked-circle
+                <v-data-table :headers="headers" :items="items_" no-data-text="暂时还没有设备" disable-sort hide-default-footer
+                    disable-pagination hide-default-header>
+                    <template v-slot:item.icon="{item}">
+                        <v-icon :color="kinds[item.kind||'none'].color">
+                            {{kinds[item.kind||'none'].icon}}
                         </v-icon>
                     </template>
                     <template v-slot:item.name="{item}">
-                        <span :class="get_text_css1(item)"> {{item.name}}</span>
+                        <span :class="kinds[item.kind].css"> {{item.name}}</span>
                     </template>
                     <template v-slot:item.kind="{item}">
                         <div style="width: 120px">
-                            <v-select v-model="item.used" dense :items="usedlist" @change="on_change" hide-details solo
-                                flat>
+                            <v-select v-model="item.kind" dense :items="kindlist" hide-details solo flat>
                                 <template v-slot:selection="{ item }">
-                                    <span :class="`body-2 ${get_text_css2(item)}`">{{item.text}}</span>
+                                    <span :class="`body-2 ${kinds[item.value].css}`">{{item.text}}</span>
                                 </template>
                             </v-select>
                         </div>
@@ -43,9 +41,15 @@
 <script>
     export default {
         props: ['dialog', 'items'],
-
+        mounted: function () {
+            this._set_items(this.items);
+        },
         data: () => ({
-            headers: [{value: 'used_', align: 'end',},{
+            items_: [],
+            headers: [{
+                    value: 'icon',
+                    align: 'end',
+                }, {
                     text: '设备',
                     align: 'start',
                     sortable: false,
@@ -58,65 +62,77 @@
                     sortable: false
                 },
             ],
-            usedlist: [{
+            kinds: {
+                none: {
+                    css: 'grey--text text--darken-2',
+                    color: 'grey darken-2',
+                    icon: 'mdi-checkbox-blank-circle-outline'
+                },
+                etest: {
+                    css: 'blue--text text--lighten-3',
+                    color: 'blue lighten-3',
+                    icon: 'mdi-checkbox-marked-circle'
+                },
+                uut: {
+                    css: 'brown--text text--lighten-3',
+                    color: 'brown lighten-3',
+                    icon: 'mdi-checkbox-blank-circle'
+                },
+                simu: {
+                    css: 'orange--text text--darken-4',
+                    color: 'orange darken-4',
+                    icon: 'mdi-checkbox-marked-circle'
+                },
+            },
+
+            kindlist: [{
                     text: '不使用',
-                    value: 'none'
+                    value: 'none',
                 }, {
-                    text: '仿真设备',
-                    value: 'etest'
+                    text: '测试设备',
+                    value: 'etest',
                 },
                 {
                     text: '实物设备',
-                    value: 'uut'
-                }
+                    value: 'uut',
+                },
+                {
+                    text: '仿真设备',
+                    value: 'simu',
+                },
             ]
         }),
 
+        watch: {
+            items: function (its) {
+                this._set_items(its);
+            }
+        },
+
         methods: {
-            cancel () {
+            _set_items(its) {
+                its = its || [];
+                let its_ = [];
+                its.forEach(it => {
+                    its_.push({
+                        id: it.id,
+                        name: it.name,
+                        kind: it.kind,
+                    });
+                });
+                this.items_ = its;
+            },
+            cancel() {
                 this.$emit("result", {
                     result: 'cancel'
                 });
             },
-            ok () {
-                if (!this.selected) {
-                    return;
-                }
+            ok() {
                 this.$emit("result", {
                     result: 'ok',
-                    selected: this.selected
+                    value: this.items_
                 });
             },
-            get_color(item) {
-                if(item.used === 'none') {
-                    return 'grey darken-2';
-                }
-                if(item.used === 'etest') {
-                    return 'blue lighten-3';
-                }
-                return 'brown lighten-3';
-            },
-            get_text_css1(item) {
-                if(item.used === 'none') {
-                    return 'grey--text text--darken-2';
-                }
-                if(item.used === 'etest') {
-                    return 'blue--text text--lighten-3';
-                }
-                return 'brown--text text--lighten-3';
-            },
-            get_text_css2(item) {
-                if(item.value === 'none') {
-                    return 'grey--text text--darken-2';
-                }
-                if(item.value === 'etest') {
-                    return 'blue--text text--lighten-3';
-                }
-                return 'brown--text text--lighten-3';
-            },
-            on_change() {
-
-            }
         }
     }
 </script>

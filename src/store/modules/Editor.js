@@ -29,7 +29,7 @@ const mutations = {
     close(state, item) {
         let idx = state.items.findIndex(it => it.id === item.id);
         if (idx >= 0) {
-            state.items.splice(idx, 1);
+            state.items.splice(idx, 1);        
             delete state.doc_states[item.id];
             redoundo.del_ru(item.id);
         }
@@ -55,14 +55,15 @@ const mutations = {
     set_state_disbar(state, state_disbar) {
         state.state_disbar = state_disbar;
     },
+    put_doc_state(state, info) {
+        if(state.items.find(it=>it.id===info.id)) {
+            state.doc_states[info.id] = info.doc_state;          
+        }
+
+    }
 };
 
 const getters = {
-    put_doc_state: (state) => (id, doc_state) => {
-        if(state.items.find(it => it.id === id)) {
-            state.doc_states[id] = doc_state;
-        }
-    },
     get_doc_state: (state) => (id) => {
         return state.doc_states[id];
     },

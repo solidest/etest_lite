@@ -1,8 +1,10 @@
-const DEFAULT_WIDTH = 300;
-const DEFAULT_HEIGHT = 600;
+const DEFAULT_WIDTH = 200;
+const MAX_HEIGHT = 200;
 const BUS_WIDTH = 30;
 const BUS_HEIGHT = 300;
 const CANVASE_WIDTH = 940;
+
+const SPACE = 30;
 
 class Conn {
     constructor(id, name, kind) {
@@ -150,7 +152,7 @@ class Map {
 
 function _create_dev(raw_dev) {
     let dev = new Dev(raw_dev.id, raw_dev.name, raw_dev.kind, raw_dev.pos);
-    if(dev.conns) {
+    if (dev.conns) {
         dev.conns.forEach(it => {
             dev.pushConn(new Conn(it.id, it.name, it.kind));
         })
@@ -160,11 +162,11 @@ function _create_dev(raw_dev) {
 
 function _create_map_empty(devs) {
     let map = new Map();
-    if(!devs) {
+    if (!devs) {
         return map;
     }
     devs.forEach(dev => {
-        if(dev.kind !== 'nil') {
+        if (dev.kind !== 'none') {
             map.pushDev(_create_dev(dev));
         }
     });
@@ -172,31 +174,31 @@ function _create_map_empty(devs) {
 }
 
 function _merge_recs(to, from) {
-    if(from.left<to.left) {
+    if (from.left < to.left) {
         to.left = from.left;
     }
-    if(from.top<to.top) {
+    if (from.top < to.top) {
         to.top = from.top;
     }
-    if(from.bottom>to.bottom) {
+    if (from.bottom > to.bottom) {
         to.bottom = from.bottom;
     }
-    if(from.right>to.right) {
+    if (from.right > to.right) {
         to.right = from.right;
     }
 }
 
 function _get_new_pos(used_rec, default_width, default_height) {
     let rec;
-    if(used_rec.right + default_width + 10 < CANVASE_WIDTH) {
+    if (used_rec.right + default_width + SPACE < CANVASE_WIDTH) {
         rec = {
-            top: 10,
-            left: used_rec.right + 10,
+            top: SPACE,
+            left: used_rec.right + (used_rec.right===0 ? 1 :2)*SPACE,
         }
     } else {
         rec = {
-            top: used_rec.bottom + 10,
-            left: 10,
+            top: used_rec.bottom + SPACE,
+            left: SPACE,
         }
     }
     rec.bottom = rec.top + default_height;
@@ -206,15 +208,15 @@ function _get_new_pos(used_rec, default_width, default_height) {
 }
 
 function update_layout(map) {
-    if(!map) {
+    if (!map) {
         return;
     }
     let rec;
     let empty_devs = [];
     let empty_buses = [];
     map.devs.forEach(dev => {
-        if(dev.pos) {
-            if(!rec) {
+        if (dev.pos) {
+            if (!rec) {
                 rec = JSON.parse(JSON.stringify(dev.pos));
             } else {
                 _merge_recs(rec, dev.pos);
@@ -224,52 +226,57 @@ function update_layout(map) {
         }
     });
     map.links.forEach(link => {
-        if(link.is_bus) {
-            if(link.pos) {
-                if(!rec) {
+        if (link.is_bus) {
+            if (link.pos) {
+                if (!rec) {
                     rec = JSON.parse(JSON.stringify(link.pos));
                 } else {
                     _merge_recs(rec, link.pos);
-                }                
+                }
             } else {
                 empty_buses.push(link);
             }
         }
     })
-    rec = rec || {left:0, top:0, right:0, bottom:0};
+    rec = rec || {
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0
+    };
     let len1 = empty_devs.length;
     let len2 = empty_buses.length;
     let len = Math.max(len1, len2);
     for (let index = 0; index < len; index++) {
-        if(index<len1) {
-            empty_devs[index].pos = _get_new_pos(rec, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        if (index < len1) {
+            empty_devs[index].pos = _get_new_pos(rec, DEFAULT_WIDTH, MAX_HEIGHT);
         }
-        if(index<len2) {
+        if (index < len2) {
             empty_buses[index].pos = _get_new_pos(rec, BUS_WIDTH, BUS_HEIGHT);
         }
     }
 }
 
-function create_map_byold(devs, old_map) {
-    let map = _create_map_empty(devs);
-    if(old_map) {
+function create_map_byold(raw_devs, old_map) {
+    let map = _create_map_empty(raw_devs);
+    if (old_map) {
         let links = old_map.links;
         links.forEach(link => {
             link.is_bus ? map.pushBLink(link.name, link.dcs, link.pos) : map.pushPLink(link.name, link.dc1, link.dc2);
-        });        
+        });
     }
     update_layout(map);
     return map;
 }
 
-function create_map_bydb(devs, bus_links, pp_links) {
-    let map = _create_map_empty(devs);
-    if(bus_links) {
+function create_map_bydb(raw_devs, bus_links, pp_links) {
+    let map = _create_map_empty(raw_devs);
+    if (bus_links) {
         bus_links.forEach(link => {
             map.pushBLink(link.name, link.dcs, link.pos);
         })
     }
-    if(pp_links) {
+    if (pp_links) {
         pp_links.forEach(link => {
             map.pushPLink(link.name, link.dc1, link.dc2);
         })
@@ -278,9 +285,62 @@ function create_map_bydb(devs, bus_links, pp_links) {
     return map;
 }
 
+function _get_dbdc(dc) {
+    return {
+        dev: {
+            id: dc.dev.id,
+            name: dc.dev.name,
+        },
+        conn: {
+            id: dc.conn.id,
+            name: dc.conn.name,
+        }
+    }
+}
+
+function create_dbcontent(raw_devs, map) {
+    let devs = raw_devs.map(it => {
+        return {
+            id: it.id,
+            name: it.name,
+            kind: it.kind
+        }
+    });
+    let bus_links = [];
+    let pp_links = [];
+    map.links.forEach(l => {
+        if (l.is_bus) {
+            bus_links.push({
+                name: l.name,
+                pos: l.pos,
+                dcs: l.dcs.map(i => {
+                    return _get_dbdc(i)
+                }),
+            })
+        } else {
+            pp_links.push({
+                name: l.name,
+                dc1: _get_dbdc(l.dc1),
+                dc2: _get_dbdc(l.dc2),
+            })
+        }
+    })
+    return {
+        devs,
+        bus_links,
+        pp_links
+    }
+}
+
 export default {
     create_map_bydb,
     create_map_byold,
-    update_layout,
+    create_dbcontent,
+    cfg_default: {
+        DEFAULT_WIDTH,
+        MAX_HEIGHT,
+        BUS_WIDTH,
+        BUS_HEIGHT,
+        CANVASE_WIDTH
+    }
 }
-
