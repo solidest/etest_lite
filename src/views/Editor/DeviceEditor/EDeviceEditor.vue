@@ -146,7 +146,7 @@
                     api.projdb_changed(this.proj_id);
                 }
                 if(this.redoundo.isEmpty) {
-                    this.redoundo.pushChange(this.items, this._get_ru_version());
+                    this.redoundo.pushChange(this.items, this._get_ru_tag());
                 }
             },
             _get_ieditor: function () {
@@ -158,7 +158,7 @@
                     do_action: (ac) => { return self[`action_${ac}`](); }
                 }
             },
-            _get_ru_version: function() {
+            _get_ru_tag: function() {
                 let sels = [];
                 this.selected.forEach(it => {sels.push(it.id)});
                 return {
@@ -183,10 +183,10 @@
                 api.projdb_changed(this.proj_id);
                 switch (reason) {
                     case 'action':
-                        this.redoundo.pushChange(this.items, this._get_ru_version());
+                        this.redoundo.pushChange(this.items, this._get_ru_tag());
                         break;
                     case 'modify':
-                        this.redoundo.pushChange(this.items, this._get_ru_version());
+                        this.redoundo.pushChange(this.items, this._get_ru_tag());
                         this._update_state();
                         break;
                     case 'redoundo':
@@ -366,7 +366,7 @@
                 this._update_change('action');
             },
             action_remove: function() {
-                this.redoundo.updateTag(this._get_ru_version());
+                this.redoundo.updateTag(this._get_ru_tag());
                 let items = this.items;
                 this.selected.forEach(it => {
                     let idx = items.findIndex(i => i === it);

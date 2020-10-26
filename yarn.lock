@@ -6006,10 +6006,10 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsplumb@^2.14.7:
-  version "2.14.7"
-  resolved "https://registry.yarnpkg.com/jsplumb/-/jsplumb-2.14.7.tgz#d9befcb8bead635ca6549e4597c63ce9f7cc1ae2"
-  integrity sha512-ArKrgAUhhRkJ2jVHU4iZLhmUwyYiBxr9Y2IrQBpW3Uw00IZNhK4Og9VM8IIgAycPgAzhiUqmaedgSGxKgypSXw==
+jsplumb@^2.15.0:
+  version "2.15.0"
+  resolved "https://registry.npm.taobao.org/jsplumb/download/jsplumb-2.15.0.tgz#6a243e05126492d3da83a2187746ddfad0b356f3"
+  integrity sha1-aiQ+BRJkktPag6IYd0bd+tCzVvM=
 
 jsprim@^1.2.2:
   version "1.4.1"

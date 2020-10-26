@@ -20,7 +20,7 @@
     "echarts": "^4.8.0",
     "enquirer": "^2.3.5",
     "js-yaml": "^3.14.0",
-    "jsplumb": "^2.14.7",
+    "jsplumb": "^2.15.0",
     "lokijs": "^1.5.8",
     "luaparse": "^0.3.0",
     "mermaid": "^8.6.2",
