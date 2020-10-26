@@ -36,6 +36,7 @@ async function get_reused(id, kind, name, memo) {
             code,
         } : null;
     } catch (error) {
+        console.error(error.message);
         return null;
     }
 }

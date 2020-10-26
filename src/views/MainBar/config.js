@@ -11,11 +11,6 @@ const cfg = {
         catalog: 'panel',
         route: 'PanelDesigner'
     }, {
-        icon: 'mdi-tools',
-        title: '工具箱',
-        catalog: 'tools',
-        route: 'ToolsBox',
-    }, {
         icon: 'mdi-cog-outline',
         title: '运行时设置',
         catalog: 'setting',
@@ -31,6 +26,11 @@ const cfg = {
         title: '复用资源管理',
         catalog: 'reused',
         route: 'ListReused',
+    }, {
+        icon: 'mdi-tools',
+        title: '工具箱',
+        catalog: 'tools',
+        route: 'ToolsBox',
     }, ]
 }
 export default cfg
