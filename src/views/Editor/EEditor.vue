@@ -10,6 +10,9 @@
         <e-empty v-else />
     </div>
 </template>
+<style scoped>
+    
+</style>
 <script>
     import Mousetrap from 'mousetrap';
     import ETitleMan from './ETitleMan';

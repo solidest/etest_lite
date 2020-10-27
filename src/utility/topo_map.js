@@ -6,6 +6,8 @@ let BUS_HEIGHT = 300;
 let CANVASE_WIDTH = 940;
 let SPACE = 30;
 let ITEM_HEIGHT = 46;
+let ITEM_VSPACE = 10;
+let ITEM_DEVTITLE_HEIGHT = 48;
 
 class Conn {
     constructor(id, name, kind, memo) {
@@ -191,9 +193,9 @@ function _merge_recs(to, from) {
     }
 }
 
-function _get_new_pos(used_rec, default_width, default_height) {
+function _get_new_pos(used_rec, w, h) {
     let rec;
-    if (used_rec.right + default_width + SPACE < CANVASE_WIDTH) {
+    if (used_rec.right + w + SPACE < CANVASE_WIDTH) {
         rec = {
             top: SPACE,
             left: used_rec.right + (used_rec.right===0 ? 1 :2)*SPACE,
@@ -204,8 +206,8 @@ function _get_new_pos(used_rec, default_width, default_height) {
             left: SPACE,
         }
     }
-    rec.bottom = rec.top + default_height;
-    rec.right = rec.left + default_width;
+    rec.bottom = rec.top + h;
+    rec.right = rec.left + w;
     _merge_recs(used_rec, rec);
     return rec;
 }
@@ -252,7 +254,7 @@ function update_layout(map) {
     let len = Math.max(len1, len2);
     for (let index = 0; index < len; index++) {
         if (index < len1) {
-            let h_all = ITEM_HEIGHT * (empty_devs[index].conns.length + 1);
+            let h_all = ITEM_HEIGHT * empty_devs[index].conns.length + ITEM_VSPACE*2 + ITEM_DEVTITLE_HEIGHT;
             if(h_all>MAX_HEIGHT) {
                 h_all = MAX_HEIGHT;
             }
@@ -346,6 +348,8 @@ function set_config(cfg) {
     BUS_HEIGHT = cfg.BUS_HEIGHT;
     CANVASE_WIDTH = cfg.CANVASE_WIDTH;
     SPACE = cfg.SPACE;
+    ITEM_VSPACE = cfg.ITEM_VSPACE;
+    ITEM_DEVTITLE_HEIGHT = cfg.ITEM_DEVTITLE_HEIGHT;
 }
 
 function set_container_size(width, height) {

@@ -2,3 +2,4 @@
 /worker/helper/expParser.js
 /language/script_lua.js
 /sdk/**
+*.min.js

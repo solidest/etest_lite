@@ -165,10 +165,10 @@
                         }
                     }
                 }
-                this._refresh_size();
                 this.map = null;
                 let self = this;
                 this.$nextTick(() => {
+                    self._refresh_size();
                     self.map = topo_map.create_map_bydb(self.raw_devs, bus_links, pp_links);
                 });
             },
@@ -253,8 +253,8 @@
                 let self = this;
                 this.$nextTick(() => {
                     self.map = topo_map.create_map_byold(self.raw_devs, map);
+                    self._save_doc();
                 });
-                this._save_doc();
             },
 
             //     _set_ru_version: function(vo) {
