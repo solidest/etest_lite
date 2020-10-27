@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex">
-        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" ref="__intf_list">
-            <e-linking-editor :map="map" />
-        </div>
+        <v-card color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
+            <e-linking-editor v-if="map" :map="map" />
+        </v-card>
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
                 :items="raw_devs" />
@@ -134,24 +134,26 @@
                 let tree = await db.get('config', 'tree');
                 let fdevs = [];
                 tman.getFileList('', tree.value, 'device', fdevs);
-                let odevs = [];
+                let rdevs = [];
                 fdevs.forEach(async (fdev) => {
                     let dev = fdev[1];
                     let od = await db.get('src', dev.id);
-                    odevs.push({
+                    rdevs.push({
                         id: dev.id,
                         name: dev.name,
+                        memo: dev.memo,
                         kind: 'none',
                         conns: ((od && od.content) ? od.content : []).map(c => {
                             return {
                                 id: c.id,
                                 name: c.name,
-                                kind: c.kind
+                                kind: c.kind,
+                                memo: c.memo
                             }
                         })
                     })
                 });
-                this.raw_devs = odevs;
+                this.raw_devs = rdevs;
             },
             _update_bydb(db_devs, bus_links, pp_links) {
                 if (db_devs) {
@@ -163,7 +165,12 @@
                         }
                     }
                 }
-                this.map = topo_map.create_map_bydb(this.raw_devs, bus_links, pp_links);
+                this._refresh_size();
+                this.map = null;
+                let self = this;
+                this.$nextTick(() => {
+                    self.map = topo_map.create_map_bydb(self.raw_devs, bus_links, pp_links);
+                });
             },
             async _reset_doc(id, reset_state = false) {
                 this.doc_id = id;
@@ -218,6 +225,13 @@
                 let s = this._get_state();
                 this.$store.commit('Editor/set_state_disbar', s);
             },
+            _refresh_size() {
+                let el = document.getElementById("editor_div");
+                if(!el) {
+                    return;
+                }
+                topo_map.set_container_size(el.offsetWidth, el.offsetHeight);
+            },
             action_select_dev() {
                 this.dlg_opt.type = 'select';
             },
@@ -233,7 +247,13 @@
                         raw_item.pos = null;
                     }
                 }
-                this.map = topo_map.create_map_byold(this.raw_devs, this.map);
+                this._refresh_size();
+                let map = this.map;
+                this.map = null;
+                let self = this;
+                this.$nextTick(() => {
+                    self.map = topo_map.create_map_byold(self.raw_devs, map);
+                });
                 this._save_doc();
             },
 
@@ -311,9 +331,6 @@
             //                 res.push(key + ': ' + v);
             //             }
             //             return res.join(', ');
-            //     },
-            //     on_resize: function (width) {
-            //         this.prop_width = width;
             //     },
             //     on_prop_changed: function() {
             //         this._update_change('modify');

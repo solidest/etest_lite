@@ -15,17 +15,13 @@ let left_tools = [{
         value: 'redo',
         icon: 'mdi-redo',
     }, {
-        text: '删除',
-        value: 'remove',
-        icon: 'mdi-delete-outline'
+        text: '运行时绑定',
+        icon: 'mdi-cog-clockwise',
+        value: 'binding',
     }, {
         text: '锁定/编辑',
         value: 'lock_edit',
         icon: 'mdi-pencil-lock-outline'
-    }, {
-        text: '运行时绑定',
-        icon: 'mdi-cog-clockwise',
-        value: 'binding',
     }];
 
 let right_tools = [{

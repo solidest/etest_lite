@@ -39,6 +39,7 @@
     </v-dialog>
 </template>
 <script>
+    import cfg from './config_map';
     export default {
         props: ['dialog', 'items'],
         mounted: function () {
@@ -62,29 +63,7 @@
                     sortable: false
                 },
             ],
-            kinds: {
-                none: {
-                    css: 'grey--text text--darken-2',
-                    color: 'grey darken-2',
-                    icon: 'mdi-checkbox-blank-circle-outline'
-                },
-                etest: {
-                    css: 'blue--text text--lighten-3',
-                    color: 'blue lighten-3',
-                    icon: 'mdi-checkbox-marked-circle'
-                },
-                uut: {
-                    css: 'brown--text text--lighten-3',
-                    color: 'brown lighten-3',
-                    icon: 'mdi-checkbox-blank-circle'
-                },
-                simu: {
-                    css: 'orange--text text--darken-4',
-                    color: 'orange darken-4',
-                    icon: 'mdi-checkbox-marked-circle'
-                },
-            },
-
+            kinds: cfg.dev_kinds,
             kindlist: [{
                     text: '不使用',
                     value: 'none',

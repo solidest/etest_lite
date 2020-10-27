@@ -1,8 +1,4 @@
 let left_tools = [{
-        text: '单选/多选',
-        value: 'toggle_select',
-        icon: 'mdi-check-all'
-    }, {
         text: '向后添加接口',
         value: 'new_item_after',
         icon: 'mdi-table-row-plus-after'
@@ -46,7 +42,11 @@ let left_tools = [{
         text: '删除',
         value: 'remove',
         icon: 'mdi-delete-outline'
-    }, ];
+    },{
+        text: '单选/多选',
+        value: 'toggle_select',
+        icon: 'mdi-check-all'
+    },  ];
 
 let right_tools = [{
     text: 'ETL代码编辑',
@@ -82,20 +82,8 @@ let headers = [{width: 48}, {
     }
 ];
 
-let intf_alias = {
-    di: 'DI',
-    do: 'DO',
-    ai: 'AI',
-    ao: 'AO',
-    serial_232: '232',
-    serial_422: '422',
-    serial_485: '485',
-    serial_ttl: 'UART',
-    can: 'CAN',
-    udp: 'UDP',
-    tcp_client: 'TCPC',
-    tcp_server: 'TCPS',
-}
+import mcfg from '../../config';
+const intf_alias = mcfg.intf_alias;
 
 let cfg = {
     kind: 'device',

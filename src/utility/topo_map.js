@@ -1,16 +1,18 @@
-const DEFAULT_WIDTH = 200;
-const MAX_HEIGHT = 200;
-const BUS_WIDTH = 30;
-const BUS_HEIGHT = 300;
-const CANVASE_WIDTH = 940;
 
-const SPACE = 30;
+let DEFAULT_WIDTH = 200;
+let MAX_HEIGHT = 200;
+let BUS_WIDTH = 30;
+let BUS_HEIGHT = 300;
+let CANVASE_WIDTH = 940;
+let SPACE = 30;
+let ITEM_HEIGHT = 46;
 
 class Conn {
-    constructor(id, name, kind) {
+    constructor(id, name, kind, memo) {
         this.id = id;
         this.name = name;
         this.kind = kind;
+        this.memo = memo;
         this.link = null;
     }
 
@@ -20,12 +22,13 @@ class Conn {
 }
 
 class Dev {
-    constructor(id, name, kind, pos) {
+    constructor(id, name, kind, pos, memo) {
         this.id = id;
         this.name = name;
         this.conns = [];
         this.kind = kind;
         this.pos = pos;
+        this.memo = memo;
     }
 
     setConns(items) {
@@ -151,10 +154,10 @@ class Map {
 }
 
 function _create_dev(raw_dev) {
-    let dev = new Dev(raw_dev.id, raw_dev.name, raw_dev.kind, raw_dev.pos);
-    if (dev.conns) {
-        dev.conns.forEach(it => {
-            dev.pushConn(new Conn(it.id, it.name, it.kind));
+    let dev = new Dev(raw_dev.id, raw_dev.name, raw_dev.kind, raw_dev.pos, raw_dev.memo);
+    if (raw_dev.conns) {
+        raw_dev.conns.forEach(it => {
+            dev.pushConn(new Conn(it.id, it.name, it.kind, it.memo));
         })
     }
     return dev;
@@ -249,7 +252,11 @@ function update_layout(map) {
     let len = Math.max(len1, len2);
     for (let index = 0; index < len; index++) {
         if (index < len1) {
-            empty_devs[index].pos = _get_new_pos(rec, DEFAULT_WIDTH, MAX_HEIGHT);
+            let h_all = ITEM_HEIGHT * (empty_devs[index].conns.length + 1);
+            if(h_all>MAX_HEIGHT) {
+                h_all = MAX_HEIGHT;
+            }
+            empty_devs[index].pos = _get_new_pos(rec, DEFAULT_WIDTH, h_all);
         }
         if (index < len2) {
             empty_buses[index].pos = _get_new_pos(rec, BUS_WIDTH, BUS_HEIGHT);
@@ -332,15 +339,24 @@ function create_dbcontent(raw_devs, map) {
     }
 }
 
+function set_config(cfg) {
+    DEFAULT_WIDTH = cfg.DEFAULT_WIDTH;
+    MAX_HEIGHT = cfg.MAX_HEIGHT;
+    BUS_WIDTH = cfg.BUS_WIDTH;
+    BUS_HEIGHT = cfg.BUS_HEIGHT;
+    CANVASE_WIDTH = cfg.CANVASE_WIDTH;
+    SPACE = cfg.SPACE;
+}
+
+function set_container_size(width, height) {
+    CANVASE_WIDTH = width;
+    console.log('set_container_size', height);
+}
+
 export default {
+    set_config,
     create_map_bydb,
     create_map_byold,
     create_dbcontent,
-    cfg_default: {
-        DEFAULT_WIDTH,
-        MAX_HEIGHT,
-        BUS_WIDTH,
-        BUS_HEIGHT,
-        CANVASE_WIDTH
-    }
+    set_container_size,
 }
