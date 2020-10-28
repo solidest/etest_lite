@@ -1,12 +1,4 @@
-const DEFAULT_WIDTH = 260;
-const BUS_WIDTH = 30;
-const BUS_HEIGHT = 300;
-const CANVASE_WIDTH = 1000;
-const SPACE = 30;
-const ITEM_HEIGHT = 46;
-const ITEM_MAX_COUNT = 10;
-const ITEM_VSPACE = 8;
-const ITEM_DEVTITLE_HEIGHT = 48;
+
 
 import mcfg from '../../config';
 const intf_alias = mcfg.intf_alias;
@@ -39,18 +31,14 @@ const dev_kinds = {
 }
 
 export default {
-    map_config: {
-        DEFAULT_WIDTH,
-        BUS_WIDTH,
-        BUS_HEIGHT,
-        CANVASE_WIDTH,
-        SPACE,
-        ITEM_HEIGHT,
-        ITEM_MAX_COUNT,
-        ITEM_VSPACE,
-        ITEM_DEVTITLE_HEIGHT,
-        MAX_ITEMS_HEIGHT: ITEM_HEIGHT*ITEM_MAX_COUNT+2*ITEM_VSPACE,
-        MAX_HEIGHT: ITEM_HEIGHT*ITEM_MAX_COUNT+2*ITEM_VSPACE+ITEM_DEVTITLE_HEIGHT,
+    map_default: {
+        DEFAULT_ITEM_HEIGHT: 48,
+        DEFAULT_BUS_SIZE: 160,
+        DEFAULT_CANVASE_WIDTH: 1000,
+        DEFAULT_SPACE: 30,
+        DEFAULT_WIDTH: 260,
+        DEFAULT_ITEMS_OTHERHEIGHT: 48+6,
+        DEFAULT_ITEMS_MAXCOUNT: 10,
     },
     intf_alias,
     dev_kinds,

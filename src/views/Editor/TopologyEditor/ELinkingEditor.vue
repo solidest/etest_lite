@@ -12,7 +12,7 @@
                 </v-btn>
             </v-card-title>
             <div :id="`l_${dev.id}`" class="d-flex flex-column"
-                :style="{position:'relative', overflow:'auto', height: `${dev.pos.bottom-dev.pos.top}px`, }">
+                :style="{position:'relative', overflow:'auto', height: `${dev.pos.height-cfg_default.DEFAULT_ITEMS_OTHERHEIGHT}px`, }">
                 <v-list-item :id="`${dev.id}.${item.id}`" v-for="item in dev.conns" :key="item.id"
                     style=" border-bottom: 1px solid grey">
                     <v-list-item-avatar size="38">
@@ -28,7 +28,8 @@
                     </v-list-item-content>
                 </v-list-item>
             </div>
-            <e-herizontal-bar :height="100" :min="100" :max="600" @resize="(e) => {on_resize(dev, e)}" />
+            <e-herizontal-bar :height="dev.pos.height-cfg_default.DEFAULT_ITEMS_OTHERHEIGHT" v-if="has_scroll(dev)"
+                :min="calc_min_h(dev)" :max="calc_max_h(dev)" @resize="(e) => {on_resize(dev, e)}" />
         </v-sheet>
         <div id="circle_bus"
             style="position:relative; width: 160px; height: 160px; border-radius: 80px; left: 200px; top: 100px; background-color: #BDBDBD;" />
@@ -63,7 +64,7 @@
 <script>
     import {
         jsPlumb
-    } from 'jsplumb';
+    } from './jsplumb.min.js';
     import topo_map from '../../../utility/topo_map';
     import cfg from './config_map';
     import EHerizontalBar from '../../Components/EHorizontalBar';
@@ -74,7 +75,7 @@
             'e-herizontal-bar': EHerizontalBar,
         },
         mounted() {
-            topo_map.set_config(cfg.map_config);
+            topo_map.set_config(cfg.map_default);
             let self = this;
             jsPlumb.ready(() => {
                 self.ready = true;
@@ -86,7 +87,7 @@
         },
         data: () => {
             return {
-                cfg_default: cfg.map_config,
+                cfg_default: cfg.map_default,
                 cfg_intf_alias: cfg.intf_alias,
                 cfg_dev_kinds: cfg.dev_kinds,
                 plumb: null,
@@ -95,8 +96,12 @@
                 conn_ends_tyle: {
                     isSource: true,
                     isTarget: true,
+                    endpoint:[ "Dot", { 
+                        radius: 6
+                    }],
                     paintStyle: {
                         fill: 'white',
+                        strokeWidth: 2
                     },
                     connector: ['StateMachine'],
                     connectorStyle: {
@@ -172,6 +177,12 @@
                     return true;
                 });
                 let self = this;
+                this.plumb.bind("beforeDrop", function(info) {
+                    console.log('beforeDrop', info);
+                    // self.plumb.repaintEverything();
+                    return true;
+                })
+            
                 this.$nextTick(() => {
                     self.plumb.batch(() => {
                         self._do_draw();
@@ -185,15 +196,23 @@
                 //     console.log('ok')
                 // }, 3000);
             },
-            calc_height(dev) {
-                if (!dev || !dev.conns) {
-                    return 15;
-                }
+            calc_min_h(dev) {
                 let len = dev.conns.length;
-                if (len > this.cfg_default.ITEM_MAX_COUNT) {
-                    len = this.cfg_default.ITEM_MAX_COUNT;
+                if(len>8) {
+                    len = 8;
                 }
-                return this.cfg_default.ITEM_HEIGHT * len;
+                return len * this.cfg_default.DEFAULT_ITEM_HEIGHT;
+            },
+            calc_max_h(dev) {
+                let len = dev.conns.length;
+                if(len>20) {
+                    len = 20;
+                }
+                return len * this.cfg_default.DEFAULT_ITEM_HEIGHT;
+            },
+            has_scroll(dev) {
+                let len = dev.conns.length;
+                return len>8;
             },
             on_destroy(id) {
                 if (!this.plumb) {
@@ -224,21 +243,21 @@
                 dev.pos = rec;
                 console.log('moved');
             },
-            on_resize(d, e) {
-                d.pos.bottom = d.pos.top+e;
+            on_resize(d, h) {
                 if(!this.plumb) {
                     return;
                 }
                 let p = this.plumb;
-
-               
+                console.log('resize', h);
+                d.pos.height = h + this.cfg_default.DEFAULT_ITEMS_OTHERHEIGHT;
+                this.$forceUpdate();
                 setTimeout(() =>{
                     p.removeList(document.getElementById(`l_${d.id}`));
                     p.addList(document.getElementById(`l_${d.id}`), {
                         anchor: ['TopRight', 'TopLeft', 'BottomLeft', 'BottomRight'],
                         endpoint: "Blank",
                     });
-                }, 300);
+                }, 200);
                 // p.batch(() => {
                 //         p.revalidate(d.id);
                 //         p.revalidate(`l_${d.id}`);
@@ -246,7 +265,6 @@
                 //             p.revalidate(`${d.id}.${conn.id}`)
                 //         });
                 //     });
-                console.log('resize', e);
             },
             do_zoom(zoom, instance, transformOrigin, el) {
                 transformOrigin = transformOrigin || [0.5, 0.5];

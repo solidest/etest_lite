@@ -1,13 +1,13 @@
 
-let DEFAULT_WIDTH = 200;
-let MAX_HEIGHT = 200;
-let BUS_WIDTH = 30;
-let BUS_HEIGHT = 300;
-let CANVASE_WIDTH = 940;
-let SPACE = 30;
-let ITEM_HEIGHT = 46;
-let ITEM_VSPACE = 10;
-let ITEM_DEVTITLE_HEIGHT = 48;
+let map_default = {
+    DEFAULT_ITEM_HEIGHT: 46,
+    DEFAULT_BUS_SIZE: 160,
+    DEFAULT_CANVASE_WIDTH: 1000,
+    DEFAULT_SPACE: 30,
+    DEFAULT_WIDTH: 260,
+    DEFAULT_ITEMS_OTHERHEIGHT: 8*2+48,
+    DEFAULT_ITEMS_MAXCOUNT: 10,
+}
 
 class Conn {
     constructor(id, name, kind, memo) {
@@ -178,38 +178,38 @@ function _create_map_empty(devs) {
     return map;
 }
 
-function _merge_recs(to, from) {
-    if (from.left < to.left) {
-        to.left = from.left;
+function _merge_recs(rec, pos) {
+    if (pos.left < rec.left) {
+        rec.left = pos.left;
     }
-    if (from.top < to.top) {
-        to.top = from.top;
+    if (pos.top < rec.top) {
+        rec.top = pos.top;
     }
-    if (from.bottom > to.bottom) {
-        to.bottom = from.bottom;
+    if (pos.left+pos.width > rec.right) {
+        rec.right = pos.left+pos.width;
     }
-    if (from.right > to.right) {
-        to.right = from.right;
+    if (pos.top+pos.height > rec.bottom) {
+        rec.bottom = pos.top+pos.height;
     }
 }
 
 function _get_new_pos(used_rec, w, h) {
-    let rec;
-    if (used_rec.right + w + SPACE < CANVASE_WIDTH) {
-        rec = {
-            top: SPACE,
-            left: used_rec.right + (used_rec.right===0 ? 1 :2)*SPACE,
+    let pos;
+    if (used_rec.right + w + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
+        pos = {
+            top: map_default.DEFAULT_SPACE,
+            left: used_rec.right + map_default.DEFAULT_SPACE,
         }
     } else {
-        rec = {
-            top: used_rec.bottom + SPACE,
-            left: SPACE,
+        pos = {
+            top: used_rec.bottom + map_default.DEFAULT_SPACE,
+            left: map_default.DEFAULT_SPACE,
         }
     }
-    rec.bottom = rec.top + h;
-    rec.right = rec.left + w;
-    _merge_recs(used_rec, rec);
-    return rec;
+    pos.height = h;
+    pos.width = w;
+    _merge_recs(used_rec, pos);
+    return pos;
 }
 
 function update_layout(map) {
@@ -254,14 +254,14 @@ function update_layout(map) {
     let len = Math.max(len1, len2);
     for (let index = 0; index < len; index++) {
         if (index < len1) {
-            let h_all = ITEM_HEIGHT * empty_devs[index].conns.length + ITEM_VSPACE*2 + ITEM_DEVTITLE_HEIGHT;
-            if(h_all>MAX_HEIGHT) {
-                h_all = MAX_HEIGHT;
+            let len = empty_devs[index].conns.length;
+            if(len > map_default.DEFAULT_ITEMS_MAXCOUNT) {
+                len = map_default.DEFAULT_ITEMS_MAXCOUNT;
             }
-            empty_devs[index].pos = _get_new_pos(rec, DEFAULT_WIDTH, h_all);
+            empty_devs[index].pos = _get_new_pos(rec, map_default.DEFAULT_WIDTH, len*map_default.DEFAULT_ITEM_HEIGHT + map_default.DEFAULT_ITEMS_OTHERHEIGHT);
         }
         if (index < len2) {
-            empty_buses[index].pos = _get_new_pos(rec, BUS_WIDTH, BUS_HEIGHT);
+            empty_buses[index].pos = _get_new_pos(rec, map_default.DEFAULT_BUS_SIZE, map_default.DEFAULT_BUS_SIZE);
         }
     }
 }
@@ -342,18 +342,11 @@ function create_dbcontent(raw_devs, map) {
 }
 
 function set_config(cfg) {
-    DEFAULT_WIDTH = cfg.DEFAULT_WIDTH;
-    MAX_HEIGHT = cfg.MAX_HEIGHT;
-    BUS_WIDTH = cfg.BUS_WIDTH;
-    BUS_HEIGHT = cfg.BUS_HEIGHT;
-    CANVASE_WIDTH = cfg.CANVASE_WIDTH;
-    SPACE = cfg.SPACE;
-    ITEM_VSPACE = cfg.ITEM_VSPACE;
-    ITEM_DEVTITLE_HEIGHT = cfg.ITEM_DEVTITLE_HEIGHT;
+    map_default = cfg;
 }
 
 function set_container_size(width, height) {
-    CANVASE_WIDTH = width;
+    map_default.DEFAULT_CANVASE_WIDTH = width;
     console.log('set_container_size', height);
 }
 
