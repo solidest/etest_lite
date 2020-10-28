@@ -1,4 +1,4 @@
-const DEFAULT_WIDTH = 230;
+const DEFAULT_WIDTH = 260;
 const BUS_WIDTH = 30;
 const BUS_HEIGHT = 300;
 const CANVASE_WIDTH = 1000;

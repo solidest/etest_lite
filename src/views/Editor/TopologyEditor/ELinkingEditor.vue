@@ -11,28 +11,27 @@
                     <v-icon small>mdi-pencil</v-icon>
                 </v-btn>
             </v-card-title>
-            <v-virtual-scroll :items="dev.conns" :item-height="cfg_default.ITEM_HEIGHT" :height="calc_height(dev)"
-                class="my-2" bench="0">
-                <template v-slot="{ item }">
-                    <v-list-item :id="`${dev.id}.${item.id}`" @hook:beforeDestroy="{on_destroy(`${dev.id}.${item.id}`)}"
-                        @hook:mounted="{on_mounted(`${dev.id}.${item.id}`)}">
-                        <v-list-item-avatar size="38">
-                            <v-avatar color="grey darken-2" class="white--text">
-                                <span class="body-2">{{ cfg_intf_alias[item.kind] }}</span>
-                            </v-avatar>
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                            <v-list-item-title>
-                                <span class="text-lg-h6 grey--text text--lighten-3">{{ item.name }}</span>
-                                <span class="grey--text text-lg-h6  ml-2" v-if="item.memo">{{ ` ${item.memo}` }}</span>
-                            </v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </template>
-            </v-virtual-scroll>
+            <div :id="`l_${dev.id}`" class="d-flex flex-column"
+                :style="{position:'relative', overflow:'auto', height: `${dev.pos.bottom-dev.pos.top}px`, }">
+                <v-list-item :id="`${dev.id}.${item.id}`" v-for="item in dev.conns" :key="item.id"
+                    style=" border-bottom: 1px solid grey">
+                    <v-list-item-avatar size="38">
+                        <v-avatar color="grey darken-2" class="white--text">
+                            <span class="body-2">{{ cfg_intf_alias[item.kind] }}</span>
+                        </v-avatar>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                        <v-list-item-title>
+                            <span class="text-lg-h6 grey--text text--lighten-3">{{ item.name }}</span>
+                            <span class="grey--text text-lg-h6  ml-2" v-if="item.memo">{{ ` ${item.memo}` }}</span>
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </div>
+            <e-herizontal-bar :height="100" :min="100" :max="600" @resize="(e) => {on_resize(dev, e)}" />
         </v-sheet>
         <div id="circle_bus"
-            style="position:relative; width: 100px; height: 100px; border-radius: 50px; left: 200px; top: 100px; background-color: gray;" />
+            style="position:relative; width: 160px; height: 160px; border-radius: 80px; left: 200px; top: 100px; background-color: #BDBDBD;" />
     </v-sheet>
 </template>
 <style scoped>
@@ -45,7 +44,7 @@
 
     ::-webkit-scrollbar {
         display: block;
-        width: 3px;
+        width: 6px;
         height: 1px;
     }
 
@@ -64,12 +63,16 @@
 <script>
     import {
         jsPlumb
-    } from './jsplumb.min.js';
+    } from 'jsplumb';
     import topo_map from '../../../utility/topo_map';
     import cfg from './config_map';
+    import EHerizontalBar from '../../Components/EHorizontalBar';
 
     export default {
         props: ['map'],
+        components: {
+            'e-herizontal-bar': EHerizontalBar,
+        },
         mounted() {
             topo_map.set_config(cfg.map_config);
             let self = this;
@@ -129,11 +132,28 @@
                 });
                 for (const dev of this.devs) {
                     this.plumb.draggable(dev.id);
+                    this.plumb.addList(document.getElementById(`l_${dev.id}`), {
+                        anchor: ['TopRight', 'TopLeft', 'BottomLeft', 'BottomRight'],
+                        endpoint: "Blank",
+                    });
                     for (const conn of dev.conns) {
                         let id = `${dev.id}.${conn.id}`;
                         if (document.getElementById(id)) {
-                            this.plumb.addEndpoint(id, {
-                                anchors: ['Left', 'Right']
+                            this.plumb.makeTarget(id, {
+                                anchor: ['Left', 'Right'],
+                                isTarget:true,
+                                isSource:true, 
+                                createEndpoint:false,
+                                allowLoopback:false,
+                                maxConnections:1,
+                            }, this.conn_ends_tyle);
+                            this.plumb.makeSource(id, {
+                                anchor: ['Left', 'Right'],
+                                isTarget:true, 
+                                isSource:true, 
+                                createEndpoint:false,
+                                allowLoopback:false,
+                                maxConnections:1,
                             }, this.conn_ends_tyle);
                         }
                     }
@@ -157,13 +177,13 @@
                         self._do_draw();
                     });
                 });
-                setTimeout(() => {
-                    if (!self.plumb) {
-                        return;
-                    }
-                    self.do_zoom(0.75, self.plumb);
-                    console.log('ok')
-                }, 3000);
+                // setTimeout(() => {
+                //     if (!self.plumb) {
+                //         return;
+                //     }
+                //     self.do_zoom(0.75, self.plumb);
+                //     console.log('ok')
+                // }, 3000);
             },
             calc_height(dev) {
                 if (!dev || !dev.conns) {
@@ -203,6 +223,30 @@
                 }
                 dev.pos = rec;
                 console.log('moved');
+            },
+            on_resize(d, e) {
+                d.pos.bottom = d.pos.top+e;
+                if(!this.plumb) {
+                    return;
+                }
+                let p = this.plumb;
+
+               
+                setTimeout(() =>{
+                    p.removeList(document.getElementById(`l_${d.id}`));
+                    p.addList(document.getElementById(`l_${d.id}`), {
+                        anchor: ['TopRight', 'TopLeft', 'BottomLeft', 'BottomRight'],
+                        endpoint: "Blank",
+                    });
+                }, 300);
+                // p.batch(() => {
+                //         p.revalidate(d.id);
+                //         p.revalidate(`l_${d.id}`);
+                //         d.conns.forEach(conn => {
+                //             p.revalidate(`${d.id}.${conn.id}`)
+                //         });
+                //     });
+                console.log('resize', e);
             },
             do_zoom(zoom, instance, transformOrigin, el) {
                 transformOrigin = transformOrigin || [0.5, 0.5];
