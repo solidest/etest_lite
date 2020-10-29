@@ -2,10 +2,14 @@ let left_tools = [{
         text: '选择设备',
         value: 'select_dev',
         icon: 'mdi-help-network-outline'
-    }, {
+    },  {
         text: '添加网络/总线',
         value: 'new_bus',
         icon: 'mdi-shape-circle-plus'
+    }, {
+        text: '切换连线样式',
+        value: 'link_type',
+        icon: 'mdi-vector-line'
     }, {
         text: '撤销',
         value: 'undo',
@@ -14,11 +18,11 @@ let left_tools = [{
         text: '恢复',
         value: 'redo',
         icon: 'mdi-redo',
-    }, {
-        text: '删除',
-        value: 'remove',
-        icon: 'mdi-delete-outline'
-    }, {
+    },  {
+        text: '自适应大小',
+        value: 'zoom_fit',
+        icon: 'mdi-magnify-scan'
+    },  {
         text: '放大',
         value: 'zoom_big',
         icon: 'mdi-magnify-plus'

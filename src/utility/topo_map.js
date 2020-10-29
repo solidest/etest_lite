@@ -57,7 +57,8 @@ class Dev_Conn {
 }
 
 class BLink {
-    constructor(name, dcs, pos) {
+    constructor(id, name, dcs, pos) {
+        this.id = id;
         this.name = name;
         this.dcs = dcs;
         this.pos = pos;
@@ -79,7 +80,8 @@ class BLink {
 }
 
 class PLink {
-    constructor(name, dc1, dc2) {
+    constructor(id, name, dc1, dc2) {
+        this.id = id;
         this.name = name;
         this.dc1 = dc1;
         this.dc1 = dc2;
@@ -122,7 +124,7 @@ class Map {
     pushDev(dev) {
         this.devs.push(dev);
     }
-    pushBLink(name, old_dcs, pos) {
+    pushBLink(id, name, old_dcs, pos) {
         if (!old_dcs) {
             return false;
         }
@@ -136,16 +138,16 @@ class Map {
         if (conns.length < 1) {
             return false;
         }
-        this.links.push(new BLink(name, conns, pos));
+        this.links.push(new BLink(id, name, conns, pos));
         return true;
     }
-    pushPLink(name, old_dc1, old_dc2) {
+    pushPLink(id, name, old_dc1, old_dc2) {
         let dc1 = this._create_empty_dev_conn(old_dc1);
         let dc2 = this._create_empty_dev_conn(old_dc2);
         if (!dc1 || !dc2) {
             return false;
         }
-        this.links.push(new PLink(name, dc1, dc2));
+        this.links.push(new PLink(id, name, dc1, dc2));
         return true;
     }
     removeLink(link) {
@@ -291,7 +293,7 @@ function create_map_byold(raw_devs, old_map) {
     if (old_map) {
         let links = old_map.links;
         links.forEach(link => {
-            link.is_bus ? map.pushBLink(link.name, link.dcs, link.pos) : map.pushPLink(link.name, link.dc1, link.dc2);
+            link.is_bus ? map.pushBLink(link.id, link.name, link.dcs, link.pos) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
         });
     }
     update_layout(map);
@@ -302,12 +304,13 @@ function create_map_bycontent(raw_devs, bus_links, pp_links) {
     let map = _create_map_empty(raw_devs);
     if (bus_links) {
         bus_links.forEach(link => {
-            map.pushBLink(link.name, link.dcs, link.pos);
-        })
+            map.pushBLink(link.id, link.name, link.dcs, link.pos);
+        });
+        map.links.push(new BLink('demo_id', 'demo', [], null));
     }
     if (pp_links) {
         pp_links.forEach(link => {
-            map.pushPLink(link.name, link.dc1, link.dc2);
+            map.pushPLink(link.id, link.name, link.dc1, link.dc2);
         })
     }
     update_layout(map);

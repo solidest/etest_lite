@@ -1,10 +1,12 @@
 <template>
-    <v-sheet color="grey darken-2" id="__CONTAINER" width="100%" height="100%" style="position:relative" class="pa-0 ma-0">
+    <v-sheet color="grey darken-2" id="__CONTAINER" width="100%" height="100%" style="position:relative"
+        class="pa-0 ma-0">
         <v-sheet class="jtk-drag-select" :width="cfg_default.DEFAULT_ITEM_WIDTH" v-for="dev in devs" :key="dev.id"
             :id="dev.id" :style="{position: 'absolute', left: `${dev.pos.left}px`, top: `${dev.pos.top}px`}"
             @mouseup="on_dragend(dev)">
             <v-list class="pa-0">
-                <v-list-item :class="cfg_dev_kinds[dev.kind].css_title" :style="`height:${cfg_default.DEFAULT_ITEMS_TITLEHEIGHT}px`">
+                <v-list-item :class="cfg_dev_kinds[dev.kind].css_title"
+                    :style="`height:${cfg_default.DEFAULT_ITEMS_TITLEHEIGHT}px`">
                     <v-list-item-icon class="mr-3">
                         <v-icon>mdi-network-outline</v-icon>
                     </v-list-item-icon>
@@ -37,12 +39,12 @@
                 </v-list-item>
             </div>
             <e-herizontal-bar v-if="dev.conns.length>cfg_default.DEFAULT_ITEMS_MINCOUNT" :count="dev.pos.show_count"
-                :step="cfg_default.DEFAULT_ITEM_HEIGHT" :min="cfg_default.DEFAULT_ITEMS_MINCOUNT" 
+                :step="cfg_default.DEFAULT_ITEM_HEIGHT" :min="cfg_default.DEFAULT_ITEMS_MINCOUNT"
                 :max="Math.min(dev.conns.length, cfg_default.DEFAULT_ITEMS_MAXCOUNT)"
                 @resize="(count) => {on_resize(dev, count)}" />
         </v-sheet>
-        <!-- <div id="circle_bus"
-            style="position:relative; width: 160px; height: 160px; border-radius: 80px; left: 200px; top: 100px; background-color: #BDBDBD;" /> -->
+        <e-bus-element v-for="item in buses" :key="item.id" :eid="item.id" @e_dbclick="on_dbclick_bus(item)"
+            :size="item.pos.width" :left="item.pos.left" :top="item.pos.top" :title="item.name" />
     </v-sheet>
 </template>
 <style scoped>
@@ -52,7 +54,6 @@
         -khtml-user-select: none;
         user-select: none;
     }
-
     ::-webkit-scrollbar {
         display: block;
         width: 6px;
@@ -78,11 +79,13 @@
     import topo_map from '../../../utility/topo_map';
     import cfg from './config_map';
     import EHerizontalBar from '../../Components/EHorizontalBar';
+    import EBusElement from './EBusElement';
 
     export default {
         props: ['map'],
         components: {
             'e-herizontal-bar': EHerizontalBar,
+            'e-bus-element': EBusElement,
         },
         mounted() {
             let self = this;
@@ -103,21 +106,12 @@
                 plumb: null,
                 draw_map: null,
                 ready: false,
-                conn_ends_tyle: {
-                    isSource: true,
+                comm_item: {
                     isTarget: true,
-                    endpoint: ["Dot", {
-                        radius: 6
-                    }],
-                    paintStyle: {
-                        fill: 'white',
-                        strokeWidth: 2
-                    },
-                    connector: ['StateMachine'],
-                    connectorStyle: {
-                        outlineStroke: 'white',
-                        strokeWidth: 1
-                    },
+                    isSource: true,
+                    createEndpoint: false,
+                    allowLoopback: false,
+                    maxConnections: 1,
                 }
             }
         },
@@ -129,70 +123,91 @@
                 return this.map ? this.map.links.filter(l => l.is_bus) : [];
             },
         },
-        watch: {
-            map: function (m) {
-                this.redraw(m);
-            },
-        },
         methods: {
             _create_plumb() {
                 let p = jsPlumb.getInstance({
                     Container: "__CONTAINER"
                 });
-                let self = this;
-                p.importDefaults({ 
+                                
+                p.importDefaults({
                     ConnectionsDetachable: false,
+                    Connector : "StateMachine",//"Bezier",
+                    Endpoint: ["Dot", {
+                        radius: 8
+                    }],
+                    EndpointStyle : { fill : "white" },
+                    Anchor: ['Left', 'Right'],
+                    PaintStyle : { strokeWidth : 3, stroke : "white" },
                 });
-                p.bind("connection", function(info) {
-                    p.unmakeTarget(info.sourceId);
-                    p.unmakeSource(info.targetId);
-                    let c = info.connection;
-                    c.setType("basic")
-                    c.bind("click", function() {
-                        console.log('c',c)
-                        if(self.selected_links.includes(c.id)) {
-                            c.toggleType("basic");
-                            let idx = self.selected_links.findIndex(it => it === c.id);
-                            self.selected_links.splice(idx, 1);
-                        } else {
-                            c.toggleType("selected");
-                            self.selected_links.push(c.id);
-                        }
-                    }); 
-                });
-                p.bind("connectionMoved", function (info) {
-                    console.log("connectionMoved", info)
-                    return true;
-                });
-                // p.bind("beforeDrop", function (info) {
-                //     console.log('beforeDrop', info);
-                //     // self.plumb.repaintEverything();
-                //     return true;
-                // });
+
                 p.registerConnectionTypes({
                     "basic": {
-                        paintStyle:{ stroke:"white", strokeWidth:5  },
-                        // hoverPaintStyle:{ stroke:"red", strokeWidth:7 },
-                        cssClass:"connector-normal"
+                        paintStyle: {
+                            stroke: "white",
+                            strokeWidth: 3
+                        },
+                        hoverPaintStyle: {
+                            stroke: "#E53935",
+                            strokeWidth: 5
+                        },
+                        cssClass: "connector-normal"
                     },
-                    "selected":{
-                        paintStyle:{ stroke:"#2979FF", strokeWidth:5 },
-                        // hoverPaintStyle:{ strokeWidth: 17, stroke:"red" },
-                        cssClass:"connector-selected"
-                    } 
+                    "selected": {
+                        paintStyle: {
+                            stroke: "#E53935",
+                            strokeWidth: 3
+                        },
+                        hoverPaintStyle: {
+                            stroke: "#FFA726",
+                            strokeWidth: 5
+                        },
+                        cssClass: "connector-selected"
+                    }
+                });
+                let self = this;
+                p.bind("connection", function (info) {
+                    if(info.targetId.indexOf('.')>0) {
+                        p.unmakeSource(info.targetId);
+                    }
+                    p.unmakeTarget(info.sourceId);
+
+                    let el = document.getElementById(`l_${info.targetId.split('.')[0]}`);
+                    if(el) {
+                        let evt = document.createEvent("HTMLEvents");
+                        evt.initEvent("scroll",true,true);
+                        el.dispatchEvent(evt);
+                    }
+                    
+                    let c = info.connection;
+                    c.setType("basic");
+                    console.log('TODO after connection');
+                    c.bind("dblclick", function () {
+                        p.makeTarget(c.sourceId, self.comm_item);
+                        if(c.targetId.indexOf('.')>0) {
+                            p.makeSource(c.targetId, self.comm_item);
+                        }
+                        p.deleteConnectionsForElement(c.sourceId);
+                        console.log('TODO after remove connection');
+                    });
                 });
                 return p;
             },
             _do_draw() {
                 this.plumb.draggable('__CONTAINER');
-                // this.plumb.draggable('circle_bus');
-                // this.plumb.makeTarget('circle_bus', {
-                //     endpoint: "Dot",
-                //     anchor: "Continuous",
-                //     paintStyle: {
-                //         fill: 'white',
-                //     },
-                // });
+                for(const bus of this.buses) {
+                    
+                    console.log('bus', bus.pos.width)
+                    this.plumb.draggable(bus.id);
+                    this.plumb.makeTarget(bus.id, {
+                        endpoint: "Dot",
+                        anchor: "Continuous",
+                        // paintStyle: {
+                        //     fill: 'white',
+                        // },
+                        maxConnections: -1,
+                    });
+                }
+                
                 for (const dev of this.devs) {
                     this.plumb.draggable(dev.id);
                     this.plumb.addList(document.getElementById(`l_${dev.id}`), {
@@ -202,22 +217,8 @@
                     for (const conn of dev.conns) {
                         let id = `${dev.id}.${conn.id}`;
                         if (document.getElementById(id)) {
-                            this.plumb.makeTarget(id, {
-                                anchor: ['Left', 'Right'],
-                                isTarget: true,
-                                isSource: true,
-                                createEndpoint: false,
-                                allowLoopback: false,
-                                maxConnections: 1,
-                            }, this.conn_ends_tyle);
-                            this.plumb.makeSource(id, {
-                                anchor: ['Left', 'Right'],
-                                isTarget: true,
-                                isSource: true,
-                                createEndpoint: false,
-                                allowLoopback: false,
-                                maxConnections: 1,
-                            }, this.conn_ends_tyle);
+                            this.plumb.makeTarget(id, this.comm_item);
+                            this.plumb.makeSource(id, this.comm_item);
                         }
                     }
                 }
@@ -234,60 +235,23 @@
                         self._do_draw();
                     });
                 });
-                // setTimeout(() => {
-                //     if (!self.plumb) {
-                //         return;
-                //     }
-                //     self.do_zoom(0.75, self.plumb);
-                //     console.log('ok')
-                // }, 3000);
             },
-            calc_min_h(dev) {
-                let len = dev.conns.length;
-                if (len > 8) {
-                    len = 8;
-                }
-                return len * this.cfg_default.DEFAULT_ITEM_HEIGHT;
-            },
-            calc_max_h(dev) {
-                let len = dev.conns.length;
-                if (len > 20) {
-                    len = 20;
-                }
-                return len * this.cfg_default.DEFAULT_ITEM_HEIGHT;
-            },
-            has_scroll(dev) {
-                let len = dev.conns.length;
-                return len > 8;
-            },
-            on_destroy(id) {
-                if (!this.plumb) {
-                    return;
-                }
-                this.plumb.deleteEndpoint(id);
-            },
-            on_mounted(id) {
-                if (!this.plumb) {
-                    return;
-                }
-                this.plumb.addEndpoint(id, {
-                    anchors: ['Left', 'Right'],
-                    uuid: id,
-                }, this.conn_ends_tyle);
-            },
+
             on_dragend(dev) {
                 let el = document.getElementById(dev.id);
-                let rec = {
-                    left: el.offsetLeft,
-                    top: el.offsetTop,
-                    bottom: el.offsetTop + el.offsetHeight,
-                    right: el.offsetLeft + el.offsetWidth,
-                }
-                if (rec.left === dev.pos.left && rec.top === dev.pos.top) {
+                if(dev.pos.left === el.offsetLeft && dev.pos.top === el.offsetTop) {
                     return;
                 }
-                dev.pos = rec;
-                console.log('moved');
+                dev.pos.left = el.offsetLeft;
+                dev.pos.top = el.offsetTop;
+                console.log('TODO after moved');
+            },
+            on_dbclick_bus(bus) {
+                let buses = this.buses;
+                let idx = buses.findIndex(it => it === bus);
+                buses.splice(idx, 1);
+                this.plumb.remove(bus.id);
+                console.log('TODO remove bus');
             },
             on_resize(d, count) {
                 if (!this.plumb) {
@@ -295,11 +259,13 @@
                 }
                 let p = this.plumb;
                 d.pos.show_count = count;
-                d.pos.height = this.cfg_default.DEFAULT_ITEMS_TITLEHEIGHT + this.cfg_default.DEFAULT_ITEM_HEIGHT*count + this.cfg_default.DEFAULT_ITEMS_TAILHEIGHT;
+                d.pos.height = this.cfg_default.DEFAULT_ITEMS_TITLEHEIGHT + this.cfg_default.DEFAULT_ITEM_HEIGHT *
+                    count + this.cfg_default.DEFAULT_ITEMS_TAILHEIGHT;
                 this.$forceUpdate();
                 setTimeout(() => {
-                    p.removeList(document.getElementById(`l_${d.id}`));
-                    p.addList(document.getElementById(`l_${d.id}`), {
+                    let el = document.getElementById(`l_${d.id}`)
+                    p.removeList(el);
+                    p.addList(el, {
                         anchor: ['TopRight', 'TopLeft', 'BottomLeft', 'BottomRight'],
                         endpoint: "Blank",
                     });
