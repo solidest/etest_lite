@@ -14,32 +14,23 @@ const dev_kinds = {
         css: 'blue--text text--lighten-3',
         color: 'blue lighten-3',
         icon: 'mdi-checkbox-marked-circle',
-        css_title: 'blue darken-3 white--text py-2',
+        css_title: 'blue darken-3 white--text',
     },
     uut: {
         css: 'brown--text text--lighten-3',
         color: 'brown lighten-3',
         icon: 'mdi-checkbox-blank-circle',
-        css_title: 'grey darken-3 white--text py-2',
+        css_title: 'grey darken-3 white--text',
     },
     simu: {
         css: 'orange--text text--darken-4',
         color: 'orange darken-4',
         icon: 'mdi-checkbox-marked-circle',
-        css_title: 'orange darken-4 white--text py-2',
+        css_title: 'orange darken-4 white--text',
     },
 }
 
 export default {
-    map_default: {
-        DEFAULT_ITEM_HEIGHT: 48,
-        DEFAULT_BUS_SIZE: 160,
-        DEFAULT_CANVASE_WIDTH: 1000,
-        DEFAULT_SPACE: 30,
-        DEFAULT_WIDTH: 260,
-        DEFAULT_ITEMS_OTHERHEIGHT: 48+6,
-        DEFAULT_ITEMS_MAXCOUNT: 10,
-    },
     intf_alias,
     dev_kinds,
 }

@@ -120,7 +120,7 @@
                 }
             },
             async _save_doc() {
-                let content = topo_map.create_dbcontent(this.raw_devs, this.map);
+                let content = topo_map.create_content(this.raw_devs, this.map);
                 content.binds = this.content.binds;
                 this.content = content;
                 await db.update('src', {
@@ -169,7 +169,7 @@
                 let self = this;
                 this.$nextTick(() => {
                     self._refresh_size();
-                    self.map = topo_map.create_map_bydb(self.raw_devs, bus_links, pp_links);
+                    self.map = topo_map.create_map_bycontent(self.raw_devs, bus_links, pp_links);
                 });
             },
             async _reset_doc(id, reset_state = false) {

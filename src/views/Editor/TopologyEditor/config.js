@@ -5,7 +5,7 @@ let left_tools = [{
     }, {
         text: '添加网络/总线',
         value: 'new_bus',
-        icon: 'mdi-card-plus-outline'
+        icon: 'mdi-shape-circle-plus'
     }, {
         text: '撤销',
         value: 'undo',
@@ -15,13 +15,21 @@ let left_tools = [{
         value: 'redo',
         icon: 'mdi-redo',
     }, {
+        text: '删除',
+        value: 'remove',
+        icon: 'mdi-delete-outline'
+    }, {
+        text: '放大',
+        value: 'zoom_big',
+        icon: 'mdi-magnify-plus'
+    }, {
+        text: '缩小',
+        value: 'zoom_small',
+        icon: 'mdi-magnify-minus',
+    }, {
         text: '运行时绑定',
         icon: 'mdi-cog-clockwise',
         value: 'binding',
-    }, {
-        text: '锁定/编辑',
-        value: 'lock_edit',
-        icon: 'mdi-pencil-lock-outline'
     }];
 
 let right_tools = [{

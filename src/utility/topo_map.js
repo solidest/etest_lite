@@ -1,12 +1,14 @@
 
 let map_default = {
-    DEFAULT_ITEM_HEIGHT: 46,
+    DEFAULT_ITEM_HEIGHT: 48,
+    DEFAULT_ITEM_WIDTH: 260,
+    DEFAULT_ITEMS_TITLEHEIGHT: 60,
+    DEFAULT_ITEMS_TAILHEIGHT: 6,
+    DEFAULT_ITEMS_MAXCOUNT: 15,
+    DEFAULT_ITEMS_MINCOUNT: 5,
     DEFAULT_BUS_SIZE: 160,
     DEFAULT_CANVASE_WIDTH: 1000,
     DEFAULT_SPACE: 30,
-    DEFAULT_WIDTH: 260,
-    DEFAULT_ITEMS_OTHERHEIGHT: 8*2+48,
-    DEFAULT_ITEMS_MAXCOUNT: 10,
 }
 
 class Conn {
@@ -193,24 +195,43 @@ function _merge_recs(rec, pos) {
     }
 }
 
-function _get_new_pos(used_rec, w, h) {
-    let pos;
-    if (used_rec.right + w + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
-        pos = {
-            top: map_default.DEFAULT_SPACE,
-            left: used_rec.right + map_default.DEFAULT_SPACE,
-        }
-    } else {
-        pos = {
-            top: used_rec.bottom + map_default.DEFAULT_SPACE,
-            left: map_default.DEFAULT_SPACE,
-        }
+function _get_conn_pos(used_rec, count, show_count) {
+    let show = Math.min(count, show_count);
+    let width = map_default.DEFAULT_ITEM_WIDTH;
+    let height = map_default.DEFAULT_ITEMS_TITLEHEIGHT + map_default.DEFAULT_ITEM_HEIGHT*show;
+    if(show<count) {
+        height += map_default.DEFAULT_ITEMS_TAILHEIGHT;
     }
-    pos.height = h;
-    pos.width = w;
-    _merge_recs(used_rec, pos);
+    let pos = {
+        width,
+        height,
+        show_count: show,
+    }
+    if (used_rec.right + width + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
+        pos.top = map_default.DEFAULT_SPACE;
+        pos.left = used_rec.right + map_default.DEFAULT_SPACE;
+    } else {
+        pos.top = used_rec.bottom + map_default.DEFAULT_SPACE;
+        pos.left = map_default.DEFAULT_SPACE;
+    }
     return pos;
 }
+
+function _get_bus_pos(used_rec) {
+    let pos = {
+        width: map_default.DEFAULT_BUS_SIZE,
+        height: map_default.DEFAULT_BUS_SIZE,
+    }
+    if (used_rec.right + pos.width + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
+        pos.top = map_default.DEFAULT_SPACE;
+        pos.left = used_rec.right + map_default.DEFAULT_SPACE;
+    } else {
+        pos.top = used_rec.bottom + map_default.DEFAULT_SPACE;
+        pos.left = map_default.DEFAULT_SPACE;
+    }
+    return pos;
+}
+
 
 function update_layout(map) {
     if (!map) {
@@ -255,13 +276,12 @@ function update_layout(map) {
     for (let index = 0; index < len; index++) {
         if (index < len1) {
             let len = empty_devs[index].conns.length;
-            if(len > map_default.DEFAULT_ITEMS_MAXCOUNT) {
-                len = map_default.DEFAULT_ITEMS_MAXCOUNT;
-            }
-            empty_devs[index].pos = _get_new_pos(rec, map_default.DEFAULT_WIDTH, len*map_default.DEFAULT_ITEM_HEIGHT + map_default.DEFAULT_ITEMS_OTHERHEIGHT);
+            empty_devs[index].pos = _get_conn_pos(rec, len, map_default.DEFAULT_ITEMS_MINCOUNT);
+            _merge_recs(rec, empty_devs[index].pos);
         }
         if (index < len2) {
-            empty_buses[index].pos = _get_new_pos(rec, map_default.DEFAULT_BUS_SIZE, map_default.DEFAULT_BUS_SIZE);
+            empty_buses[index].pos = _get_bus_pos(rec);
+            _merge_recs(rec, empty_buses[index].pos);
         }
     }
 }
@@ -278,7 +298,7 @@ function create_map_byold(raw_devs, old_map) {
     return map;
 }
 
-function create_map_bydb(raw_devs, bus_links, pp_links) {
+function create_map_bycontent(raw_devs, bus_links, pp_links) {
     let map = _create_map_empty(raw_devs);
     if (bus_links) {
         bus_links.forEach(link => {
@@ -307,7 +327,7 @@ function _get_dbdc(dc) {
     }
 }
 
-function create_dbcontent(raw_devs, map) {
+function create_content(raw_devs, map) {
     let devs = raw_devs.map(it => {
         return {
             id: it.id,
@@ -341,9 +361,6 @@ function create_dbcontent(raw_devs, map) {
     }
 }
 
-function set_config(cfg) {
-    map_default = cfg;
-}
 
 function set_container_size(width, height) {
     map_default.DEFAULT_CANVASE_WIDTH = width;
@@ -351,9 +368,9 @@ function set_container_size(width, height) {
 }
 
 export default {
-    set_config,
-    create_map_bydb,
+    map_default,
+    create_map_bycontent,
     create_map_byold,
-    create_dbcontent,
+    create_content,
     set_container_size,
 }
