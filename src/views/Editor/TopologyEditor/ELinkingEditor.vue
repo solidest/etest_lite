@@ -82,7 +82,7 @@
     import EBusElement from './EBusElement';
 
     export default {
-        props: ['map'],
+        props: ['map', 'line_type'],
         components: {
             'e-herizontal-bar': EHerizontalBar,
             'e-bus-element': EBusElement,
@@ -131,7 +131,7 @@
                                 
                 p.importDefaults({
                     ConnectionsDetachable: false,
-                    Connector : "StateMachine",//"Bezier",
+                    Connector : this.line_type||"StateMachine",//"Bezier",
                     Endpoint: ["Dot", {
                         radius: 8
                     }],
@@ -166,18 +166,12 @@
                 });
                 let self = this;
                 p.bind("connection", function (info) {
+                    console.log(info)
                     if(info.targetId.indexOf('.')>0) {
                         p.unmakeSource(info.targetId);
                     }
                     p.unmakeTarget(info.sourceId);
-
-                    let el = document.getElementById(`l_${info.targetId.split('.')[0]}`);
-                    if(el) {
-                        let evt = document.createEvent("HTMLEvents");
-                        evt.initEvent("scroll",true,true);
-                        el.dispatchEvent(evt);
-                    }
-                    
+                    self._scroll_dev_items(info.targetId.split('.')[0]);
                     let c = info.connection;
                     c.setType("basic");
                     console.log('TODO after connection');
@@ -201,9 +195,6 @@
                     this.plumb.makeTarget(bus.id, {
                         endpoint: "Dot",
                         anchor: "Continuous",
-                        // paintStyle: {
-                        //     fill: 'white',
-                        // },
                         maxConnections: -1,
                     });
                 }
@@ -223,6 +214,14 @@
                     }
                 }
             },
+            _scroll_dev_items(dev_id) {
+                let el = document.getElementById(`l_${dev_id}`);
+                if(el) {
+                    let evt = document.createEvent("HTMLEvents");
+                    evt.initEvent("scroll",true,true);
+                    el.dispatchEvent(evt);
+                }
+            },
             redraw(map) {
                 if (!map || map === this.draw_map || !this.ready) {
                     return;
@@ -236,7 +235,7 @@
                     });
                 });
             },
-
+        
             on_dragend(dev) {
                 let el = document.getElementById(dev.id);
                 if(dev.pos.left === el.offsetLeft && dev.pos.top === el.offsetTop) {
@@ -288,6 +287,14 @@
                 el.style["transformOrigin"] = oString;
 
                 instance.setZoom(zoom);
+            },
+            do_action: (ac) => {
+                let fn = self[`action_${ac}`];
+                if (fn) {
+                    return fn();
+                } else {
+                    console.log(ac);
+                }
             }
         }
     }

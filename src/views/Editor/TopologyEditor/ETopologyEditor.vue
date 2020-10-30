@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <v-card color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
-            <e-linking-editor v-if="map" :map="map" />
+            <e-linking-editor v-if="map" :map="map" :line_type="line_type" ref="__editor" />
         </v-card>
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
@@ -31,6 +31,8 @@
     import ELinkingEditor from './ELinkingEditor'
     // import reused from '../../../utility/reused';
 
+    const line_types = ['Straight','StateMachine', 'Bezier',  'Flowchart'];
+
     export default {
         props: ['top_height'],
         components: {
@@ -55,7 +57,7 @@
                 map: null,
                 selected: null,
                 redoundo: null,
-
+                line_type_idx: 0,
                 // headers: cfg.headers,
                 // alias: cfg.intf_alias,
                 // single_select: true,
@@ -76,6 +78,9 @@
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
+            line_type: function() {
+                return line_types[this.line_type_idx]
+            }
         },
         watch: {
             active_doc_id: async function (nid) {
@@ -95,7 +100,11 @@
                     },
                     do_action: (ac) => {
                         let fn = self[`action_${ac}`];
-                        if (fn) fn();
+                        if (fn) {
+                            return fn();
+                        } else {
+                            return self.$refs.__editor.do_action(ac);
+                        }
                     }
                 }
             },
@@ -234,6 +243,17 @@
             },
             action_select_dev() {
                 this.dlg_opt.type = 'select';
+            },
+            action_link_type() {
+                this.line_type_idx++;
+                if(this.line_type_idx>line_types.length) {
+                    this.line_type_idx = 0;
+                }
+                let map = this.map;
+                this.map = null;
+                this.$nextTick(() => {
+                    this.map = map;
+                })
             },
             do_select_devs(res) {
                 this.dlg_opt.type = null;
