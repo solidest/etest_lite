@@ -41,7 +41,7 @@
             <e-herizontal-bar v-if="dev.conns.length>cfg_default.DEFAULT_ITEMS_MINCOUNT" :count="dev.pos.show_count"
                 :step="cfg_default.DEFAULT_ITEM_HEIGHT" :min="cfg_default.DEFAULT_ITEMS_MINCOUNT"
                 :max="Math.min(dev.conns.length, cfg_default.DEFAULT_ITEMS_MAXCOUNT)"
-                @resize="(count) => {on_resize(dev, count)}" />
+                @resize="(count) => {on_items_resize(dev, count)}" />
         </v-sheet>
         <e-bus-element v-for="item in buses" :key="item.id" :eid="item.id" @e_dbclick="on_dbclick_bus(item)"
             :size="item.pos.width" :left="item.pos.left" :top="item.pos.top" :title="item.name" />
@@ -82,7 +82,7 @@
     import EBusElement from './EBusElement';
 
     export default {
-        props: ['map', 'line_type'],
+        props: ['map', 'line_type', 'scale'],
         components: {
             'e-herizontal-bar': EHerizontalBar,
             'e-bus-element': EBusElement,
@@ -94,9 +94,6 @@
                 self.redraw(self.map);
             });
         },
-        beforeDestroy() {
-            this.plumb = null;
-        },
         data: () => {
             return {
                 cfg_default: topo_map.map_default,
@@ -104,7 +101,6 @@
                 cfg_dev_kinds: cfg.dev_kinds,
                 selected_links: [],
                 plumb: null,
-                draw_map: null,
                 ready: false,
                 comm_item: {
                     isTarget: true,
@@ -120,8 +116,13 @@
                 return this.map ? this.map.devs : [];
             },
             buses() {
-                return this.map ? this.map.links.filter(l => l.is_bus) : [];
+                return this.map ? this.map.buses : [];
             },
+        },
+        watch: {
+            scale(v) {
+                this.do_zoom(v);
+            }
         },
         methods: {
             _create_plumb() {
@@ -131,7 +132,7 @@
                                 
                 p.importDefaults({
                     ConnectionsDetachable: false,
-                    Connector : this.line_type||"StateMachine",//"Bezier",
+                    Connector : this.line_type,
                     Endpoint: ["Dot", {
                         radius: 8
                     }],
@@ -147,12 +148,12 @@
                             strokeWidth: 3
                         },
                         hoverPaintStyle: {
-                            stroke: "#E53935",
+                            stroke: "#FFA726",
                             strokeWidth: 5
                         },
                         cssClass: "connector-normal"
                     },
-                    "selected": {
+                    "errored": {
                         paintStyle: {
                             stroke: "#E53935",
                             strokeWidth: 3
@@ -166,7 +167,6 @@
                 });
                 let self = this;
                 p.bind("connection", function (info) {
-                    console.log(info)
                     if(info.targetId.indexOf('.')>0) {
                         p.unmakeSource(info.targetId);
                     }
@@ -174,23 +174,24 @@
                     self._scroll_dev_items(info.targetId.split('.')[0]);
                     let c = info.connection;
                     c.setType("basic");
-                    console.log('TODO after connection');
+                    self._add_linkdata(c.id, c.sourceId, c.targetId);
+                    self.$emit('changed');
                     c.bind("dblclick", function () {
                         p.makeTarget(c.sourceId, self.comm_item);
                         if(c.targetId.indexOf('.')>0) {
                             p.makeSource(c.targetId, self.comm_item);
                         }
                         p.deleteConnectionsForElement(c.sourceId);
-                        console.log('TODO after remove connection');
+                        self._remove_linkdata(c.id);
+                        self.$emit('changed');
                     });
                 });
                 return p;
             },
             _do_draw() {
                 this.plumb.draggable('__CONTAINER');
-                for(const bus of this.buses) {
-                    
-                    console.log('bus', bus.pos.width)
+                let buses = this.buses;
+                for(const bus of buses) {
                     this.plumb.draggable(bus.id);
                     this.plumb.makeTarget(bus.id, {
                         endpoint: "Dot",
@@ -222,11 +223,31 @@
                     el.dispatchEvent(evt);
                 }
             },
+            _add_linkdata(link_id, from_id, to_id) {
+                let r;
+                if(to_id.indexOf('.')>0) {
+                    let ids1 = from_id.split('.');
+                    let ids2 = to_id.split('.');
+                    r = this.map.pushPLink(link_id, link_id, {dev:{id:ids1[0]}, conn:{id:ids1[1]}}, {dev:{id:ids2[0]}, conn:{id:ids2[1]}})
+                } else {
+                    let ids = from_id.split('.');
+                    r = this.map.pushBLink(link_id, link_id, to_id, [{dev: {id: ids[0]}, conn: {id: ids[1]}}]);
+                }
+                if(!r) {
+                    console.error('add link error');
+                }
+            },
+            _remove_linkdata(link_id) {
+                let r = this.map.removeLink(link_id);
+                if(!r) {
+                    console.error('remove link error');
+                }
+            },
+
             redraw(map) {
-                if (!map || map === this.draw_map || !this.ready) {
+                if (!map || !this.ready) {
                     return;
                 }
-                this.draw_map = map;
                 this.plumb = this._create_plumb();
                 let self = this;
                 this.$nextTick(() => {
@@ -243,16 +264,14 @@
                 }
                 dev.pos.left = el.offsetLeft;
                 dev.pos.top = el.offsetTop;
-                console.log('TODO after moved');
+                this.$emit('changed');
             },
             on_dbclick_bus(bus) {
-                let buses = this.buses;
-                let idx = buses.findIndex(it => it === bus);
-                buses.splice(idx, 1);
                 this.plumb.remove(bus.id);
-                console.log('TODO remove bus');
+                this.map.removeBus(bus.id);
+                this.$emit('changed');
             },
-            on_resize(d, count) {
+            on_items_resize(d, count) {
                 if (!this.plumb) {
                     return;
                 }
@@ -269,33 +288,23 @@
                         endpoint: "Blank",
                     });
                 }, 200);
+                this.$emit('changed');
             },
-            do_zoom(zoom, instance, transformOrigin, el) {
-                transformOrigin = transformOrigin || [0.5, 0.5];
-                instance = instance || jsPlumb;
-                el = el || instance.getContainer();
-                var p = ["webkit"],
-                    s = "scale(" + zoom + ")",
+            do_zoom(scale) {
+                let transformOrigin = [0.5, 0.5];
+                let el = this.plumb.getContainer();
+                let p = ["webkit"],
+                    s = "scale(" + scale + ")",
                     oString = (transformOrigin[0] * 100) + "% " + (transformOrigin[1] * 100) + "%";
 
-                for (var i = 0; i < p.length; i++) {
+                for (let i = 0; i < p.length; i++) {
                     el.style[p[i] + "Transform"] = s;
                     el.style[p[i] + "TransformOrigin"] = oString;
                 }
-
                 el.style["transform"] = s;
                 el.style["transformOrigin"] = oString;
-
-                instance.setZoom(zoom);
+                this.plumb.setZoom(scale);
             },
-            do_action: (ac) => {
-                let fn = self[`action_${ac}`];
-                if (fn) {
-                    return fn();
-                } else {
-                    console.log(ac);
-                }
-            }
         }
     }
 </script>

@@ -1,11 +1,8 @@
 <template>
-    <!-- <div :id="eid"
-            :style="{position:'relative', width: `${size}px`, height: `${size}px`, 'border-radius': `${size/2}px`,
-             left: `${left}px`, top: `${top}px`, 'background-color': '#BDBDBD'}" /> -->
-    <div :style="{position:'relative', left: `${left}px`, top: `${top}px`, width: `${size}px`, height: `${size}px`}"
+    <div :style="{position:'absolute', left: `${left}px`, top: `${top}px`, width: `${size}px`, height: `${size}px`}"
         :id="eid">
         <svg :width="size" :height="size">
-            <circle :id="eid" :cx="size/2" :cy="size/2" :r="size/2-4" :stroke-width="selected?5:3" fill="none" :stroke="`${selected?'#E53935':'white'}`" 
+            <circle :id="eid" :cx="size/2" :cy="size/2" :r="size/2-4" :stroke-width="selected?5:3" fill="none" :stroke="`${selected?'#FFA726':'white'}`" 
                 @mouseenter="on_hover" @mouseout="on_unhover" @dblclick="on_dbclick">
             </circle>
         </svg>

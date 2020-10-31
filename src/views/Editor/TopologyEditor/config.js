@@ -19,7 +19,7 @@ let left_tools = [{
         value: 'redo',
         icon: 'mdi-redo',
     },  {
-        text: '自适应大小',
+        text: '显示100%',
         value: 'zoom_fit',
         icon: 'mdi-magnify-scan'
     },  {

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <v-card color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
-            <e-linking-editor v-if="map" :map="map" :line_type="line_type" ref="__editor" />
+            <e-linking-editor v-if="map" :map="map" :line_type="line_type" :scale="scale" />
         </v-card>
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    // import shortid from 'shortid';
+    import shortid from 'shortid';
     import api from '../../../api/client/';
     import topo_map from '../../../utility/topo_map';
     // import helper from '../../../utility/helper';
@@ -45,6 +45,7 @@
         mounted: async function () {
             await this._reset_doc(this.active_doc_id);
             this.$emit('active', this._get_ieditor());
+            setTimeout(() => {this.scale=1}, 1)
         },
         beforeDestroy: function () {
             this._save_docstate();
@@ -55,9 +56,9 @@
                 content: {},
                 raw_devs: [],
                 map: null,
-                selected: null,
                 redoundo: null,
                 line_type_idx: 0,
+                scale: 1,
                 // headers: cfg.headers,
                 // alias: cfg.intf_alias,
                 // single_select: true,
@@ -103,7 +104,7 @@
                         if (fn) {
                             return fn();
                         } else {
-                            return self.$refs.__editor.do_action(ac);
+                            console.log('TODO', ac)
                         }
                     }
                 }
@@ -112,10 +113,7 @@
                 if(!this.doc_id) {
                     return;
                 }
-                let s = {
-                    selected: this.selected,
-                }
-                this.$store.commit('Editor/put_doc_state', {id: this.doc_id, doc_state: s});
+       
             },
             _load_docstate: function() {
                 if(!this.doc_id) {
@@ -164,7 +162,7 @@
                 });
                 this.raw_devs = rdevs;
             },
-            _update_bydb(db_devs, bus_links, pp_links) {
+            _update_bydb(db_devs, buses, bus_links, pp_links) {
                 if (db_devs) {
                     for (const db_dev of db_devs) {
                         let dev = this.raw_devs.find(it => (it.id === db_dev.id || it.name === db_dev.name));
@@ -176,10 +174,10 @@
                 }
                 this.map = null;
                 let self = this;
-                this.$nextTick(() => {
+                setTimeout(() => {
                     self._refresh_size();
-                    self.map = topo_map.create_map_bycontent(self.raw_devs, bus_links, pp_links);
-                });
+                    self.map = topo_map.create_map_bycontent(self.raw_devs, buses, bus_links, pp_links);
+                }, 0);
             },
             async _reset_doc(id, reset_state = false) {
                 this.doc_id = id;
@@ -200,6 +198,7 @@
                         id,
                         content: {
                             devs: [],
+                            buses: [],
                             bus_links: [],
                             pp_links: [],
                             binds: {}
@@ -210,23 +209,16 @@
                     doc = await db.get('src', id);
                 }
                 this.content = doc.content;
-                this._update_bydb(this.content.devs, this.content.bus_links, this.content.pp_links);
+                this._update_bydb(this.content.devs, this.content.buses, this.content.bus_links, this.content.pp_links);
                 if (this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.content, this.selected);
                 }
             },
             _get_state: function () {
                 let dis = {
-                    move_up: false,
-                    move_down: false,
-                    cut: false,
-                    copy: false,
-                    paste: false,
-                    paste_batch: false,
-                    undo: false,
-                    redo: false,
-                    remove: false,
-                    multi_insert: false,
+                    zoom_big: this.scale>1.99,
+                    zoom_small: this.scale<0.21,
+                    zoom_fit: this.scale===1,
                 }
                 return dis;
             },
@@ -239,7 +231,14 @@
                 if(!el) {
                     return;
                 }
-                topo_map.set_container_size(el.offsetWidth, el.offsetHeight);
+                topo_map.set_container_width(el.offsetWidth, el.offsetHeight);
+            },
+            _update_map() {
+                let map = this.map;
+                this.map = null;
+                this.$nextTick(() => {
+                    this.map = map;
+                });
             },
             action_select_dev() {
                 this.dlg_opt.type = 'select';
@@ -249,11 +248,26 @@
                 if(this.line_type_idx>line_types.length) {
                     this.line_type_idx = 0;
                 }
-                let map = this.map;
-                this.map = null;
-                this.$nextTick(() => {
-                    this.map = map;
-                })
+                this._update_map();
+            },
+            action_zoom_big() {
+                this.scale += 0.2;
+                if(this.scale>2) {
+                    this.scale = 2;
+                }
+            },
+            action_zoom_small() {
+                this.scale -= 0.2;
+                if(this.scale<0.2) {
+                    this.scale = 0.2;
+                }
+            },
+            action_zoom_fit() {
+                this.scale = 1;
+            },
+            action_new_bus() {
+                topo_map.add_bus(this.map, shortid.generate());
+                this._update_map();
             },
             do_select_devs(res) {
                 this.dlg_opt.type = null;
@@ -268,13 +282,9 @@
                     }
                 }
                 this._refresh_size();
-                let map = this.map;
-                this.map = null;
-                let self = this;
-                this.$nextTick(() => {
-                    self.map = topo_map.create_map_byold(self.raw_devs, map);
-                    self._save_doc();
-                });
+                this.map = topo_map.create_map_byold(this.raw_devs, this.map);
+                this._save_doc();
+                this._update_map();
             },
 
             //     _set_ru_version: function(vo) {

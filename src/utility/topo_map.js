@@ -6,7 +6,7 @@ let map_default = {
     DEFAULT_ITEMS_TAILHEIGHT: 6,
     DEFAULT_ITEMS_MAXCOUNT: 15,
     DEFAULT_ITEMS_MINCOUNT: 5,
-    DEFAULT_BUS_SIZE: 160,
+    DEFAULT_BUS_SIZE: 100,
     DEFAULT_CANVASE_WIDTH: 1000,
     DEFAULT_SPACE: 30,
 }
@@ -35,15 +35,6 @@ class Dev {
         this.memo = memo;
     }
 
-    setConns(items) {
-        this.conns = [];
-        if (items) {
-            for (const it of items) {
-                this.pushConn(it);
-            }
-        }
-    }
-
     pushConn(conn) {
         this.conns.push(conn);
     }
@@ -57,25 +48,17 @@ class Dev_Conn {
 }
 
 class BLink {
-    constructor(id, name, dcs, pos) {
+    constructor(id, name, bus, dc) {
         this.id = id;
         this.name = name;
-        this.dcs = dcs;
-        this.pos = pos;
-        this.is_bus = true;
-        let self = this;
-        dcs.forEach(dev => {
-            dev.conns.forEach(conn => {
-                conn.setLink(self);
-            })
-        });
+        this.bus = bus;
+        this.dc = dc;
+        this.dc.conn.setLink(self);
     }
     clear() {
-        this.dcs.forEach(dev => {
-            dev.conns.forEach(conn => {
-                conn.setLink(null);
-            })
-        });
+        this.dc.conn.setLink(null);
+        this.dc = null;
+        this.bus = null;
     }
 }
 
@@ -84,13 +67,15 @@ class PLink {
         this.id = id;
         this.name = name;
         this.dc1 = dc1;
-        this.dc1 = dc2;
+        this.dc2 = dc2;
         dc1.conn.setLink(this);
         dc2.conn.setLink(this);
     }
     clear() {
         this.dc1.conn.setLink(null);
         this.dc2.conn.setLink(null);
+        this.dc1 = null;
+        this.dc2 = null;
     }
 }
 
@@ -98,6 +83,7 @@ class Map {
     constructor() {
         this.devs = [];
         this.links = [];
+        this.buses = [];
     }
     _create_empty_dev_conn(old_dev_conn) {
         if (!old_dev_conn) {
@@ -113,32 +99,33 @@ class Map {
         }
         return new Dev_Conn(dev, conn);
     }
-    setDevs(devs) {
-        this.devs = [];
-        if (devs) {
-            for (const it of devs) {
-                this.pushDev(it);
-            }
-        }
-    }
     pushDev(dev) {
         this.devs.push(dev);
     }
-    pushBLink(id, name, old_dcs, pos) {
+    pushBus(id, pos) {
+        this.buses.push({id, pos});
+    }
+    pushBLink(id, name, bus_id, old_dcs) {
         if (!old_dcs) {
             return false;
         }
-        let conns = [];
+        let bus = this.buses.find(b => b.id === bus_id);
+        if(!bus) {
+            return false;
+        }
+        let dcs = [];
         for (const dev_conn of old_dcs) {
             let dc = this._create_empty_dev_conn(dev_conn);
             if (dc) {
-                conns.push(dc);
+                dcs.push(dc);
             }
         }
-        if (conns.length < 1) {
+        if (dcs.length === 0) {
             return false;
         }
-        this.links.push(new BLink(id, name, conns, pos));
+        for (const dc of dcs) {
+            this.links.push(new BLink(id, name, bus, dc));
+        }
         return true;
     }
     pushPLink(id, name, old_dc1, old_dc2) {
@@ -150,11 +137,25 @@ class Map {
         this.links.push(new PLink(id, name, dc1, dc2));
         return true;
     }
-    removeLink(link) {
-        let idx = this.links.findIndex(it => it === link)
+    removeLink(link_id) {
+        let idx = this.links.findIndex(it => it.id === link_id)
         if (idx >= 0) {
+            this.links[idx].clear();
             this.links.splice(idx, 1);
-            link.clear();
+            return true;
+        }
+        return null;
+    }
+    removeBus(bus_id) {
+        let idx = this.buses.findIndex(b => b.id === bus_id);
+        if(idx<0){
+            return false;
+        }
+        let b = this.buses[idx];
+        this.buses.splice(idx, 1);
+        let ls = this.links.filter(l => l.bus === b);
+        for (const link of ls) {
+            this.removeLink(link.id);
         }
     }
 }
@@ -169,7 +170,7 @@ function _create_dev(raw_dev) {
     return dev;
 }
 
-function _create_map_empty(devs) {
+function _create_map_empty(devs, buses) {
     let map = new Map();
     if (!devs) {
         return map;
@@ -179,6 +180,11 @@ function _create_map_empty(devs) {
             map.pushDev(_create_dev(dev));
         }
     });
+    if(buses) {
+        buses.forEach(bus => {
+            map.pushBus(bus.id, bus.pos);
+        });
+    }
     return map;
 }
 
@@ -197,7 +203,7 @@ function _merge_recs(rec, pos) {
     }
 }
 
-function _get_conn_pos(used_rec, count, show_count) {
+function _get_dev_pos(used_rec, count, show_count, last_pos) {
     let show = Math.min(count, show_count);
     let width = map_default.DEFAULT_ITEM_WIDTH;
     let height = map_default.DEFAULT_ITEMS_TITLEHEIGHT + map_default.DEFAULT_ITEM_HEIGHT*show;
@@ -209,6 +215,11 @@ function _get_conn_pos(used_rec, count, show_count) {
         height,
         show_count: show,
     }
+    if(last_pos && last_pos.left + last_pos.width + map_default.DEFAULT_SPACE + width < map_default.DEFAULT_CANVASE_WIDTH) {
+        pos.top = last_pos.top;
+        pos.left = last_pos.left + last_pos.width + map_default.DEFAULT_SPACE;
+        return pos;
+    }
     if (used_rec.right + width + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
         pos.top = map_default.DEFAULT_SPACE;
         pos.left = used_rec.right + map_default.DEFAULT_SPACE;
@@ -219,10 +230,15 @@ function _get_conn_pos(used_rec, count, show_count) {
     return pos;
 }
 
-function _get_bus_pos(used_rec) {
+function _get_bus_pos(used_rec, last_pos) {
     let pos = {
         width: map_default.DEFAULT_BUS_SIZE,
         height: map_default.DEFAULT_BUS_SIZE,
+    }
+    if(last_pos && last_pos.left + last_pos.width + map_default.DEFAULT_SPACE + map_default.DEFAULT_BUS_SIZE < map_default.DEFAULT_CANVASE_WIDTH) {
+        pos.top = last_pos.top;
+        pos.left = last_pos.left + last_pos.width + map_default.DEFAULT_SPACE;
+        return pos;
     }
     if (used_rec.right + pos.width + map_default.DEFAULT_SPACE < map_default.DEFAULT_CANVASE_WIDTH) {
         pos.top = map_default.DEFAULT_SPACE;
@@ -234,18 +250,28 @@ function _get_bus_pos(used_rec) {
     return pos;
 }
 
+function _pos_to_rec(pos) {
+    return {
+        left: pos.left,
+        top: pos.top,
+        bottom: pos.top + pos.height,
+        right: pos.left + pos.width,
+    }
+}
 
 function update_layout(map) {
     if (!map) {
         return;
     }
     let rec;
+    let last_pos;
     let empty_devs = [];
     let empty_buses = [];
     map.devs.forEach(dev => {
         if (dev.pos) {
+            last_pos = dev.pos;
             if (!rec) {
-                rec = JSON.parse(JSON.stringify(dev.pos));
+                rec = _pos_to_rec(dev.pos);
             } else {
                 _merge_recs(rec, dev.pos);
             }
@@ -253,17 +279,16 @@ function update_layout(map) {
             empty_devs.push(dev);
         }
     });
-    map.links.forEach(link => {
-        if (link.is_bus) {
-            if (link.pos) {
-                if (!rec) {
-                    rec = JSON.parse(JSON.stringify(link.pos));
-                } else {
-                    _merge_recs(rec, link.pos);
-                }
+    map.buses.forEach(bus => {
+        if (bus.pos) {
+            last_pos = bus.pos;
+            if (!rec) {
+                rec = _pos_to_rec(bus.pos);
             } else {
-                empty_buses.push(link);
+                _merge_recs(rec, bus.pos);
             }
+        } else {
+            empty_buses.push(bus);
         }
     })
     rec = rec || {
@@ -278,35 +303,37 @@ function update_layout(map) {
     for (let index = 0; index < len; index++) {
         if (index < len1) {
             let len = empty_devs[index].conns.length;
-            empty_devs[index].pos = _get_conn_pos(rec, len, map_default.DEFAULT_ITEMS_MINCOUNT);
-            _merge_recs(rec, empty_devs[index].pos);
+            last_pos = _get_dev_pos(rec, len, map_default.DEFAULT_ITEMS_MINCOUNT, last_pos);
+            empty_devs[index].pos = last_pos;
+            _merge_recs(rec, last_pos);
         }
         if (index < len2) {
-            empty_buses[index].pos = _get_bus_pos(rec);
-            _merge_recs(rec, empty_buses[index].pos);
+            last_pos = _get_bus_pos(rec, last_pos);
+            empty_buses[index].pos = last_pos;
+            _merge_recs(rec, last_pos);
         }
     }
 }
 
 function create_map_byold(raw_devs, old_map) {
-    let map = _create_map_empty(raw_devs);
+    let map = _create_map_empty(raw_devs, old_map ? old_map.buses : []);
     if (old_map) {
         let links = old_map.links;
         links.forEach(link => {
-            link.is_bus ? map.pushBLink(link.id, link.name, link.dcs, link.pos) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
+            link.is_bus ? map.pushBLink(link.id, link.name, link.bus_id, link.dcs) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
         });
     }
     update_layout(map);
     return map;
 }
 
-function create_map_bycontent(raw_devs, bus_links, pp_links) {
-    let map = _create_map_empty(raw_devs);
+function create_map_bycontent(raw_devs, buses, bus_links, pp_links) {
+    let map = _create_map_empty(raw_devs, buses);
+
     if (bus_links) {
         bus_links.forEach(link => {
-            map.pushBLink(link.id, link.name, link.dcs, link.pos);
+            map.pushBLink(link.id, link.name, link.bus_id, link.dcs);
         });
-        map.links.push(new BLink('demo_id', 'demo', [], null));
     }
     if (pp_links) {
         pp_links.forEach(link => {
@@ -365,9 +392,13 @@ function create_content(raw_devs, map) {
 }
 
 
-function set_container_size(width, height) {
+function set_container_width(width) {
     map_default.DEFAULT_CANVASE_WIDTH = width;
-    console.log('set_container_size', height);
+}
+
+function add_bus(map, bus_id) {
+    map.pushBus(bus_id);
+    update_layout(map);
 }
 
 export default {
@@ -375,5 +406,6 @@ export default {
     create_map_bycontent,
     create_map_byold,
     create_content,
-    set_container_size,
+    add_bus,
+    set_container_width,
 }
