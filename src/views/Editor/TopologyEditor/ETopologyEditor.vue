@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <v-card color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
-            <e-linking-editor v-if="map" :map="map" :line_type="line_type" :scale="scale" />
+            <e-linking-editor v-if="map" :map="map" :line_type="line_type" :scale="scale"  @changed="on_changed"/>
         </v-card>
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
@@ -240,6 +240,9 @@
                     this.map = map;
                 });
             },
+            on_changed() {
+                console.log('TODO save')
+            },
             action_select_dev() {
                 this.dlg_opt.type = 'select';
             },
@@ -267,6 +270,7 @@
             },
             action_new_bus() {
                 topo_map.add_bus(this.map, shortid.generate());
+                this.on_changed();
                 this._update_map();
             },
             do_select_devs(res) {

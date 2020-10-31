@@ -166,6 +166,18 @@
                     }
                 });
                 let self = this;
+                p.bind("beforeDrop", function(info) {
+                    if(!info.sourceId.indexOf('.')) {
+                        return false;
+                    }
+                    if(info.targetId.indexOf('.')) {
+                        return true;
+                    }
+                    if(self.buses.find(b => b.id === info.targetId)) {
+                        return true;
+                    }
+                    return false;
+                });
                 p.bind("connection", function (info) {
                     if(info.targetId.indexOf('.')>0) {
                         p.unmakeSource(info.targetId);
@@ -174,7 +186,10 @@
                     self._scroll_dev_items(info.targetId.split('.')[0]);
                     let c = info.connection;
                     c.setType("basic");
-                    self._add_linkdata(c.id, c.sourceId, c.targetId);
+                    if(!self._add_linkdata(c.id, c.sourceId, c.targetId)) {
+                        setTimeout(()=>{p.deleteConnection(c)}, 0);
+                        return;
+                    }
                     self.$emit('changed');
                     c.bind("dblclick", function () {
                         p.makeTarget(c.sourceId, self.comm_item);
@@ -234,8 +249,9 @@
                     r = this.map.pushBLink(link_id, link_id, to_id, [{dev: {id: ids[0]}, conn: {id: ids[1]}}]);
                 }
                 if(!r) {
-                    console.error('add link error');
+                    console.error('ERROR')
                 }
+                return r;
             },
             _remove_linkdata(link_id) {
                 let r = this.map.removeLink(link_id);
@@ -267,6 +283,10 @@
                 this.$emit('changed');
             },
             on_dbclick_bus(bus) {
+                let links = this.map.linksOfbus(bus.id);
+                links.forEach(l=>{
+                    this.plumb.makeSource(`${l.dc.dev.id}.${l.dc.conn.id}`, this.comm_item);
+                });
                 this.plumb.remove(bus.id);
                 this.map.removeBus(bus.id);
                 this.$emit('changed');

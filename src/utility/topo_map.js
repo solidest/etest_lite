@@ -99,6 +99,9 @@ class Map {
         }
         return new Dev_Conn(dev, conn);
     }
+    linksOfbus(bus_id) {
+        return this.links.filter(l=>l.bus&&l.bus.id===bus_id);
+    }
     pushDev(dev) {
         this.devs.push(dev);
     }
