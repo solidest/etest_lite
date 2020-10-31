@@ -108,7 +108,8 @@
                     createEndpoint: false,
                     allowLoopback: false,
                     maxConnections: 1,
-                }
+                },
+                loading: false,
             }
         },
         computed: {
@@ -117,6 +118,9 @@
             },
             buses() {
                 return this.map ? this.map.buses : [];
+            },
+            links() {
+                return this.map ? this.map.links : [];
             },
         },
         watch: {
@@ -179,6 +183,9 @@
                     return false;
                 });
                 p.bind("connection", function (info) {
+                    if(self.loading) {
+                        return;
+                    }
                     if(info.targetId.indexOf('.')>0) {
                         p.unmakeSource(info.targetId);
                     }
@@ -191,19 +198,21 @@
                         return;
                     }
                     self.$emit('changed');
-                    c.bind("dblclick", function () {
-                        p.makeTarget(c.sourceId, self.comm_item);
-                        if(c.targetId.indexOf('.')>0) {
-                            p.makeSource(c.targetId, self.comm_item);
-                        }
-                        p.deleteConnectionsForElement(c.sourceId);
-                        self._remove_linkdata(c.id);
-                        self.$emit('changed');
-                    });
+                    c.bind("dblclick", ()=>{self._remove_link(c)});
                 });
                 return p;
             },
+            _remove_link(c) {
+                this.plumb.makeTarget(c.sourceId, this.comm_item);
+                if(c.targetId.indexOf('.')>0) {
+                    this.plumb.makeSource(c.targetId, this.comm_item);
+                }
+                this.plumb.deleteConnectionsForElement(c.sourceId);
+                this._remove_linkdata(c.sourceId);
+                this.$emit('changed');
+            },
             _do_draw() {
+                this.loading = true;
                 this.plumb.draggable('__CONTAINER');
                 let buses = this.buses;
                 for(const bus of buses) {
@@ -222,13 +231,33 @@
                         endpoint: "Blank",
                     });
                     for (const conn of dev.conns) {
-                        let id = `${dev.id}.${conn.id}`;
-                        if (document.getElementById(id)) {
-                            this.plumb.makeTarget(id, this.comm_item);
-                            this.plumb.makeSource(id, this.comm_item);
+                        if(conn.link) {
+                            continue;
                         }
+                        let id = `${dev.id}.${conn.id}`;
+                        this.plumb.makeTarget(id, this.comm_item);
+                        this.plumb.makeSource(id, this.comm_item);
                     }
                 }
+
+                let self = this;
+                for(const link of this.links) {
+                    let c
+                    if(link.bus) {
+                        let conn_id = `${link.dc.dev.id}.${link.dc.conn.id}`;
+                        c = this.plumb.connect({source: conn_id, target: link.bus.id});
+                    } else {
+                        let from_id =  `${link.dc1.dev.id}.${link.dc1.conn.id}`;
+                        let to_id =  `${link.dc2.dev.id}.${link.dc2.conn.id}`;
+                        this.plumb.makeSource(from_id, this.comm_item);
+                        this.plumb.makeTarget(to_id, this.comm_item);
+                        c = this.plumb.connect({source: from_id, target: to_id});
+                    }
+                    c.setType("basic");
+                    c.bind("dblclick", ()=>{self._remove_link(c)});
+                    this.plumb.setIdChanged(c.id, link.id);
+                }
+                this.loading = false;
             },
             _scroll_dev_items(dev_id) {
                 let el = document.getElementById(`l_${dev_id}`);
@@ -249,14 +278,15 @@
                     r = this.map.pushBLink(link_id, link_id, to_id, [{dev: {id: ids[0]}, conn: {id: ids[1]}}]);
                 }
                 if(!r) {
-                    // console.error('ERROR')
+                    console.error('ERROR')
                 }
                 return r;
             },
-            _remove_linkdata(link_id) {
-                let r = this.map.removeLink(link_id);
+            _remove_linkdata(source_id) {
+                let ids = source_id.split('.');
+                let r = this.map.removeLink(ids[0], ids[1]);
                 if(!r) {
-                    console.error('remove link error');
+                    console.error('remove link error', source_id);
                 }
             },
 

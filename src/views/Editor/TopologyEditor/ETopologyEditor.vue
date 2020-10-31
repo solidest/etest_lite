@@ -273,6 +273,9 @@
                 this.on_changed();
                 this._update_map();
             },
+            action_binding() {
+                this._update_map();
+            },
             do_select_devs(res) {
                 this.dlg_opt.type = null;
                 if (res.result !== 'ok') {

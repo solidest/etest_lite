@@ -140,8 +140,14 @@ class Map {
         this.links.push(new PLink(id, name, dc1, dc2));
         return true;
     }
-    removeLink(link_id) {
-        let idx = this.links.findIndex(it => it.id === link_id)
+    removeLink(dev_id, conn_id) {
+        let idx = this.links.findIndex(it => {
+            if(it.bus) {
+                return (it.dc.dev.id === dev_id && it.dc.conn.id === conn_id);
+            } else {
+                return (it.dc1.dev.id === dev_id && it.dc1.conn.id === conn_id);
+            }
+        })
         if (idx >= 0) {
             this.links[idx].clear();
             this.links.splice(idx, 1);
@@ -158,7 +164,7 @@ class Map {
         this.buses.splice(idx, 1);
         let ls = this.links.filter(l => l.bus === b);
         for (const link of ls) {
-            this.removeLink(link.id);
+            this.removeLink(link.dc.dev.id, link.dc.conn.id);
         }
     }
 }
@@ -323,7 +329,7 @@ function create_map_byold(raw_devs, old_map) {
     if (old_map) {
         let links = old_map.links;
         links.forEach(link => {
-            link.is_bus ? map.pushBLink(link.id, link.name, link.bus_id, link.dcs) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
+            link.bus ? map.pushBLink(link.id, link.name, link.bus_id, link.dcs) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
         });
     }
     update_layout(map);
@@ -371,7 +377,7 @@ function create_content(raw_devs, map) {
     let bus_links = [];
     let pp_links = [];
     map.links.forEach(l => {
-        if (l.is_bus) {
+        if (l.bus) {
             bus_links.push({
                 name: l.name,
                 pos: l.pos,
