@@ -249,7 +249,7 @@
                     r = this.map.pushBLink(link_id, link_id, to_id, [{dev: {id: ids[0]}, conn: {id: ids[1]}}]);
                 }
                 if(!r) {
-                    console.error('ERROR')
+                    // console.error('ERROR')
                 }
                 return r;
             },
