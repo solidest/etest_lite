@@ -66,7 +66,7 @@
             proj_modules: cfg.proj_modules,
             pub_modules: cfg.pub_modules,
             width: mini_width,
-            saved_width: 500,
+            saved_width: 360,
             active: null,
         }),
 

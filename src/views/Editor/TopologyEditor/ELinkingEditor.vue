@@ -15,7 +15,7 @@
                         <v-list-item-subtitle>{{dev.memo}}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-action>
-                        <v-btn icon>
+                        <v-btn icon @click="on_open_dev(dev.id)">
                             <v-icon small>mdi-pencil</v-icon>
                         </v-btn>
                     </v-list-item-action>
@@ -79,6 +79,8 @@
     import topo_map from '../../../utility/topo_map';
     import cfg from './config_map';
     import EHerizontalBar from '../../Components/EHorizontalBar';
+    import tman from '../../../utility/tree_man';
+    import db from '../../../doc/workerdb';
     import EBusElement from './EBusElement';
 
     export default {
@@ -312,6 +314,11 @@
                         self._do_draw();
                     });
                 });
+            },
+            on_open_dev: async function(dev_id) {
+                let tree = await db.get('config', 'tree');
+                let dev = tman.findItem(tree.value, dev_id)
+                this.$store.commit('Editor/open', dev);
             },
             on_drageddev(dev) {
                 let el = document.getElementById(dev.id);

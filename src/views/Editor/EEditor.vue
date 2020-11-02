@@ -18,6 +18,8 @@
     import ETitleMan from './ETitleMan';
     import ELuaEditor from './LuaEditor/ELuaEditor';
     import EEditorBar from './EEditorBar';
+    import ETopologyEditor from './TopologyEditor/ETopologyEditor';
+    import EEmpty from '../../views/EEmpty';
 
     export default {
         components: {
@@ -25,8 +27,8 @@
             'e-title-man': ETitleMan,
             'e-run-editor': ELuaEditor,
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
-            'e-topology-editor': () => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
-            'e-empty': () => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
+            'e-topology-editor': ETopologyEditor,//() => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
+            'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
         },
         mounted: function () {
             this.update_size();
