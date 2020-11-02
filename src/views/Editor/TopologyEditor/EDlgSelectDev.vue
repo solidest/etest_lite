@@ -85,7 +85,7 @@
         watch: {
             items: function (its) {
                 this._set_items(its);
-            }
+            },
         },
 
         methods: {

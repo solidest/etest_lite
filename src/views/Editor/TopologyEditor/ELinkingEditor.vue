@@ -1,9 +1,9 @@
 <template>
-    <v-sheet color="grey darken-2" id="__CONTAINER" width="100%" height="100%" style="position:relative"
-        class="pa-0 ma-0">
+    <v-sheet color="grey darken-2" id="__CONTAINER" width="100%" height="100%" class="pa-0 ma-0"
+        @mouseup="on_dragedcanvas" :style="{position: 'absolute', left: `${canv_pos.left}px`, top: `${canv_pos.top}px`}">
         <v-sheet class="jtk-drag-select" :width="cfg_default.DEFAULT_ITEM_WIDTH" v-for="dev in devs" :key="dev.id"
             :id="dev.id" :style="{position: 'absolute', left: `${dev.pos.left}px`, top: `${dev.pos.top}px`}"
-            @mouseup="on_dragend(dev)">
+            @mouseup="on_drageddev(dev)">
             <v-list class="pa-0">
                 <v-list-item :class="cfg_dev_kinds[dev.kind].css_title"
                     :style="`height:${cfg_default.DEFAULT_ITEMS_TITLEHEIGHT}px`">
@@ -43,8 +43,8 @@
                 :max="Math.min(dev.conns.length, cfg_default.DEFAULT_ITEMS_MAXCOUNT)"
                 @resize="(count) => {on_items_resize(dev, count)}" />
         </v-sheet>
-        <e-bus-element v-for="item in buses" :key="item.id" :eid="item.id" @e_dbclick="on_dbclick_bus(item)"
-            :size="item.pos.width" :left="item.pos.left" :top="item.pos.top" :title="item.name" />
+        <e-bus-element v-for="item in buses" :key="item.id" :eid="item.id" @e_dbclick="on_remove_bus(item)"
+            :size="item.pos.width" :left="item.pos.left" :top="item.pos.top" :title="item.name" @moved="p=>{on_dragedbus(item, p)}" />
     </v-sheet>
 </template>
 <style scoped>
@@ -82,12 +82,16 @@
     import EBusElement from './EBusElement';
 
     export default {
-        props: ['map', 'line_type', 'scale'],
+        props: ['map', 'line_type', 'scale', 'left', 'top'],
         components: {
             'e-herizontal-bar': EHerizontalBar,
             'e-bus-element': EBusElement,
         },
         mounted() {
+            this.canv_pos = {
+                top: this.top||0,
+                left: this.left||0
+            };
             let self = this;
             jsPlumb.ready(() => {
                 self.ready = true;
@@ -110,6 +114,10 @@
                     maxConnections: 1,
                 },
                 loading: false,
+                canv_pos: {
+                    left: 0,
+                    top: 0,
+                }
             }
         },
         computed: {
@@ -243,9 +251,9 @@
                 let self = this;
                 for(const link of this.links) {
                     let c
-                    if(link.bus) {
+                    if(link.bus_id) {
                         let conn_id = `${link.dc.dev.id}.${link.dc.conn.id}`;
-                        c = this.plumb.connect({source: conn_id, target: link.bus.id});
+                        c = this.plumb.connect({source: conn_id, target: link.bus_id});
                     } else {
                         let from_id =  `${link.dc1.dev.id}.${link.dc1.conn.id}`;
                         let to_id =  `${link.dc2.dev.id}.${link.dc2.conn.id}`;
@@ -256,6 +264,9 @@
                     c.setType("basic");
                     c.bind("dblclick", ()=>{self._remove_link(c)});
                     this.plumb.setIdChanged(c.id, link.id);
+                }
+                if(this.scale!==1) {
+                    this.do_zoom(this.scale);
                 }
                 this.loading = false;
             },
@@ -275,7 +286,7 @@
                     r = this.map.pushPLink(link_id, link_id, {dev:{id:ids1[0]}, conn:{id:ids1[1]}}, {dev:{id:ids2[0]}, conn:{id:ids2[1]}})
                 } else {
                     let ids = from_id.split('.');
-                    r = this.map.pushBLink(link_id, link_id, to_id, [{dev: {id: ids[0]}, conn: {id: ids[1]}}]);
+                    r = this.map.pushBLink(link_id, link_id, to_id, {dev: {id: ids[0]}, conn: {id: ids[1]}});
                 }
                 if(!r) {
                     console.error('ERROR')
@@ -302,8 +313,7 @@
                     });
                 });
             },
-        
-            on_dragend(dev) {
+            on_drageddev(dev) {
                 let el = document.getElementById(dev.id);
                 if(dev.pos.left === el.offsetLeft && dev.pos.top === el.offsetTop) {
                     return;
@@ -312,7 +322,23 @@
                 dev.pos.top = el.offsetTop;
                 this.$emit('changed');
             },
-            on_dbclick_bus(bus) {
+            on_dragedbus(bus, pos) {
+                bus.pos.left = pos.left;
+                bus.pos.top = pos.top;
+                this.$emit('changed');
+            },
+            on_dragedcanvas() {
+                let el = document.getElementById('__CONTAINER');
+                if(this.canv_pos.left === el.offsetLeft && this.canv_pos.top === el.offsetTop) {
+                    return;
+                }
+                this.canv_pos = {
+                    left: el.offsetLeft,
+                    top: el.offsetTop
+                }
+                this.$emit('moved', this.canv_pos);
+            },
+            on_remove_bus(bus) {
                 let links = this.map.linksOfbus(bus.id);
                 links.forEach(l=>{
                     this.plumb.makeSource(`${l.dc.dev.id}.${l.dc.conn.id}`, this.comm_item);

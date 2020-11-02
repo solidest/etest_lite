@@ -48,17 +48,17 @@ class Dev_Conn {
 }
 
 class BLink {
-    constructor(id, name, bus, dc) {
+    constructor(id, name, bus_id, dc) {
         this.id = id;
         this.name = name;
-        this.bus = bus;
+        this.bus_id = bus_id;
         this.dc = dc;
         this.dc.conn.setLink(self);
     }
     clear() {
         this.dc.conn.setLink(null);
         this.dc = null;
-        this.bus = null;
+        this.bus_id = null;
     }
 }
 
@@ -100,7 +100,7 @@ class Map {
         return new Dev_Conn(dev, conn);
     }
     linksOfbus(bus_id) {
-        return this.links.filter(l=>l.bus&&l.bus.id===bus_id);
+        return this.links.filter(l=>l.bus_id&&l.bus_id===bus_id);
     }
     pushDev(dev) {
         this.devs.push(dev);
@@ -108,28 +108,20 @@ class Map {
     pushBus(id, pos) {
         this.buses.push({id, pos});
     }
-    pushBLink(id, name, bus_id, old_dcs) {
-        if (!old_dcs) {
+    pushBLink(id, name, bus_id, old_dc) {
+        if (!old_dc) {
             return false;
         }
         let bus = this.buses.find(b => b.id === bus_id);
         if(!bus) {
             return false;
         }
-        let dcs = [];
-        for (const dev_conn of old_dcs) {
-            let dc = this._create_empty_dev_conn(dev_conn);
-            if (dc) {
-                dcs.push(dc);
-            }
+        let dc = this._create_empty_dev_conn(old_dc);
+        if (dc) {
+            this.links.push(new BLink(id, name, bus.id, dc));
+            return true;
         }
-        if (dcs.length === 0) {
-            return false;
-        }
-        for (const dc of dcs) {
-            this.links.push(new BLink(id, name, bus, dc));
-        }
-        return true;
+        return false;
     }
     pushPLink(id, name, old_dc1, old_dc2) {
         let dc1 = this._create_empty_dev_conn(old_dc1);
@@ -142,7 +134,7 @@ class Map {
     }
     removeLink(dev_id, conn_id) {
         let idx = this.links.findIndex(it => {
-            if(it.bus) {
+            if(it.bus_id) {
                 return (it.dc.dev.id === dev_id && it.dc.conn.id === conn_id);
             } else {
                 return (it.dc1.dev.id === dev_id && it.dc1.conn.id === conn_id);
@@ -160,9 +152,8 @@ class Map {
         if(idx<0){
             return false;
         }
-        let b = this.buses[idx];
         this.buses.splice(idx, 1);
-        let ls = this.links.filter(l => l.bus === b);
+        let ls = this.links.filter(l => l.bus_id === bus_id);
         for (const link of ls) {
             this.removeLink(link.dc.dev.id, link.dc.conn.id);
         }
@@ -329,7 +320,7 @@ function create_map_byold(raw_devs, old_map) {
     if (old_map) {
         let links = old_map.links;
         links.forEach(link => {
-            link.bus ? map.pushBLink(link.id, link.name, link.bus_id, link.dcs) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
+            link.bus_id ? map.pushBLink(link.id, link.name, link.bus_id, link.dc) : map.pushPLink(link.id, link.name, link.dc1, link.dc2);
         });
     }
     update_layout(map);
@@ -341,7 +332,7 @@ function create_map_bycontent(raw_devs, buses, bus_links, pp_links) {
 
     if (bus_links) {
         bus_links.forEach(link => {
-            map.pushBLink(link.id, link.name, link.bus_id, link.dcs);
+            map.pushBLink(link.id, link.name, link.bus_id, link.dc);
         });
     }
     if (pp_links) {
@@ -366,24 +357,23 @@ function _get_dbdc(dc) {
     }
 }
 
-function create_content(raw_devs, map) {
-    let devs = raw_devs.map(it => {
+function create_content(map) {
+    let devs = map.devs.map(it => {
         return {
             id: it.id,
             name: it.name,
-            kind: it.kind
+            kind: it.kind,
+            pos: it.pos,
         }
     });
     let bus_links = [];
     let pp_links = [];
     map.links.forEach(l => {
-        if (l.bus) {
+        if (l.bus_id) {
             bus_links.push({
                 name: l.name,
-                pos: l.pos,
-                dcs: l.dcs.map(i => {
-                    return _get_dbdc(i)
-                }),
+                bus_id: l.bus_id,
+                dc: _get_dbdc(l.dc)
             })
         } else {
             pp_links.push({
@@ -392,14 +382,20 @@ function create_content(raw_devs, map) {
                 dc2: _get_dbdc(l.dc2),
             })
         }
-    })
+    });
+    let buses = map.buses.map(it => {
+        return {
+            id: it.id,
+            pos: it.pos,
+        }
+    });
     return {
         devs,
         bus_links,
-        pp_links
+        pp_links,
+        buses,
     }
 }
-
 
 function set_container_width(width) {
     map_default.DEFAULT_CANVASE_WIDTH = width;
@@ -410,6 +406,62 @@ function add_bus(map, bus_id) {
     update_layout(map);
 }
 
+function adjust(map) {
+    let res = false;
+    let minleft = 10000;
+    let mintop = 10000;
+    map.devs.forEach(dev=>{
+        if(dev.pos) {
+            if(dev.pos.left<minleft) {
+                minleft = dev.pos.left;
+            }
+            if(dev.pos.top<mintop) {
+                mintop = dev.pos.top;
+            } 
+        }
+    });
+    map.buses.forEach(bus=> {
+        if(bus.pos) {
+            if(bus.pos.left<minleft) {
+                minleft = bus.pos.left;
+            }
+            if(bus.pos.top<mintop) {
+                mintop = bus.pos.top;
+            } 
+        }
+    });
+    let left_adj = minleft - 30;
+    let top_adj = mintop - 30;
+    if(left_adj!==0) {
+        map.devs.forEach(dev => {
+            if(dev.pos) {
+                dev.pos.left -= left_adj;
+            }
+        });
+        map.buses.forEach(bus => {
+            if(bus.pos) {
+                bus.pos.left -= left_adj;
+            }
+        })
+        res = true;
+    }
+    if(top_adj!==0) {
+        map.devs.forEach(dev => {
+            if(dev.pos) {
+                dev.pos.top -= top_adj;
+            }
+        });
+        map.buses.forEach(bus => {
+            if(bus.pos) {
+                bus.pos.top -= top_adj;
+            }
+        })
+        res = true;
+    }
+    return res;
+}
+
+
 export default {
     map_default,
     create_map_bycontent,
@@ -417,4 +469,5 @@ export default {
     create_content,
     add_bus,
     set_container_width,
+    adjust,
 }
