@@ -158,6 +158,27 @@ class Map {
             this.removeLink(link.dc.dev.id, link.dc.conn.id);
         }
     }
+    getKind(dev_id, conn_id) {
+        if(!this.raw_devs) {
+            return;
+        }
+        let dev = this.raw_devs.find(d => d.id === dev_id);
+        if(dev) {
+            let conn = dev.conns.find(c => c.id === conn_id);
+            return conn ? conn.kind : '';
+        }
+        return '';
+    }
+    getBusKinds(bus_id) {
+        let res = [];
+        let self = this;
+        this.links.forEach(l => {
+            if(l.bus_id === bus_id) {
+                res.push(self.getKind(l.dc.dev.id, l.dc.conn.id));
+            }
+        })
+        return res;
+    }
 }
 
 function _create_dev(raw_dev) {
@@ -315,6 +336,17 @@ function update_layout(map) {
     }
 }
 
+function _update_conns_count(dev) {
+    if(dev.pos.show_count < map_default.DEFAULT_ITEMS_MINCOUNT || dev.pos.show_count > dev.conns.length) {
+        dev.pos.show_count = Math.min(map_default.DEFAULT_ITEMS_MINCOUNT, dev.conns.length);
+        return
+    }
+    if(dev.pos.show_count > map_default.DEFAULT_ITEMS_MAXCOUNT || dev.pos.show_count < dev.conns.length) {
+        dev.pos.show_count = Math.min(map_default.DEFAULT_ITEMS_MAXCOUNT, dev.conns.length);
+        return
+    }
+}
+
 function create_map_byold(raw_devs, old_map) {
     let map = _create_map_empty(raw_devs, old_map ? old_map.buses : []);
     if (old_map) {
@@ -324,6 +356,8 @@ function create_map_byold(raw_devs, old_map) {
         });
     }
     update_layout(map);
+    map.raw_devs = raw_devs;
+    map.devs.forEach(d => _update_conns_count(d));
     return map;
 }
 
@@ -341,6 +375,8 @@ function create_map_bycontent(raw_devs, buses, bus_links, pp_links) {
         })
     }
     update_layout(map);
+    map.raw_devs = raw_devs;
+    map.devs.forEach(d => _update_conns_count(d));
     return map;
 }
 

@@ -82,6 +82,7 @@
     import tman from '../../../utility/tree_man';
     import db from '../../../doc/workerdb';
     import EBusElement from './EBusElement';
+    import link_check from '../../../utility/link_check';
 
     export default {
         props: ['map', 'line_type', 'scale', 'left', 'top'],
@@ -181,14 +182,19 @@
                 });
                 let self = this;
                 p.bind("beforeDrop", function(info) {
-                    if(!info.sourceId.indexOf('.')) {
+                    if(info.sourceId.indexOf('.')<0) {
                         return false;
                     }
-                    if(info.targetId.indexOf('.')) {
-                        return true;
+                    if(info.targetId.indexOf('.')>0) {
+                        let fromids = info.sourceId.split('.');
+                        let toids = info.targetId.split('.');
+                        return link_check.allow_link(self.map.getKind(fromids[0], fromids[1]), self.map.getKind(toids[0], toids[1]));
                     }
                     if(self.buses.find(b => b.id === info.targetId)) {
-                        return true;
+                        let fromids = info.sourceId.split('.');
+                        let bus_kinds = self.map.getBusKinds(info.targetId);
+                        let res = link_check.allow_bus(self.map.getKind(fromids[0], fromids[1]), bus_kinds);
+                        return res;
                     }
                     return false;
                 });
@@ -213,6 +219,9 @@
                 return p;
             },
             _remove_link(c) {
+                if(c.sourceId.indexOf('.')<0) {
+                    return;
+                }
                 this.plumb.makeTarget(c.sourceId, this.comm_item);
                 if(c.targetId.indexOf('.')>0) {
                     this.plumb.makeSource(c.targetId, this.comm_item);
@@ -255,6 +264,7 @@
                     let c
                     if(link.bus_id) {
                         let conn_id = `${link.dc.dev.id}.${link.dc.conn.id}`;
+                        this.plumb.makeSource(conn_id, this.comm_item);
                         c = this.plumb.connect({source: conn_id, target: link.bus_id});
                     } else {
                         let from_id =  `${link.dc1.dev.id}.${link.dc1.conn.id}`;

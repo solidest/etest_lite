@@ -7,6 +7,8 @@
         <div v-if="dlg_opt.type">
             <e-select-dlg v-if="dlg_opt.type==='select'" @result="do_select_devs" :dialog="dlg_opt.type"
                 :items="raw_devs" />
+            <e-binding-dlg v-else-if="dlg_opt.type==='binding'" @result="do_binding" :dialog="dlg_opt.type"
+                :binding="binding"/>
         </div>
     </div>
 </template>
@@ -28,6 +30,7 @@
         components: {
             'e-linking-editor': ELinkingEditor,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectdevdlg" */ './EDlgSelectDev'),
+            'e-binding-dlg': () => import( /* webpackChunkName: "ebindingdlg" */ './EDlgBinding'),
         },
         mounted: async function () {
             await this._reset_doc(this.active_doc_id);
@@ -66,6 +69,12 @@
             },
             proj_id: function () {
                 return this.$store.state.proj.id;
+            },
+            binding: function() {
+                return {
+                    devs: this.map.devs.map(d => {return {id: d.id, name: d.name, memo: d.memo, conns: d.conns.map(c=> {return {id: c.id, name: c.name, kind: c.kind, memo: c.memo}})}}),
+                    binds: this.content.binds || []
+                }
             },
         },
         watch: {
@@ -182,7 +191,7 @@
                             buses: [],
                             bus_links: [],
                             pp_links: [],
-                            binds: {}
+                            binds: []
                         },
                         kind: cfg.kind
                     });
@@ -209,7 +218,6 @@
                     zoom_small: this.map_state.scale<0.21,
                     undo: this.redoundo.undoCount===0,
                     redo: this.redoundo.redoCount===0,
-                    binding: true, //TODO
                 }
                 return dis;
             },
@@ -303,7 +311,7 @@
                 });
             },
             action_binding() {
-                this._update_map();
+                this.dlg_opt.type = 'binding';
             },
             do_select_devs(res) {
                 this.dlg_opt.type = null;
@@ -322,6 +330,14 @@
                 this._save_doc();
                 this._update_map();
             },
+            do_binding(res) {
+                this.dlg_opt.type = null;
+                if(res.result !== 'ok') {
+                    return;
+                }
+                this.content.binds = res.value;
+                this._save_doc();
+            }
         }
     }
 </script>
