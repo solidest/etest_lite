@@ -287,6 +287,19 @@
                 }
                 return dis;
             },
+            _fill_default (conns) {
+                if(!conns) {
+                    return;
+                }
+                for (const conn of conns) {
+                    let dft = defaults[conn.kind];
+                    for(const k in dft) {
+                        if(conn[k] === undefined) {
+                            conn[k] = dft[k]
+                        }
+                    }
+                }
+            },
             format_cfg: function(obj) {
                     if (!obj) {
                         return '';
@@ -429,8 +442,10 @@
                     return;
                 }
                 let doc = sdk.converter.device_etl2dev(res.value);
+                this._fill_default(doc.content);
                 this.$doc.content = doc.content;
                 db.update('src', this.$doc);
+                api.projdb_changed(this.proj_id);
                 await this._reset_doc(this.doc_id, true);
                 this._update_state();
             },

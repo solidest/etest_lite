@@ -113,7 +113,6 @@ export default {
         return checker[from].allow_links.includes(to);
     },
     allow_bus(from, tos) {
-        console.log('from', from, 'tos', tos)
         let allow_bus = checker[from].allow_bus;
         if(allow_bus) {
             return allow_bus(tos);

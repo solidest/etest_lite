@@ -9,6 +9,8 @@
                 :items="raw_devs" />
             <e-binding-dlg v-else-if="dlg_opt.type==='binding'" @result="do_binding" :dialog="dlg_opt.type"
                 :binding="binding"/>
+            <e-etl-dlg v-else-if="dlg_opt.type==='etl'" @result="do_etl_code" :dialog="dlg_opt.type"
+                :title="dlg_opt.title" :etl_code="dlg_opt.data" :kind="kind" />
         </div>
     </div>
 </template>
@@ -22,6 +24,7 @@
     import db from '../../../doc/workerdb';
     import redoundo from '../../../doc/redoundo';
     import ELinkingEditor from './ELinkingEditor'
+    import {sdk} from '../../../../sdk/sdk'
 
     const line_types = ['Straight','StateMachine', 'Bezier',  'Flowchart'];
 
@@ -31,6 +34,7 @@
             'e-linking-editor': ELinkingEditor,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectdevdlg" */ './EDlgSelectDev'),
             'e-binding-dlg': () => import( /* webpackChunkName: "ebindingdlg" */ './EDlgBinding'),
+            'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
         },
         mounted: async function () {
             await this._reset_doc(this.active_doc_id);
@@ -42,6 +46,7 @@
         },
         data() {
             return {
+                kind: cfg.kind,
                 doc_id: null,
                 content: {},
                 raw_devs: [],
@@ -76,12 +81,19 @@
                     binds: this.content.binds || []
                 }
             },
+            dialog: function() {
+                return this.dlg_opt.type;
+            }
         },
         watch: {
             active_doc_id: async function (nid) {
                 await this._save_docstate(this.doc_id);
                 await this._reset_doc(nid);
                 this._update_state();
+            },
+            dialog: function(d) {
+                let mode = d ? (d==='etl'?'fullscreen':'dialog') : 'normal';
+                this.$store.commit('setWinMode', mode);
             },
         },
         methods: {
@@ -113,7 +125,7 @@
                 if(!this.doc_id) {
                     return;
                 }
-                this.map_state  = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
+                this.map_state = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
             },
             async _save_doc(ignore_undo=false) {
                 let content = topo_map.create_content(this.map);
@@ -161,7 +173,7 @@
                         let dev = this.raw_devs.find(it => (it.id === db_dev.id || it.name === db_dev.name));
                         if (dev) {
                             dev.kind = db_dev.kind || 'none';
-                            dev.pos = db_dev.pos;
+                            dev.pos = db_dev.pos || dev.pos;
                         }
                     }
                 }
@@ -312,6 +324,30 @@
             },
             action_binding() {
                 this.dlg_opt.type = 'binding';
+            },
+            action_etl_code: function() {
+                let topo = this.$store.state.Editor.active;
+                let content = topo_map.create_content(this.map);
+                content.binds = this.content.binds;
+                let etl_code = '// 此代码由ETestDev自动生成\n// 请勿修改连接拓扑名称\n\n' + sdk.converter.topology_dev2etl(content, topo.name, topo.memo);
+                this.dlg_opt.type = 'etl';
+                this.dlg_opt.title = topo.name;
+                this.dlg_opt.data = etl_code;
+            },
+            do_etl_code: async function(res) {
+                this.dlg_opt.type = null;
+                if(res.result!=='ok') {
+                    return;
+                }
+                let content = sdk.converter.topology_etl2dev(res.value).content;
+                let map = this._create_map_bydb(content.devs, content.buses, content.bus_links, content.pp_links);
+                // map = topo_map.create_map_byold
+                this.content = content;
+                this.map = map;
+                this._save_doc(true);
+                this.redoundo.reset();
+                this._update_state();
+                this._update_map();
             },
             do_select_devs(res) {
                 this.dlg_opt.type = null;

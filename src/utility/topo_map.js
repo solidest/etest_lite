@@ -126,7 +126,7 @@ class Map {
     pushPLink(id, name, old_dc1, old_dc2) {
         let dc1 = this._create_empty_dev_conn(old_dc1);
         let dc2 = this._create_empty_dev_conn(old_dc2);
-        if (!dc1 || !dc2) {
+        if (!dc1 || !dc2 || dc1.conn.id===dc2.conn.id) {
             return false;
         }
         this.links.push(new PLink(id, name, dc1, dc2));
