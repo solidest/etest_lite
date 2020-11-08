@@ -337,13 +337,9 @@ function update_layout(map) {
 }
 
 function _update_conns_count(dev) {
-    if(dev.pos.show_count < map_default.DEFAULT_ITEMS_MINCOUNT || dev.pos.show_count > dev.conns.length) {
+    let show_count = dev.pos.show_count;
+    if( show_count < map_default.DEFAULT_ITEMS_MINCOUNT || show_count > dev.conns.length || show_count > map_default.DEFAULT_ITEMS_MAXCOUNT) {
         dev.pos.show_count = Math.min(map_default.DEFAULT_ITEMS_MINCOUNT, dev.conns.length);
-        return
-    }
-    if(dev.pos.show_count > map_default.DEFAULT_ITEMS_MAXCOUNT || dev.pos.show_count < dev.conns.length) {
-        dev.pos.show_count = Math.min(map_default.DEFAULT_ITEMS_MAXCOUNT, dev.conns.length);
-        return
     }
 }
 

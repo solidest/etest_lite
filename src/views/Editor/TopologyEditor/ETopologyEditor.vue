@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex">
-        <v-card color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
+        <v-card tile color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
             <e-linking-editor v-if="map" :map="map" :line_type="line_types[content.line_type_idx||0]" :scale="map_state.scale" :left="map_state.left" :top="map_state.top"
             @changed="on_changed" @moved="on_moved" />
         </v-card>

@@ -29,7 +29,7 @@ let left_tools = [{
     }, {
         text: '批量粘贴',
         value: 'paste_batch',
-        icon: 'mdi-content-duplicate'
+        icon: 'mdi-view-grid-plus'
     }, {
         text: '撤销',
         value: 'undo',

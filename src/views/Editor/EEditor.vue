@@ -16,18 +16,18 @@
 <script>
     import Mousetrap from 'mousetrap';
     import ETitleMan from './ETitleMan';
-    import ELuaEditor from './LuaEditor/ELuaEditor';
     import EEditorBar from './EEditorBar';
     import ETopologyEditor from './TopologyEditor/ETopologyEditor';
+    import EEtlEditor from './ScriptEditor/EEtlEditor';
     import EEmpty from '../../views/EEmpty';
 
     export default {
         components: {
             'e-editor-bar': EEditorBar,
             'e-title-man': ETitleMan,
-            'e-run-editor': ELuaEditor,
-            'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
+            'e-script-editor': EEtlEditor,
             'e-topology-editor': ETopologyEditor,//() => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
+            'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
             'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
         },
         mounted: function () {
