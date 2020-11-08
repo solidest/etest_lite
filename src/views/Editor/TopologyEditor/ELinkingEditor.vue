@@ -323,7 +323,7 @@
                 }
                 let direct = link_check.calc_arrow(this.map.getKind(fromids[0], fromids[1]), this.map.getKind(toids[0], toids[1]));
                 if(direct!==0) {
-                    c.addOverlay([ "Arrow", { width:15, height:15, direction: direct, location:0.7}]);
+                    c.addOverlay([ "Arrow", { width:15, height:15, direction: direct, location: (direct>0 ? 0.7:0.3)}]);
                 }
             },
 
