@@ -199,16 +199,17 @@
                     return false;
                 });
                 p.bind("connection", function (info) {
+                    let c = info.connection;
                     if(self.loading) {
                         return;
                     }
-                    if(info.targetId.indexOf('.')>0) {
-                        p.unmakeSource(info.targetId);
-                    }
+                    c.setType("basic");
                     p.unmakeTarget(info.sourceId);
                     self._scroll_dev_items(info.targetId.split('.')[0]);
-                    let c = info.connection;
-                    c.setType("basic");
+                    if(info.targetId.indexOf('.')>0) {
+                        p.unmakeSource(info.targetId);
+                        self._set_arraow(c);
+                    }
                     if(!self._add_linkdata(c.id, c.sourceId, c.targetId)) {
                         setTimeout(()=>{p.deleteConnection(c)}, 0);
                         return;
@@ -266,14 +267,16 @@
                         let conn_id = `${link.dc.dev.id}.${link.dc.conn.id}`;
                         this.plumb.makeSource(conn_id, this.comm_item);
                         c = this.plumb.connect({source: conn_id, target: link.bus_id});
+                        c.setType("basic");
                     } else {
                         let from_id =  `${link.dc1.dev.id}.${link.dc1.conn.id}`;
                         let to_id =  `${link.dc2.dev.id}.${link.dc2.conn.id}`;
                         this.plumb.makeSource(from_id, this.comm_item);
                         this.plumb.makeTarget(to_id, this.comm_item);
                         c = this.plumb.connect({source: from_id, target: to_id});
+                        c.setType("basic");
+                        this._set_arraow(c);
                     }
-                    c.setType("basic");
                     c.bind("dblclick", ()=>{self._remove_link(c)});
                     this.plumb.setIdChanged(c.id, link.id);
                 }
@@ -310,6 +313,17 @@
                 let r = this.map.removeLink(ids[0], ids[1]);
                 if(!r) {
                     console.error('remove link error', source_id);
+                }
+            },
+            _set_arraow(c) {
+                let fromids = c.sourceId.split('.');
+                let toids = c.targetId.split('.');
+                if(fromids.length!==2 || toids.length!==2) {
+                    return;
+                }
+                let direct = link_check.calc_arrow(this.map.getKind(fromids[0], fromids[1]), this.map.getKind(toids[0], toids[1]));
+                if(direct!==0) {
+                    c.addOverlay([ "Arrow", { width:15, height:15, direction: direct, location:0.7}]);
                 }
             },
 

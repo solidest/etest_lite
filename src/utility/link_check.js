@@ -13,7 +13,7 @@ const checker = {
     },
     do: {
         allow_links: ['di'],
-        should_source: 'di',
+        should_target: 'di',
     },
     udp: {
         allow_links: ['udp'],
@@ -98,7 +98,6 @@ const checker = {
                 return true;
             }
             for (const c of conns) {
-                console.log(c)
                 if(!['can'].includes(c)) {
                     return false;
                 }
@@ -120,11 +119,12 @@ export default {
         return false;
     },
     calc_arrow(from, to) {
-        if(from.should_source) {
-            return to === from.should_source ? -1 : 0;
+        console.log(from, to)
+        if(checker[from].should_source) {
+            return to === checker[from].should_source ? -1 : 0;
         }
-        if(from.should_target) {
-            return to === from.should_target ? 1 : 0;
+        if(checker[from].should_target) {
+            return to === checker[from].should_target ? 1 : 0;
         }
         return 0;
     }
