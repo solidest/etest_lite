@@ -11,6 +11,8 @@ async function _get_etlcode(id, name, memo) {
         switch (doc.kind) {
             case 'device':
                 return sdk.converter.device_dev2etl(doc.content, name, memo);
+            case 'topology':
+                return sdk.converter.topology_dev2etl(doc.content, name, memo);
         }
     }
     return null;
@@ -21,6 +23,8 @@ function get_devobj(kind, code) {
     switch (kind) {
         case 'device':
             return sdk.converter.device_etl2dev(ast);
+        case 'topology':
+            return sdk.converter.topology_etl2dev(ast);
     }
     return null;
 }
