@@ -1,15 +1,22 @@
 <template>
     <div class="d-flex">
-        <v-sheet color="grey darken-2" :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="editor_div">
-            
-        </v-sheet>
+        <div :style="{height:`calc(100vh - ${top_height}px)`, width: '100%', 'overflow-y': 'auto'}" id="blocklyDiv">
+        </div>
         <e-refby :top_height="top_height" />
     </div>
 </template>
+<style>
+.blocklyMainBackground {
+    stroke: #000 !important;
+}
+</style>
 
 <script>
     import cfg from './config';
     import ERefby from './ERefby';
+    import Blockly from './blockly/blockly_compressed';
+    import Blocks from './blockly/blocks_compressed';
+    import Zh_smg from './blockly/zh-hans';
 
     export default {
         props: ['top_height'],
@@ -75,8 +82,19 @@
                 // }
                 // this.map_state = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
             },
+            _update_blockly() {
+                if(!Blocks || !Zh_smg) {
+                    console.error('missed files of blockly');
+                }
+
+                Blockly.inject('blocklyDiv', {theme: cfg.theme, toolbox: cfg.toolbox, media: 'media/'});
+            },
             async _reset_doc(id, reset_state=false) {
                 console.log(id, reset_state);
+                let self = this;
+                this.$nextTick(() => {
+                    self._update_blockly();
+                })
                 // let self = this;
                 // this.doc_id = id;
                 // if(!id) {

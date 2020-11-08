@@ -3,3 +3,4 @@
 /language/script_lua.js
 /sdk/**
 *.min.js
+blockly/**

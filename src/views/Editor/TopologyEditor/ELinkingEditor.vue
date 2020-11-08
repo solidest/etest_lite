@@ -220,7 +220,7 @@
                 return p;
             },
             _remove_link(c) {
-                if(c.sourceId.indexOf('.')<0) {
+                if(c.sourceId.indexOf('.')<0 || (c.targetId.indexOf('.')<0 && !this.map.buses.find(b=>b.id===c.targetId))) {
                     return;
                 }
                 this.plumb.makeTarget(c.sourceId, this.comm_item);
