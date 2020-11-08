@@ -1,6 +1,10 @@
 let left_tools = [{
+  text: '程序引用',
+  value: 'ref_script',
+  icon: 'mdi-share-all-outline'
+}, {
   text: '拷贝',
-  value: 'paste_batch',
+  value: 'duplicate',
   icon: 'mdi-content-duplicate'
 }, {
   text: '撤销',
@@ -39,7 +43,7 @@ let theme = {
       "colourPrimary": "rgb(91, 165, 91)",
     },
     "math_blocks": {
-      "colourPrimary":"rgb(91, 103, 165)"
+      "colourPrimary": "rgb(91, 103, 165)"
     },
     "text_blocks": {
       "colourPrimary": "rgb(73, 132, 112)"
@@ -56,7 +60,7 @@ let theme = {
   },
   'componentStyles': {
     'workspaceBackgroundColour': '#424242',
-    'toolboxBackgroundColour':'#212121'
+    'toolboxBackgroundColour': '#212121'
   }
 };
 
@@ -70,6 +74,7 @@ let toolbox = `<xml id="toolbox" style="display: none">
   </category>
   <category name="报文" colour="#29B6F6">
   </category>
+  <sep></sep>
   <category name="逻辑" colour="%{BKY_LOGIC_HUE}">
     <block type="controls_if"></block>
     <block type="logic_compare"></block>
