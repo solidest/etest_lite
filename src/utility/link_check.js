@@ -119,7 +119,6 @@ export default {
         return false;
     },
     calc_arrow(from, to) {
-        console.log(from, to)
         if(checker[from].should_source) {
             return to === checker[from].should_source ? -1 : 0;
         }
