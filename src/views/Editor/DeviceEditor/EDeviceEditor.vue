@@ -328,7 +328,6 @@
                 this.$nextTick(() => {
                     self._update_state();
                 });
-                this.$emit('action_click');
             },
             action_redo: function() {
                 let ov = this.redoundo.popRedo();

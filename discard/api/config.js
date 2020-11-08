@@ -21,12 +21,12 @@ const default_src = [{
     catalog: 'simu',
     children: []
 }, {
-    id: 'LB',
-    name: '脚本库',
+    id: 'SC',
+    name: '测试程序',
     kind: 'dir',
     fixed: true,
     actions: ['new_item'],
-    catalog: 'libs',
+    catalog: 'script',
     children: []
 }, {
     id: 'EN',

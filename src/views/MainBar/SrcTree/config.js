@@ -4,16 +4,15 @@ const cfg = {
         protocol: '通信协议',
         topology: '连接拓扑',
         device: '设备接口',
-        libs: '测试程序',
+        script: '测试程序',
         simu: '仿真模型',
         run: '执行用例',
         dir: '目录'
     },
-
     file_icons: {
         PG: 'mdi-google-play',
         SM: 'mdi-shape',
-        LB: 'mdi-puzzle',
+        SC: 'mdi-puzzle',
         EN: 'mdi-folder-cog',
         PT: 'mdi-comment-processing',
         TP: 'mdi-lan',
@@ -22,7 +21,7 @@ const cfg = {
         protocol: 'mdi-comment-processing-outline',
         topology: 'mdi-lan-connect',
         device: 'mdi-network-outline',
-        libs: 'mdi-puzzle-outline',
+        script: 'mdi-puzzle-outline',
         xtra: 'mdi-cogs',
         simu: 'mdi-shape-outline',
     },
@@ -69,13 +68,13 @@ const cfg = {
     //     children: []
     // }, 
     {
-        id: 'LB',
+        id: 'SC',
         name: '测试程序',
         kind: 'dir',
         fixed: true,
         default_action: 'new_item',
         actions: ['new_item', 'new_dir'],
-        catalog: 'libs',
+        catalog: 'script',
         children: []
     }, {
         id: 'EN',

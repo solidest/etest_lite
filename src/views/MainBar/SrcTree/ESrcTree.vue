@@ -117,7 +117,7 @@
                     return cur.actions;
                 }
                 let acs = ['new_item', 'rename', 'remove'];
-                if(['run', 'libs'].includes(cur.catalog)) {
+                if(['run', 'script'].includes(cur.catalog)) {
                     acs.push('new_dir');
                 }
                 if(cur.kind !== 'dir') {
@@ -184,6 +184,7 @@
                 }
             },
             _open_doc: function(it) {
+                console.log(it.kind)
                 if(!['device', 'topology'].includes(it.kind)) return;
                 this.$store.commit('Editor/open', it);                
                 if(this.$route.name !== 'Editor') {
