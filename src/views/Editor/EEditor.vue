@@ -28,6 +28,7 @@
             'e-script-editor': EEtlEditor,
             'e-topology-editor': ETopologyEditor,//() => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
+            'e-simu-editor': () => import(/* webpackChunkName: "e-simu-editor" */ './SimuEditor/EEmpty'),
             'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
         },
         mounted: function () {

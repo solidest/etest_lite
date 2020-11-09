@@ -14,9 +14,9 @@
 <script>
     import cfg from './config';
     import ERefby from './ERefby';
-    import Blockly from './blockly/blockly_compressed';
-    import Blocks from './blockly/blocks_compressed';
-    import Zh_smg from './blockly/zh-hans';
+    import Blockly from '../../Components/blockly/blockly_compressed';
+    import Blocks from '../../Components/blockly/blocks_compressed';
+    import Zh_smg from '../../Components/blockly/zh-hans';
 
     export default {
         props: ['top_height'],

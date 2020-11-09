@@ -184,7 +184,7 @@
                 }
             },
             _open_doc: function(it) {
-                if(!['device', 'topology', 'script'].includes(it.kind)) return;
+                if(!['device', 'topology', 'script', 'simu'].includes(it.kind)) return;
                 this.$store.commit('Editor/open', it);                
                 if(this.$route.name !== 'Editor') {
                     this.$router.push({name: 'Editor'});
