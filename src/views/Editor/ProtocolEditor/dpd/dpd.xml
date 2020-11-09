@@ -78,51 +78,56 @@
       <block type="input_dummy" id="!KDa0R5@gqf;76-L8J7z">
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
-          <block type="field_input" id="^cA0WwyYTS#-Q3,_i9A@">
-            <field name="TEXT">seg_xxx</field>
-            <field name="FIELDNAME">seg_name</field>
+          <block type="field_static" id="fa|=vU*_rWzx`4k$oU#s">
+            <field name="TEXT">整数</field>
             <next>
-              <block type="field_static" id="7YRU7ErlDDoUpOOF17wG">
-                <field name="TEXT">:</field>
+              <block type="field_input" id="^cA0WwyYTS#-Q3,_i9A@">
+                <field name="TEXT">seg_xxx</field>
+                <field name="FIELDNAME">seg_name</field>
                 <next>
-                  <block type="field_dropdown" id="+B[a+JBPa{,m$mW:^|.r">
-                    <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                    <field name="FIELDNAME">signed</field>
-                    <field name="USER0">无符号</field>
-                    <field name="CPU0">false</field>
-                    <field name="USER1">有符号</field>
-                    <field name="CPU1">true</field>
+                  <block type="field_static" id="7YRU7ErlDDoUpOOF17wG">
+                    <field name="TEXT">:</field>
                     <next>
-                      <block type="field_number" id="$j[j-=@LBe:J.J$Yip*o">
-                        <field name="VALUE">8</field>
-                        <field name="FIELDNAME">bits</field>
-                        <field name="MIN">1</field>
-                        <field name="MAX">64</field>
-                        <field name="PRECISION">0</field>
+                      <block type="field_dropdown" id="+B[a+JBPa{,m$mW:^|.r">
+                        <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                        <field name="FIELDNAME">signed</field>
+                        <field name="USER0">无符号</field>
+                        <field name="CPU0">false</field>
+                        <field name="USER1">有符号</field>
+                        <field name="CPU1">true</field>
                         <next>
-                          <block type="field_static" id="])^x0Ns`:ew~gGs0JWb=">
-                            <field name="TEXT">位整数,</field>
+                          <block type="field_number" id="$j[j-=@LBe:J.J$Yip*o">
+                            <field name="VALUE">8</field>
+                            <field name="FIELDNAME">bits</field>
+                            <field name="MIN">1</field>
+                            <field name="MAX">64</field>
+                            <field name="PRECISION">0</field>
                             <next>
-                              <block type="field_dropdown" id=".aSdaP==5LXJ)yh_Hs64">
-                                <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                                <field name="FIELDNAME">big_order</field>
-                                <field name="USER0">小端序</field>
-                                <field name="CPU0">false</field>
-                                <field name="USER1">大端序</field>
-                                <field name="CPU1">true</field>
+                              <block type="field_static" id="])^x0Ns`:ew~gGs0JWb=">
+                                <field name="TEXT">位,</field>
                                 <next>
-                                  <block type="field_static" id="S9a*^uaISGT!%ASZ!X^Z">
-                                    <field name="TEXT">,</field>
+                                  <block type="field_dropdown" id=".aSdaP==5LXJ)yh_Hs64">
+                                    <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                                    <field name="FIELDNAME">big_order</field>
+                                    <field name="USER0">小端序</field>
+                                    <field name="CPU0">false</field>
+                                    <field name="USER1">大端序</field>
+                                    <field name="CPU1">true</field>
                                     <next>
-                                      <block type="field_dropdown" id="$Q^tdn]Mc49QNW,nS+-K">
-                                        <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
-                                        <field name="FIELDNAME">encode</field>
-                                        <field name="USER0">补码</field>
-                                        <field name="CPU0">complement</field>
-                                        <field name="USER1">反码</field>
-                                        <field name="CPU1">inverse</field>
-                                        <field name="USER2">原码</field>
-                                        <field name="CPU2">primitive</field>
+                                      <block type="field_static" id="S9a*^uaISGT!%ASZ!X^Z">
+                                        <field name="TEXT">,</field>
+                                        <next>
+                                          <block type="field_dropdown" id="$Q^tdn]Mc49QNW,nS+-K">
+                                            <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                                            <field name="FIELDNAME">encode</field>
+                                            <field name="USER0">补码</field>
+                                            <field name="CPU0">complement</field>
+                                            <field name="USER1">反码</field>
+                                            <field name="CPU1">inverse</field>
+                                            <field name="USER2">原码</field>
+                                            <field name="CPU2">primitive</field>
+                                          </block>
+                                        </next>
                                       </block>
                                     </next>
                                   </block>
@@ -187,31 +192,36 @@
       <block type="input_dummy" id="XM)c]q)n.s}o?DZS.;zU">
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
-          <block type="field_input" id="QT2sgevI9{{k(@HNc?yp">
-            <field name="TEXT">seg_xxx</field>
-            <field name="FIELDNAME">seg_name</field>
+          <block type="field_static" id="i1x~AW_daleF?nO_2?Dr">
+            <field name="TEXT">小数</field>
             <next>
-              <block type="field_static" id="ts,qcg5$l[j_b+gld;7y">
-                <field name="TEXT">:</field>
+              <block type="field_input" id="QT2sgevI9{{k(@HNc?yp">
+                <field name="TEXT">seg_xxx</field>
+                <field name="FIELDNAME">seg_name</field>
                 <next>
-                  <block type="field_dropdown" id="MNHe]*N.SN.2]]{f*(sR">
-                    <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                    <field name="FIELDNAME">double</field>
-                    <field name="USER0">单精度</field>
-                    <field name="CPU0">false</field>
-                    <field name="USER1">双精度</field>
-                    <field name="CPU1">true</field>
+                  <block type="field_static" id="ts,qcg5$l[j_b+gld;7y">
+                    <field name="TEXT">:</field>
                     <next>
-                      <block type="field_static" id="HT]-,:f#d;Ea}4+3/cBj">
-                        <field name="TEXT">浮点数,</field>
+                      <block type="field_dropdown" id="MNHe]*N.SN.2]]{f*(sR">
+                        <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                        <field name="FIELDNAME">double</field>
+                        <field name="USER0">单精度</field>
+                        <field name="CPU0">false</field>
+                        <field name="USER1">双精度</field>
+                        <field name="CPU1">true</field>
                         <next>
-                          <block type="field_dropdown" id="OrWVx|jwX_Ltk35*(/Ht">
-                            <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                            <field name="FIELDNAME">big_order</field>
-                            <field name="USER0">小端序</field>
-                            <field name="CPU0">false</field>
-                            <field name="USER1">大端序</field>
-                            <field name="CPU1">true</field>
+                          <block type="field_static" id="HT]-,:f#d;Ea}4+3/cBj">
+                            <field name="TEXT">,</field>
+                            <next>
+                              <block type="field_dropdown" id="OrWVx|jwX_Ltk35*(/Ht">
+                                <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                                <field name="FIELDNAME">big_order</field>
+                                <field name="USER0">小端序</field>
+                                <field name="CPU0">false</field>
+                                <field name="USER1">大端序</field>
+                                <field name="CPU1">true</field>
+                              </block>
+                            </next>
                           </block>
                         </next>
                       </block>
@@ -270,20 +280,25 @@
       <block type="input_dummy" id="7SjL_)|x|0-$44%JaX~F">
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
-          <block type="field_input" id="5Mi]-gUxP*$tuYy8@h^`">
-            <field name="TEXT">seg_xxx</field>
-            <field name="FIELDNAME">seg_name</field>
+          <block type="field_static" id="l$5$b):c#g]ri7Y=JCxd">
+            <field name="TEXT">字节流</field>
             <next>
-              <block type="field_static" id="1KYh^~w@UBS{^Vck/+h.">
-                <field name="TEXT">:</field>
+              <block type="field_input" id="5Mi]-gUxP*$tuYy8@h^`">
+                <field name="TEXT">seg_xxx</field>
+                <field name="FIELDNAME">seg_name</field>
                 <next>
-                  <block type="field_dropdown" id="y2k+#SrnFQw@Zau}t96e">
-                    <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                    <field name="FIELDNAME">len_type</field>
-                    <field name="USER0">字节长度为</field>
-                    <field name="CPU0">length</field>
-                    <field name="USER1">结束符为</field>
-                    <field name="CPU1">endwith</field>
+                  <block type="field_static" id="1KYh^~w@UBS{^Vck/+h.">
+                    <field name="TEXT">:</field>
+                    <next>
+                      <block type="field_dropdown" id="y2k+#SrnFQw@Zau}t96e">
+                        <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                        <field name="FIELDNAME">len_type</field>
+                        <field name="USER0">字节长度为</field>
+                        <field name="CPU0">length</field>
+                        <field name="USER1">结束符为</field>
+                        <field name="CPU1">endwith</field>
+                      </block>
+                    </next>
                   </block>
                 </next>
               </block>
@@ -302,7 +317,7 @@
                 <field name="ALIGN">LEFT</field>
                 <statement name="FIELDS">
                   <block type="field_static" id="r30ijBHS8Hr5jxEQB[A_">
-                    <field name="TEXT">的数据段, 自动值为</field>
+                    <field name="TEXT">, 自动值为</field>
                   </block>
                 </statement>
                 <next>
@@ -352,12 +367,17 @@
       <block type="input_dummy" id="B[aq`OLPf1cl@Vw-.@09">
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
-          <block type="field_input" id="}OFa+EhuweqB$p?FXxgf">
-            <field name="TEXT">group_xxx</field>
-            <field name="FIELDNAME">seg_name</field>
+          <block type="field_static" id="nvGvqvg+x94:5IIm)lj4">
+            <field name="TEXT">分组</field>
             <next>
-              <block type="field_static" id="VWWY#}]rHuP=L]K70*qG">
-                <field name="TEXT">:</field>
+              <block type="field_input" id="}OFa+EhuweqB$p?FXxgf">
+                <field name="TEXT">group_xxx</field>
+                <field name="FIELDNAME">seg_name</field>
+                <next>
+                  <block type="field_static" id="VWWY#}]rHuP=L]K70*qG">
+                    <field name="TEXT">:</field>
+                  </block>
+                </next>
               </block>
             </next>
           </block>
@@ -368,7 +388,7 @@
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="lpmV[Livs[gT`6zyxHv[">
-                <field name="TEXT">分组</field>
+                <field name="TEXT">解析</field>
               </block>
             </statement>
             <value name="TYPE">
@@ -407,7 +427,7 @@
     <field name="CONNECTIONS">BOTH</field>
     <statement name="INPUTS">
       <block type="input_value" id="(f0[}Dn-k#GkNE4_GBdy">
-        <field name="INPUTNAME">NAME</field>
+        <field name="INPUTNAME">repeated</field>
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
           <block type="field_static" id="vc.$)Ic`q9V}Gdwp)L!(">
@@ -421,8 +441,8 @@
           <block type="input_dummy" id="BAUvOT1kXb2RYppba`zy">
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
-              <block type="field_static" id="`^u:evHyAl(YQ}pmyfot">
-                <field name="TEXT">次</field>
+              <block type="field_static" id="QZLvv!Al0!lrjiu3K:R-">
+                <field name="TEXT">次整数</field>
                 <next>
                   <block type="field_input" id="P(.x.qrn($QvB7^jOsCJ">
                     <field name="TEXT">seg_xxx</field>
@@ -447,7 +467,7 @@
                                 <field name="PRECISION">0</field>
                                 <next>
                                   <block type="field_static" id="{8u5+u.;!FS=fr:m$w%f">
-                                    <field name="TEXT">位整数,</field>
+                                    <field name="TEXT">位,</field>
                                     <next>
                                       <block type="field_dropdown" id=":Q`+01N/gDGK!fqbBF^o">
                                         <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
@@ -546,7 +566,7 @@
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="HF`ZzHVQ9A1KUStPPD@f">
-                <field name="TEXT">次</field>
+                <field name="TEXT">次小数</field>
                 <next>
                   <block type="field_input" id="bH%IS8xS7D4KRoxb_[5Y">
                     <field name="TEXT">seg_xxx</field>
@@ -564,7 +584,7 @@
                             <field name="CPU1">true</field>
                             <next>
                               <block type="field_static" id="3g8(rgW_8t[jgH0`IFoh">
-                                <field name="TEXT">浮点数,</field>
+                                <field name="TEXT">,</field>
                                 <next>
                                   <block type="field_dropdown" id="DL}k0gDeWNVNb6O9w,Dy">
                                     <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
@@ -644,7 +664,7 @@
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="RYlj{XoVZ+F#_he%5WrW">
-                <field name="TEXT">次</field>
+                <field name="TEXT">次字节流</field>
                 <next>
                   <block type="field_input" id="4~xU1V6oQCew,HDhXzHX">
                     <field name="TEXT">seg_xxx</field>
@@ -680,7 +700,7 @@
                     <field name="ALIGN">LEFT</field>
                     <statement name="FIELDS">
                       <block type="field_static" id="c[EMLK4@(i9U]AF)N7wT">
-                        <field name="TEXT">的数据段, 自动值为</field>
+                        <field name="TEXT">, 自动值为</field>
                         <next>
                           <block type="field_input" id="3NA3.UI!=U;=o0F+x__M">
                             <field name="TEXT">[ ]</field>
@@ -741,7 +761,7 @@
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="8}a2Y/V,x[Iow]A+%?;!">
-                <field name="TEXT">次</field>
+                <field name="TEXT">次分组</field>
                 <next>
                   <block type="field_input" id="0Vs*/4*Tovk#N3J(c6T!">
                     <field name="TEXT">group_xxx</field>
@@ -761,7 +781,7 @@
                 <field name="ALIGN">LEFT</field>
                 <statement name="FIELDS">
                   <block type="field_static" id="foNgk8hblC;#!)CIHyT;">
-                    <field name="TEXT">分组</field>
+                    <field name="TEXT">解析</field>
                   </block>
                 </statement>
                 <value name="TYPE">
@@ -887,38 +907,43 @@
       <block type="input_dummy" id="YyKb~J;p}3=Xr3`pI`^/">
         <field name="ALIGN">LEFT</field>
         <statement name="FIELDS">
-          <block type="field_input" id="ErrS0gR3%3w)n4zLM(%`">
-            <field name="TEXT">seg_xxx</field>
-            <field name="FIELDNAME">seg_nage</field>
+          <block type="field_static" id="c8Yr#%;F.bvR;k=J#DG#">
+            <field name="TEXT">自定义</field>
             <next>
-              <block type="field_static" id="dtJero|A}rzYP@ThXF=}">
-                <field name="TEXT">: 使用</field>
+              <block type="field_input" id="ErrS0gR3%3w)n4zLM(%`">
+                <field name="TEXT">seg_xxx</field>
+                <field name="FIELDNAME">seg_nage</field>
                 <next>
-                  <block type="field_dropdown" id="3~c!)+1X{(@l$a};@4LE">
-                    <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
-                    <field name="FIELDNAME">unpack_fn</field>
-                    <field name="USER0">unpack_fn1</field>
-                    <field name="CPU0">fn1</field>
-                    <field name="USER1">unpack_fn2</field>
-                    <field name="CPU1">fn2</field>
-                    <field name="USER2">unpack_fn3</field>
-                    <field name="CPU2">fn3</field>
+                  <block type="field_static" id="dtJero|A}rzYP@ThXF=}">
+                    <field name="TEXT">: 使用</field>
                     <next>
-                      <block type="field_static" id="G]0D:lbd{:O/*Da=}OjJ">
-                        <field name="TEXT">解包, 使用</field>
+                      <block type="field_dropdown" id="3~c!)+1X{(@l$a};@4LE">
+                        <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                        <field name="FIELDNAME">unpack_fn</field>
+                        <field name="USER0">unpack_fn1</field>
+                        <field name="CPU0">fn1</field>
+                        <field name="USER1">unpack_fn2</field>
+                        <field name="CPU1">fn2</field>
+                        <field name="USER2">unpack_fn3</field>
+                        <field name="CPU2">fn3</field>
                         <next>
-                          <block type="field_dropdown" id="%blg:Md`wMh#1ft2$hrP">
-                            <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
-                            <field name="FIELDNAME">pack_fn</field>
-                            <field name="USER0">pack_fn1</field>
-                            <field name="CPU0">fn1</field>
-                            <field name="USER1">pack_fn2</field>
-                            <field name="CPU1">fn2</field>
-                            <field name="USER2">pack_fn3</field>
-                            <field name="CPU2">fn3</field>
+                          <block type="field_static" id="G]0D:lbd{:O/*Da=}OjJ">
+                            <field name="TEXT">解包, 使用</field>
                             <next>
-                              <block type="field_static" id="UfLKX9`~#+=1IkX0bO{0">
-                                <field name="TEXT">打包</field>
+                              <block type="field_dropdown" id="%blg:Md`wMh#1ft2$hrP">
+                                <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                                <field name="FIELDNAME">pack_fn</field>
+                                <field name="USER0">pack_fn1</field>
+                                <field name="CPU0">fn1</field>
+                                <field name="USER1">pack_fn2</field>
+                                <field name="CPU1">fn2</field>
+                                <field name="USER2">pack_fn3</field>
+                                <field name="CPU2">fn3</field>
+                                <next>
+                                  <block type="field_static" id="UfLKX9`~#+=1IkX0bO{0">
+                                    <field name="TEXT">打包</field>
+                                  </block>
+                                </next>
                               </block>
                             </next>
                           </block>
