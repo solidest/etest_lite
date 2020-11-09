@@ -4,9 +4,9 @@ const cfg = {
         protocol: '通信协议',
         topology: '连接拓扑',
         device: '设备接口',
-        script: '测试程序',
+        script: '程序',
         simu: '仿真模型',
-        run: '执行用例',
+        run: '用例',
         dir: '目录'
     },
     file_icons: {
@@ -49,7 +49,7 @@ const cfg = {
     ],
     default_tree: [{
         id: 'PG',
-        name: '执行用例',
+        name: '用例',
         kind: 'dir',
         fixed: true,
         default_action: 'new_item',
@@ -69,7 +69,7 @@ const cfg = {
     // }, 
     {
         id: 'SC',
-        name: '测试程序',
+        name: '程序',
         kind: 'dir',
         fixed: true,
         default_action: 'new_item',

@@ -22,7 +22,7 @@ const default_src = [{
     children: []
 }, {
     id: 'SC',
-    name: '测试程序',
+    name: '程序',
     kind: 'dir',
     fixed: true,
     actions: ['new_item'],

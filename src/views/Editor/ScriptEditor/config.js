@@ -1,8 +1,4 @@
-let left_tools = [{
-  text: '程序引用',
-  value: 'ref_script',
-  icon: 'mdi-share-all-outline'
-}, {
+let left_tools = [ {
   text: '拷贝',
   value: 'duplicate',
   icon: 'mdi-content-duplicate'
@@ -26,6 +22,14 @@ let left_tools = [{
   text: '缩小',
   value: 'zoom_small',
   icon: 'mdi-magnify-minus',
+}, {
+  text: '中英文切换',
+  value: 'toggle_en_zh',
+  icon: 'mdi-alphabetical-variant'
+}, {
+  text: '执行设置',
+  icon: 'mdi-cog-clockwise',
+  value: 'binding',
 }];
 
 let right_tools = [{
