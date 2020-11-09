@@ -274,13 +274,18 @@
             <field name="TEXT">seg_xxx</field>
             <field name="FIELDNAME">seg_name</field>
             <next>
-              <block type="field_dropdown" id="y2k+#SrnFQw@Zau}t96e">
-                <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                <field name="FIELDNAME">len_type</field>
-                <field name="USER0">字节长度为</field>
-                <field name="CPU0">length</field>
-                <field name="USER1">结束符为</field>
-                <field name="CPU1">endwith</field>
+              <block type="field_static" id="1KYh^~w@UBS{^Vck/+h.">
+                <field name="TEXT">:</field>
+                <next>
+                  <block type="field_dropdown" id="y2k+#SrnFQw@Zau}t96e">
+                    <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                    <field name="FIELDNAME">len_type</field>
+                    <field name="USER0">字节长度为</field>
+                    <field name="CPU0">length</field>
+                    <field name="USER1">结束符为</field>
+                    <field name="CPU1">endwith</field>
+                  </block>
+                </next>
               </block>
             </next>
           </block>
@@ -645,13 +650,18 @@
                     <field name="TEXT">seg_xxx</field>
                     <field name="FIELDNAME">seg_name</field>
                     <next>
-                      <block type="field_dropdown" id="MS74psbG||(S]Ojf1a:2">
-                        <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                        <field name="FIELDNAME">len_type</field>
-                        <field name="USER0">字节长度为</field>
-                        <field name="CPU0">length</field>
-                        <field name="USER1">结尾符为</field>
-                        <field name="CPU1">endwith</field>
+                      <block type="field_static" id="@J7,Cq(dLijWx!UP+Z=$">
+                        <field name="TEXT">:</field>
+                        <next>
+                          <block type="field_dropdown" id="MS74psbG||(S]Ojf1a:2">
+                            <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                            <field name="FIELDNAME">len_type</field>
+                            <field name="USER0">字节长度为</field>
+                            <field name="CPU0">length</field>
+                            <field name="USER1">结尾符为</field>
+                            <field name="CPU1">endwith</field>
+                          </block>
+                        </next>
                       </block>
                     </next>
                   </block>
