@@ -274,8 +274,13 @@
             <field name="TEXT">seg_xxx</field>
             <field name="FIELDNAME">seg_name</field>
             <next>
-              <block type="field_static" id="1,fFU%cOzvQ~-H)?o9+m">
-                <field name="TEXT">: 长度为</field>
+              <block type="field_dropdown" id="y2k+#SrnFQw@Zau}t96e">
+                <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                <field name="FIELDNAME">len_type</field>
+                <field name="USER0">字节长度为</field>
+                <field name="CPU0">length</field>
+                <field name="USER1">结束符为</field>
+                <field name="CPU1">endwith</field>
               </block>
             </next>
           </block>
@@ -292,7 +297,7 @@
                 <field name="ALIGN">LEFT</field>
                 <statement name="FIELDS">
                   <block type="field_static" id="r30ijBHS8Hr5jxEQB[A_">
-                    <field name="TEXT">字节的数据, 自动值为</field>
+                    <field name="TEXT">的数据段, 自动值为</field>
                   </block>
                 </statement>
                 <next>
@@ -640,8 +645,13 @@
                     <field name="TEXT">seg_xxx</field>
                     <field name="FIELDNAME">seg_name</field>
                     <next>
-                      <block type="field_static" id="zGav1lhY4-)I[n?Ky5we">
-                        <field name="TEXT">: 长度为</field>
+                      <block type="field_dropdown" id="MS74psbG||(S]Ojf1a:2">
+                        <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                        <field name="FIELDNAME">len_type</field>
+                        <field name="USER0">字节长度为</field>
+                        <field name="CPU0">length</field>
+                        <field name="USER1">结尾符为</field>
+                        <field name="CPU1">endwith</field>
                       </block>
                     </next>
                   </block>
@@ -660,7 +670,7 @@
                     <field name="ALIGN">LEFT</field>
                     <statement name="FIELDS">
                       <block type="field_static" id="c[EMLK4@(i9U]AF)N7wT">
-                        <field name="TEXT">字节的数据, 自动值为</field>
+                        <field name="TEXT">的数据段, 自动值为</field>
                         <next>
                           <block type="field_input" id="3NA3.UI!=U;=o0F+x__M">
                             <field name="TEXT">[ ]</field>
