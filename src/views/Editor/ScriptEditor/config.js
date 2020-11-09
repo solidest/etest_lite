@@ -22,17 +22,7 @@ let left_tools = [ {
   text: '缩小',
   value: 'zoom_small',
   icon: 'mdi-magnify-minus',
-}, 
-// {
-//   text: '中英文切换',
-//   value: 'toggle_en_zh',
-//   icon: 'mdi-alphabetical-variant'
-// },
- {
-  text: '执行设置',
-  icon: 'mdi-cog-clockwise',
-  value: 'binding',
-}];
+}, ];
 
 let right_tools = [{
   text: 'ETL代码编辑',

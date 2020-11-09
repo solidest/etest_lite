@@ -19,6 +19,7 @@
     import EEditorBar from './EEditorBar';
     import ETopologyEditor from './TopologyEditor/ETopologyEditor';
     import EEtlEditor from './ScriptEditor/EEtlEditor';
+    import EProtocolEditor from './ProtocolEditor/EProtocolEditor';
     import EEmpty from '../../views/EEmpty';
 
     export default {
@@ -26,7 +27,8 @@
             'e-editor-bar': EEditorBar,
             'e-title-man': ETitleMan,
             'e-script-editor': EEtlEditor,
-            'e-topology-editor': ETopologyEditor,//() => import(/* webpackChunkName: "e-topology-editor" */ './TopologyEditor/ETopologyEditor'),
+            'e-topology-editor': ETopologyEditor,
+            'e-protocol-editor': EProtocolEditor,
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
             'e-simu-editor': () => import(/* webpackChunkName: "e-simu-editor" */ './SimuEditor/EEmpty'),
             'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
