@@ -16,12 +16,10 @@
 
 <script>
     import cfg from './config';
+    import dpd_editor from './dpd_editor';
     import EVerticalBar from '../../Components/EVerticalBar';
     import EPorpertyPanel from '../../Components/EPropertyPanel';
-    import Blockly from '../../Components/blockly/blockly_compressed';
-    import Blocks from '../../Components/blockly/blocks_compressed';
-    import Zh_smg from '../../Components/blockly/zh-hans';
-
+    
     export default {
         props: ['top_height'],
         components: {
@@ -34,6 +32,8 @@
         mounted: async function () {
             await this._reset_doc(this.active_doc_id);
             this.$emit('active', this._get_ieditor());
+            let self = this;
+            setTimeout(()=>self.on_resize(), 200);
         },
         beforeDestroy: function () {
             this._save_docstate();
@@ -89,18 +89,11 @@
                 // }
                 // this.map_state = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
             },
-            _update_blockly() {
-                if(!Blocks || !Zh_smg) {
-                    console.error('missed files of blockly');
-                }
-
-                Blockly.inject('blocklyDiv', {theme: cfg.theme, toolbox: cfg.toolbox, media: 'media/'});
-            },
+           
             async _reset_doc(id, reset_state=false) {
                 console.log(id, reset_state);
-                let self = this;
                 this.$nextTick(() => {
-                    self._update_blockly();
+                    dpd_editor.setup('blocklyDiv');
                 })
                 // let self = this;
                 // this.doc_id = id;
@@ -156,7 +149,9 @@
                 return dis;
             },
             on_resize: function (width) {
-                this.prop_width = width;
+                if(width) {
+                    this.prop_width = width;
+                }
                 setTimeout(() => {
                     let e = new Event('resize');
                     window.dispatchEvent(e);
