@@ -19,6 +19,9 @@
   ::-webkit-scrollbar {
     display: none;
   }
+  * {
+    -webkit-transition: none !important;
+  }
 </style>
 <script>
   import ESysBar from './views/Components/ESysBar';

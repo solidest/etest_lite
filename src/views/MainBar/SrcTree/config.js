@@ -12,7 +12,7 @@ const cfg = {
     file_icons: {
         PG: 'mdi-google-play',
         SM: 'mdi-shape',
-        SC: 'mdi-puzzle',
+        SC: 'mdi-script-text',
         EN: 'mdi-folder-cog',
         PT: 'mdi-comment-processing',
         TP: 'mdi-lan',
@@ -21,7 +21,7 @@ const cfg = {
         protocol: 'mdi-comment-processing-outline',
         topology: 'mdi-lan-connect',
         device: 'mdi-network-outline',
-        script: 'mdi-puzzle-outline',
+        script: 'mdi-script-text-outline',
         xtra: 'mdi-cogs',
         simu: 'mdi-shape-outline',
     },
