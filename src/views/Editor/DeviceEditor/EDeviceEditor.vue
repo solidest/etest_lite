@@ -46,16 +46,15 @@
     import BatchName from '../../../utility/BatchName';
 
     export default {
-        props: ['top_height'],
+        props: ['top_height', 'doc'],
         components: {
             'e-vertical-bar': EVerticalBar,
             'e-property-panel': EPorpertyPanel,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectonedlg" */ '../../Dialog/EDlgSelectOne'),
             'e-number-dlg': () => import( /* webpackChunkName: "enumberdlg" */ '../../Dialog/EDlgNumber'),
-            'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
         },
         mounted: async function () {
-            await this._reset_doc(this.active_doc_id);
+            await this._reset_doc(this.doc);
             this.$emit('active', this._get_ieditor());
         },
         beforeDestroy: function() {
@@ -76,15 +75,10 @@
                     tag: null,
                 },
                 redoundo: null,
-                kind: cfg.kind,
                 doc_id: null,
             }
         },
         computed: {
-            active_doc_id: function () {
-                let ac = this.$store.state.Editor.active;
-                return (ac && ac.kind===cfg.kind) ? ac.id : null;
-            },
             current: function() {
                 if(this.selected.length === 1) {
                     return {
@@ -103,9 +97,9 @@
             }
         },
         watch: {
-            active_doc_id: async function (nid) {
+            doc: async function (doc) {
                 this._save_docstate();
-                await this._reset_doc(nid);
+                await this._reset_doc(doc);
                 this._update_state();
             },
             dialog: function(d) {
@@ -150,28 +144,16 @@
                     this.selected = [];
                 }   
             },
-            _reset_doc: async function (id, reset_state=false) {
+            _reset_doc: async function (doc) {
+                let id = doc ? doc.id : null;
                 this.doc_id = id;
+                this.$doc = doc;
                 if(!id) {
                     return;
                 }
                 this.redoundo = redoundo.get_ru(id);
-                let doc = await db.get('src', id);
-                if (doc) {
-                    this.items = doc.content;
-                    this.$doc = doc;
-                } else {
-                    await db.insert('src', {id, content: [], kind: this.kind});
-                    this.$doc =  await db.get('src', id);
-                    this.items = this.$doc.content;
-                    api.projdb_changed(this.proj_id);
-                }
-                if(reset_state) {
-                    this.redoundo.reset();
-                    this.selected = [];
-                } else {
-                    this._load_docstate();                 
-                }
+                this.items = doc.content;
+                this._load_docstate();
                 if(this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.items, this._get_ru_tag());
                 }
@@ -428,25 +410,13 @@
                 this.dlg_opt.data = 2;
                 this.dlg_opt.tag = {label: '数量'};
             },
-            action_etl_code: function() {
+            action_etl_code: async function() {
                 let dev = this.$store.state.Editor.active;
                 let etl_code = '// 此代码由ETestDev自动生成\n// 请勿修改设备名称\n\n' + sdk.converter.device_dev2etl(this.items, dev.name, dev.memo);
-                this.dlg_opt.type = 'etl';
-                this.dlg_opt.title = dev.name;
-                this.dlg_opt.data = etl_code;
-            },
-            do_etl_code: async function(res) {
-                this.dlg_opt.type = null;
-                if(res.result!=='ok') {
-                    return;
-                }
-                let doc = sdk.converter.device_etl2dev(res.value);
-                this._fill_default(doc.content);
-                this.$doc.content = doc.content;
-                db.update('src', this.$doc);
-                api.projdb_changed(this.proj_id);
-                await this._reset_doc(this.doc_id, true);
-                this._update_state();
+                this.$doc.coding = true;
+                this.$doc.code = etl_code;
+                await db.update('src', this.$doc);
+                this.$emit('change_editor');
             },
             do_paste: function(res) {
                 if(res && res.length>0) {

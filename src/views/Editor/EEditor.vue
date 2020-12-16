@@ -5,7 +5,7 @@
                 <e-title-man :items="titles" ref="__title_man" />
                 <e-editor-bar :items_left="left_tools" :items_right="right_tools" @action="on_action" class="pa-0 ma-0" />
             </v-card>
-            <component v-bind:is="editor_type" :top_height="top_height" @active="on_active"></component>
+            <component v-bind:is="editor_type" :top_height="top_height" :doc="doc" @active="on_active" @change_editor="on_change_editor"></component>
         </div>
         <e-empty v-else />
     </div>
@@ -14,6 +14,7 @@
     
 </style>
 <script>
+    import shortid from 'shortid';
     import Mousetrap from 'mousetrap';
     import ETitleMan from './ETitleMan';
     import EEditorBar from './EEditorBar';
@@ -21,6 +22,8 @@
     import EEtlEditor from './ScriptEditor/EEtlEditor';
     import EProtocolEditor from './ProtocolEditor/EProtocolEditor';
     import EEmpty from '../../views/EEmpty';
+    import cfg from './config';
+    import db from '../../doc/workerdb';
 
     export default {
         components: {
@@ -31,6 +34,7 @@
             'e-protocol-editor': EProtocolEditor,
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
             'e-simu-editor': () => import(/* webpackChunkName: "e-simu-editor" */ './SimuEditor/EEmpty'),
+            'e-etl-editor': () => import(/* webpackChunkName: "e-etl-editor" */ './EtlEditor/EEtlEditor'),
             'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
         },
         mounted: function () {
@@ -42,6 +46,7 @@
             Mousetrap.bind('ctrl+z', () => {if(self.is_normal) self.quick_action('undo')});
             Mousetrap.bind('ctrl+y', () => {if(self.is_normal) self.quick_action('redo')});
             Mousetrap.bind('del', () => {if(self.is_normal) self.quick_action('remove')});
+            this.reset_doc(this.active_doc)
         },
         beforeDestroy: function() {
             Mousetrap.bind('ctrl+x', ()=>{});
@@ -56,7 +61,9 @@
                 titleman_height: 0,
                 left_tools:[],
                 right_tools: [],
-                ieditor: {}
+                ieditor: {},
+                editor_type: 'e-empty',
+                doc: null,
             }
         },
         computed: {
@@ -69,9 +76,8 @@
             top_height: function() {
                 return 75 + this.titleman_height;
             },
-            editor_type: function() {
-                let ac = this.$store.state.Editor.active;
-                return ac ? `e-${ac.kind}-editor` : null;
+            active_doc: function () {
+                return this.$store.state.Editor.active;
             },
             allow_paste: function() {
                 let ac = this.$store.state.Editor.active;
@@ -88,8 +94,30 @@
             allow_paste: function() {
                 this.update_state();
             },
+            active_doc: function(active) {
+                this.reset_doc(active);
+            }
         },
         methods: {
+            reset_doc: async function (active_doc) {
+                if(!active_doc) {
+                    this.editor_type = 'e-empty';
+                    return;
+                }
+                let id = active_doc.id;
+                let kind = active_doc.kind;
+                let doc = await db.get('src', id);
+                let kcfg = cfg[kind];
+                if (!doc) {
+                    let doc = JSON.parse(JSON.stringify(kcfg.default));
+                    doc.id = shortid.generate();
+                    doc.kind = kind;
+                    await db.insert('src', doc);
+                    doc = await db.get('src', id);
+                }
+                this.doc = doc;
+                this.editor_type = doc.coding ? kcfg.code_editor : kcfg.visual_editor;
+            },
             update_size: function() {
                 let self = this;
                 this.$nextTick(() => {
@@ -117,6 +145,10 @@
                     this.ieditor.do_action(ac);
                     this.update_state();
                 }
+            },
+            on_change_editor: function() {
+                console.log("aaa")
+                this.reset_doc(this.active_doc);
             }
         }
 

@@ -275,7 +275,10 @@
                         this.plumb.makeTarget(to_id, this.comm_item);
                         c = this.plumb.connect({source: from_id, target: to_id});
                         c.setType("basic");
-                        this._set_arraow(c);
+                        let direct = link_check.calc_arrow(this.map.getKind(link.dc1.dev.id, link.dc1.conn.id), this.map.getKind(link.dc2.dev.id, link.dc2.conn.id));
+                        if(direct!==0) {
+                            c.addOverlay([ "Arrow", { width:15, height:15, direction: direct, location: (direct>0 ? 0.7:0.3)}]);
+                        }
                     }
                     c.bind("dblclick", ()=>{self._remove_link(c)});
                     this.plumb.setIdChanged(c.id, link.id);

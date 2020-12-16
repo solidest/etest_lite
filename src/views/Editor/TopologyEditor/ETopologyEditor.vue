@@ -17,13 +17,13 @@
 
 <script>
     import shortid from 'shortid';
+    import cfg from './config';
+    import ELinkingEditor from './ELinkingEditor'
     import api from '../../../api/client/';
     import topo_map from '../../../utility/topo_map';
-    import cfg from './config';
     import tman from '../../../utility/tree_man';
     import db from '../../../doc/workerdb';
     import redoundo from '../../../doc/redoundo';
-    import ELinkingEditor from './ELinkingEditor'
     import {sdk} from '../../../../sdk/sdk'
 
     const line_types = ['Straight','StateMachine', 'Bezier',  'Flowchart'];
