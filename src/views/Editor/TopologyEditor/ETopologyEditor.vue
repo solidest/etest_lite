@@ -9,8 +9,6 @@
                 :items="raw_devs" />
             <e-binding-dlg v-else-if="dlg_opt.type==='binding'" @result="do_binding" :dialog="dlg_opt.type"
                 :binding="binding"/>
-            <e-etl-dlg v-else-if="dlg_opt.type==='etl'" @result="do_etl_code" :dialog="dlg_opt.type"
-                :title="dlg_opt.title" :etl_code="dlg_opt.data" :kind="kind" />
         </div>
     </div>
 </template>
@@ -33,8 +31,7 @@
         components: {
             'e-linking-editor': ELinkingEditor,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectdevdlg" */ './EDlgSelectDev'),
-            'e-binding-dlg': () => import( /* webpackChunkName: "ebindingdlg" */ './EDlgBinding'),
-            'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
+            'e-binding-dlg': () => import( /* webpackChunkName: "ebindingdlg" */ './EDlgBinding')
         },
         mounted: async function () {
             await this._reset_doc(this.doc);
@@ -134,7 +131,9 @@
                 await db.update('src', {
                     id: this.doc_id,
                     content,
-                    kind: cfg.kind
+                    kind: cfg.kind,
+                    code: '',
+                    coding: false,
                 });
                 api.projdb_changed(this.proj_id);
             },
@@ -302,14 +301,20 @@
             action_binding() {
                 this.dlg_opt.type = 'binding';
             },
-            action_etl_code: function() {
+            action_etl_code: async function() {
                 let topo = this.$store.state.Editor.active;
                 let content = topo_map.create_content(this.map);
                 content.binds = this.content.binds;
                 let etl_code = '// 此代码由ETestDev自动生成\n// 请勿修改连接拓扑名称\n\n' + sdk.converter.topology_dev2etl(content, topo.name, topo.memo);
-                this.dlg_opt.type = 'etl';
-                this.dlg_opt.title = topo.name;
-                this.dlg_opt.data = etl_code;
+                
+                await db.update('src', {
+                    id: this.doc_id,
+                    content,
+                    kind: cfg.kind,
+                    code: etl_code,
+                    coding: true,
+                });
+                this.$emit('change_editor');
             },
             do_etl_code: async function(res) {
                 this.dlg_opt.type = null;
@@ -318,7 +323,6 @@
                 }
                 let content = sdk.converter.topology_etl2dev(res.value).content;
                 let map = this._create_map_bydb(content.devs, content.buses, content.bus_links, content.pp_links);
-                // map = topo_map.create_map_byold
                 this.content = content;
                 this.map = map;
                 this._save_doc(true);

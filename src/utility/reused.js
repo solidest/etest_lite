@@ -8,12 +8,17 @@ async function _get_etlcode(id, name, memo) {
     if (!doc || !doc.content) {
         return null;
     } else {
-        switch (doc.kind) {
-            case 'device':
-                return sdk.converter.device_dev2etl(doc.content, name, memo);
-            case 'topology':
-                return sdk.converter.topology_dev2etl(doc.content, name, memo);
+        if(doc.coding) {
+            return doc.code;
+        } else {
+            switch (doc.kind) {
+                case 'device':
+                    return sdk.converter.device_dev2etl(doc.content, name, memo);
+                case 'topology':
+                    return sdk.converter.topology_dev2etl(doc.content, name, memo);
+            }            
         }
+
     }
     return null;
 }

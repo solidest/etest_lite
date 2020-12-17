@@ -25,8 +25,6 @@
                 :title="dlg_opt.title" :items="dlg_opt.data" />
             <e-number-dlg v-else-if="dlg_opt.type==='number'" @result="do_paste_batch" :dialog="dlg_opt.type"
                 :title="dlg_opt.title" :value="dlg_opt.data" :label="dlg_opt.tag.label" />
-            <e-etl-dlg v-else-if="dlg_opt.type==='etl'" @result="do_etl_code" :dialog="dlg_opt.type"
-                :title="dlg_opt.title" :etl_code="dlg_opt.data" :kind="kind" />
         </div>
     </div>
 </template>

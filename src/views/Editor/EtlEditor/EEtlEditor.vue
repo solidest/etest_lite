@@ -52,7 +52,6 @@
                 if (!d) {
                     return;
                 }
-                console.log('doc', d)
                 this.$doc = this.doc;
                 let v = d.code;
                 if (this.code !== v) {
@@ -152,8 +151,17 @@
                     if(!ast || ast.length!==1 || ast[0].kind !==this.$doc.kind) {
                         throw new Error('ETL代码错误');
                     }
-                    this.$doc.content = sdk.converter.device_etl2dev(ast[0]).content;
                     this.$doc.coding = false;
+                    switch (this.doc.kind) {
+                        case 'device':
+                            this.$doc.content = sdk.converter.device_etl2dev(ast[0]).content;
+                            break;
+                        case 'topology':
+                            this.$doc.content = sdk.converter.topology_etl2dev(ast[0]).content;
+                            break;
+                        default:
+                            break;
+                    }
                     await db.update('src', this.$doc);
                     this.$emit('change_editor');
                 } catch (error) {

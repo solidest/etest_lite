@@ -62,7 +62,7 @@
                 left_tools:[],
                 right_tools: [],
                 ieditor: {},
-                editor_type: 'e-empty',
+                editor_type: null,
                 doc: null,
             }
         },
@@ -101,7 +101,7 @@
         methods: {
             reset_doc: async function (active_doc) {
                 if(!active_doc) {
-                    this.editor_type = 'e-empty';
+                    this.editor_type = null;
                     return;
                 }
                 let id = active_doc.id;

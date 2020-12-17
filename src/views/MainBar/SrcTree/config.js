@@ -17,6 +17,7 @@ const cfg = {
         PT: 'mdi-comment-processing',
         TP: 'mdi-lan',
         DV: 'mdi-network',
+        MT: 'mdi-monitor-eye',
         run: 'mdi-play-outline',
         protocol: 'mdi-comment-processing-outline',
         topology: 'mdi-lan-connect',
@@ -24,6 +25,7 @@ const cfg = {
         script: 'mdi-script-text-outline',
         xtra: 'mdi-cogs',
         simu: 'mdi-shape-outline',
+        panel: 'mdi-monitor-edit',
     },
 
     ctx_menus: [{
@@ -49,7 +51,7 @@ const cfg = {
     ],
     default_tree: [{
             id: 'PG',
-            name: '用例',
+            name: '测试数据',
             kind: 'dir',
             fixed: true,
             default_action: 'new_item',
@@ -59,12 +61,22 @@ const cfg = {
         },
         {
             id: 'SC',
-            name: '程序',
+            name: '测试程序',
             kind: 'dir',
             fixed: true,
             default_action: 'new_item',
             actions: ['new_item', 'new_dir'],
             catalog: 'script',
+            children: []
+        },
+        {
+            id: 'MT',
+            name: '监控面板',
+            kind: 'dir',
+            fixed: true,
+            default_action: 'new_item',
+            actions: ['new_item', 'new_dir'],
+            catalog: 'panel',
             children: []
         },
         {

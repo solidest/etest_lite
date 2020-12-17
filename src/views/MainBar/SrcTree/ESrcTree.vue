@@ -117,7 +117,7 @@
                     return cur.actions;
                 }
                 let acs = ['new_item', 'rename', 'remove'];
-                if(['run', 'script'].includes(cur.catalog)) {
+                if(['run', 'script', 'panel'].includes(cur.catalog)) {
                     acs.push('new_dir');
                 }
                 if(cur.kind !== 'dir') {

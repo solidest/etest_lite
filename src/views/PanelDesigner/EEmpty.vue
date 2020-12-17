@@ -6,10 +6,10 @@
                     <img alt="ETestDev" src="../../assets/logo.svg" style="display: block;">
                 </v-row>
                 <v-row class="mb-6 grey--text" justify="center">
-                    <span>“面板设计器” 为ETestDev专业版中的功能</span>
+                    <span>“应用设计器” 为ETestDev专业版中的功能</span>
                 </v-row>
                 <v-row class="mb-6 grey--text" justify="center">
-                    <span>提供可视化界面设计、生成独立执行程序等高级功能</span>
+                    <span>提供可视化界面配置、生成独立执行应用程序等高级功能</span>
                 </v-row>
             </div>
         </v-row>

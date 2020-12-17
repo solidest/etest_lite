@@ -7,7 +7,7 @@ const cfg = {
         route: 'SrcTree'
     }, {
         icon: 'mdi-monitor-edit',
-        title: '面板设计器',
+        title: '应用设计器',
         catalog: 'panel',
         route: 'PanelDesigner'
     }, {
