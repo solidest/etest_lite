@@ -143,7 +143,7 @@
                 let fdevs = [];
                 tman.getFileList('', tree.value, 'device', fdevs);
                 let rdevs = [];
-                fdevs.forEach(async (fdev) => {
+                for(let fdev of fdevs) {
                     let dev = fdev[1];
                     let od = await db.get('src', dev.id);
                     rdevs.push({
@@ -160,7 +160,7 @@
                             }
                         })
                     })
-                });
+                }
                 this.raw_devs = rdevs;
             },
             _create_map_bydb(db_devs, buses, bus_links, pp_links) {
@@ -178,10 +178,10 @@
             async _reset_doc(doc) {
                 let id = doc ? doc.id : null;
                 this.doc_id = id;
-                let self = this;
                 if(!id) {
                     return;
                 }
+                let self = this;
                 this.map = null;
                 this.redoundo = redoundo.get_ru(id);
                 this._load_docstate();
@@ -192,7 +192,6 @@
                     }, 200);
                 }
                 this.content = doc.content;
-                console.log('devs', this.content.devs)
                 this._refresh_size();
                 let map = this._create_map_bydb(this.content.devs, this.content.buses, this.content.bus_links, this.content.pp_links);
                 this.$nextTick(() => {
