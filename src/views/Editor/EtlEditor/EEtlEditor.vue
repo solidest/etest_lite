@@ -1,21 +1,20 @@
 <template>
-     <div :style="{height: `calc(100vh - ${top_height}px)`, width: '100%'}" class="pa-0 ma-0">
-         <v-sheet id="main_monaco_id" width="100%" height="100%" @keydown.stop class="pa-0 ma-0" v-resize="layout">
+    <div :style="{height: `calc(100vh - ${top_height}px)`, width: '100%'}" class="pa-0 ma-0">
+        <v-sheet id="main_monaco_id" width="100%" height="100%" @keydown.stop class="pa-0 ma-0" v-resize="layout">
         </v-sheet>
     </div>
 </template>
 <script>
     import * as monaco from 'monaco-editor';
     import cfg from './config.js';
+    import db from '../../../doc/workerdb';
+    import {sdk} from '../../../../sdk/sdk'
     export default {
         props: ['top_height', 'doc'],
         mounted() {
             this.$doc = this.doc;
             this.code = this.doc.code;
             this.$emit('active', this._get_ieditor());
-
-            let self = this;
-            
             this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
                 value: this.code || '',
                 language: 'etl',
@@ -31,6 +30,7 @@
                 },
             });
             this.model = this.editor.getModel();
+            let self = this;
             this.model.onDidChangeContent(function () {
                 self.update_version();
                 self.on_change(self.model.getValue());
@@ -45,19 +45,22 @@
                 initialVersion: 0,
                 currentVersion: 0,
                 lastVersion: 0,
-                allow_undo: false,
-                allow_redo: false,
             }
         },
         watch: {
             doc: function (d) {
+                if (!d) {
+                    return;
+                }
+                console.log('doc', d)
                 this.$doc = this.doc;
                 let v = d.code;
                 if (this.code !== v) {
                     this.is_update = true;
                     this.model.setValue(v);
-                    this.reset_version();
                 }
+                this.reset_version();
+                this._update_state();
             }
         },
         methods: {
@@ -75,101 +78,94 @@
                 }
             },
             _get_state() {
-                return {}
+                return {
+                    undo: this.currentVersion <= this.initialVersion,
+                    redo: this.currentVersion >= this.lastVersion
+                }
+            },
+            _update_state() {
+                let s = this._get_state();
+                this.$store.commit('Editor/set_state_disbar', s);
             },
             reset_version: function () {
                 this.initialVersion = this.model.getAlternativeVersionId();
                 this.currentVersion = this.initialVersion;
                 this.lastVersion = this.initialVersion;
-                this.allow_undo = false;
-                this.allow_redo = false;
             },
             update_version: function () {
                 const versionId = this.model.getAlternativeVersionId();
-                if (versionId < this.currentVersion) {
-                    this.allow_redo = true;
-                    if (versionId === this.initialVersion) {
-                        this.allow_undo = false;
-                    }
-                } else {
-                    if (versionId <= this.lastVersion) {
-                        if (versionId == this.lastVersion) {
-                            this.allow_redo = false;
-                        }
-                    } else {
-                        this.allow_redo = false;
-                        if (this.currentVersion > this.lastVersion) {
-                            this.lastVersion = this.currentVersion;
-                        }
-                    }
-                    this.allow_undo = true;
+                if (this.currentVersion > this.lastVersion) {
+                    this.lastVersion = this.currentVersion;
                 }
                 this.currentVersion = versionId;
             },
             on_change: function (value) {
-                this.script_ = value;
+                this.code = value;
                 if (this.is_update) {
                     this.is_update = false;
                     return;
                 }
-                this.$emit('change', value);
+                this.$doc.code = value;
+                this._update_state();
+                db.update('src', this.$doc);
             },
             layout: function () {
                 if (this.editor) {
                     this.editor.layout();
                 }
             },
-            get_action_handler: function () {
-                let self = this;
-                return {
-                    disabled_undo: function () {
-                        return self.currentVersion <= self.initialVersion;
-                    },
-                    disabled_redo: function () {
-                        return self.currentVersion >= self.lastVersion;
-                    },
-                    undo: function () {
-                        self.editor.trigger('a', 'undo', 'a');
-                        self.editor.focus();
-                    },
-                    redo: function () {
-                        self.editor.trigger('a', 'redo', 'a');
-                        self.editor.focus();
-                    },
-                    copy: function () {
-                        self.editor.trigger('a', 'editor.action.clipboardCopyAction', 'a');
-                        self.editor.focus();
-                    },
-                    paste: function () {
-                        self.editor.focus();
-                        document.execCommand('paste')
-                    },
-                    cut: function () {
-                        self.editor.trigger('a', 'editor.action.clipboardCutAction', 'a');
-                        self.editor.focus();
-                    },
-                    comment: function () {
-                        self.editor.trigger('a', 'editor.action.commentLine', 'a');
-                        self.editor.focus();
-                    },
-                    find: function () {
-                        self.editor.trigger('', 'actions.find');
-                    },
-                    goto_line: function(line) {
-                        self.editor.revealLine(line);
-                        self.editor.focus();
-                    },
-                    set_err: function(line, msg) {
-                        monaco.editor.setModelMarkers(self.model, 'eslint', line>0?[
-                            {
-                                startLineNumber: line,
-                                endLineNumber: line,
-                                message: msg,
-                            }
-                        ]:[]);
-                        self.err = true;
+            action_find: function () {
+                this.editor.trigger('', 'actions.find');
+            },
+            action_comment: function () {
+                this.editor.trigger('a', 'editor.action.commentLine', 'a');
+                this.editor.focus();
+            },
+            action_cut: function () {
+                this.editor.trigger('a', 'editor.action.clipboardCutAction', 'a');
+                this.editor.focus();
+            },
+            action_copy: function () {
+                this.editor.trigger('a', 'editor.action.clipboardCopyAction', 'a');
+                this.editor.focus();
+            },
+            action_paste: function () {
+                this.editor.focus();
+                document.execCommand('paste')
+            },
+            action_undo: function () {
+                this.editor.trigger('a', 'undo', 'a');
+                this.editor.focus();
+            },
+            action_redo: function () {
+                this.editor.trigger('a', 'redo', 'a');
+                this.editor.focus();
+            },
+            action_goto_line: function () {
+                console.log('TODO goto line')
+                // this.editor.revealLine(line);
+                // this.editor.focus();
+            },
+            action_visual_edit: async function () {
+                try {
+                    let ast = sdk.parser.parse_etl(this.code);
+                    if(!ast || ast.length!==1 || ast[0].kind !==this.$doc.kind) {
+                        throw new Error('ETL代码错误');
                     }
+                    this.$doc.content = sdk.converter.device_etl2dev(ast[0]).content;
+                    this.$doc.coding = false;
+                    await db.update('src', this.$doc);
+                    this.$emit('change_editor');
+                } catch (error) {
+                    this.$store.commit('setMsgError', `ETL代码错误, ${error.message}`);
                 }
+            },
+            set_err(line, msg) {
+                monaco.editor.setModelMarkers(this.model, 'eslint', line > 0 ? [{
+                    startLineNumber: line,
+                    endLineNumber: line,
+                    message: msg,
+                }] : []);
             }
         }
     }

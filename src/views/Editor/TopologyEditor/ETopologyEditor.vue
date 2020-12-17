@@ -29,7 +29,7 @@
     const line_types = ['Straight','StateMachine', 'Bezier',  'Flowchart'];
 
     export default {
-        props: ['top_height'],
+        props: ['top_height', 'doc'],
         components: {
             'e-linking-editor': ELinkingEditor,
             'e-select-dlg': () => import( /* webpackChunkName: "eselectdevdlg" */ './EDlgSelectDev'),
@@ -37,7 +37,7 @@
             'e-etl-dlg': () => import( /* webpackChunkName: "eetldlg" */ '../../Dialog/EDlgETL'),
         },
         mounted: async function () {
-            await this._reset_doc(this.active_doc_id);
+            await this._reset_doc(this.doc);
             this.$emit('active', this._get_ieditor());
             setTimeout(() => {this.scale=1}, 1)
         },
@@ -68,10 +68,6 @@
             }
         },
         computed: {
-            active_doc_id: function () {
-                let ac = this.$store.state.Editor.active;
-                return (ac && ac.kind===cfg.kind) ? ac.id : null;
-            },
             proj_id: function () {
                 return this.$store.state.proj.id;
             },
@@ -86,9 +82,9 @@
             }
         },
         watch: {
-            active_doc_id: async function (nid) {
-                await this._save_docstate(this.doc_id);
-                await this._reset_doc(nid);
+            doc: async function (d) {
+                await this._save_docstate();
+                await this._reset_doc(d);
                 this._update_state();
             },
             dialog: function(d) {
@@ -179,47 +175,29 @@
                 }
                 return topo_map.create_map_bycontent(this.raw_devs, buses, bus_links, pp_links);
             },
-            async _reset_doc(id, reset_state=false) {
-                let self = this;
+            async _reset_doc(doc) {
+                let id = doc ? doc.id : null;
                 this.doc_id = id;
+                let self = this;
                 if(!id) {
                     return;
                 }
                 this.map = null;
                 this.redoundo = redoundo.get_ru(id);
-                if(reset_state) {
-                    this.redoundo.reset();
-                    this.selected = [];
-                } else {
-                    this._load_docstate();
-                }
+                this._load_docstate();
                 await this._load_rawdata();
-                let doc = await db.get('src', id);
-                if (!doc) {
-                    await db.insert('src', {
-                        id,
-                        content: {
-                            devs: [],
-                            buses: [],
-                            bus_links: [],
-                            pp_links: [],
-                            binds: []
-                        },
-                        kind: cfg.kind
-                    });
-                    api.projdb_changed(this.proj_id);
-                    doc = await db.get('src', id);
+                if (doc.content.devs.length === 0) {
                     setTimeout(() => {
                         self.dlg_opt.type='select';
                     }, 200);
                 }
                 this.content = doc.content;
+                console.log('devs', this.content.devs)
                 this._refresh_size();
                 let map = this._create_map_bydb(this.content.devs, this.content.buses, this.content.bus_links, this.content.pp_links);
                 this.$nextTick(() => {
                     self.map = map;
                 });
-
                 if (this.redoundo.isEmpty) {
                     this.redoundo.pushChange(this.content, this.selected);
                 }

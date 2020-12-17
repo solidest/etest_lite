@@ -14,12 +14,12 @@
     
 </style>
 <script>
-    import shortid from 'shortid';
     import Mousetrap from 'mousetrap';
     import ETitleMan from './ETitleMan';
     import EEditorBar from './EEditorBar';
     import ETopologyEditor from './TopologyEditor/ETopologyEditor';
-    import EEtlEditor from './ScriptEditor/EEtlEditor';
+    import EScriptEditor from './ScriptEditor/EScriptEditor';
+    import EEtlEditor from './EtlEditor/EEtlEditor';
     import EProtocolEditor from './ProtocolEditor/EProtocolEditor';
     import EEmpty from '../../views/EEmpty';
     import cfg from './config';
@@ -29,13 +29,13 @@
         components: {
             'e-editor-bar': EEditorBar,
             'e-title-man': ETitleMan,
-            'e-script-editor': EEtlEditor,
+            'e-script-editor': EScriptEditor,
             'e-topology-editor': ETopologyEditor,
             'e-protocol-editor': EProtocolEditor,
             'e-device-editor': () => import(/* webpackChunkName: "e-device-editor" */ './DeviceEditor/EDeviceEditor'),
             'e-simu-editor': () => import(/* webpackChunkName: "e-simu-editor" */ './SimuEditor/EEmpty'),
-            'e-etl-editor': () => import(/* webpackChunkName: "e-etl-editor" */ './EtlEditor/EEtlEditor'),
-            'e-empty': EEmpty, //() => import(/* webpackChunkName: "e-empty" */ '../../views/EEmpty'),
+            'e-etl-editor': EEtlEditor,
+            'e-empty': EEmpty,
         },
         mounted: function () {
             this.update_size();
@@ -109,8 +109,9 @@
                 let doc = await db.get('src', id);
                 let kcfg = cfg[kind];
                 if (!doc) {
-                    let doc = JSON.parse(JSON.stringify(kcfg.default));
-                    doc.id = shortid.generate();
+                    console.log('new doc')
+                    doc = JSON.parse(JSON.stringify(kcfg.default));
+                    doc.id = id;
                     doc.kind = kind;
                     await db.insert('src', doc);
                     doc = await db.get('src', id);
@@ -147,7 +148,6 @@
                 }
             },
             on_change_editor: function() {
-                console.log("aaa")
                 this.reset_doc(this.active_doc);
             }
         }
