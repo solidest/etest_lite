@@ -145,12 +145,23 @@
                 for(let fdev of fdevs) {
                     let dev = fdev[1];
                     let od = await db.get('src', dev.id);
+                    let content = []
+                    if(od.coding) {
+                        try {
+                            let ast = sdk.parser.parse_etl(od.code);
+                            content = sdk.converter.device_etl2dev(ast[0]).content
+                        } catch (err) {
+                            console.error(err.message)
+                        }
+                    } else {
+                        content = od.content;
+                    }
                     rdevs.push({
                         id: dev.id,
                         name: dev.name,
                         memo: dev.memo,
                         kind: 'none',
-                        conns: ((od && od.content) ? od.content : []).map(c => {
+                        conns: content.map(c => {
                             return {
                                 id: c.id,
                                 name: c.name,
