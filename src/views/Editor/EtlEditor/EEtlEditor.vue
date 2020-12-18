@@ -149,6 +149,7 @@
             },
             action_visual_edit: async function () {
                 try {
+                    console.log('parse_etl')
                     let ast = sdk.parser.parse_etl(this.code);
                     if(!ast || ast.length!==1 || ast[0].kind !==this.$doc.kind) {
                         throw new Error('ETL代码错误');

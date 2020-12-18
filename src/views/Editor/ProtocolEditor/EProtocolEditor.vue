@@ -91,8 +91,7 @@
                 // this.map_state = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
             },
            
-            async _reset_doc(id, reset_state=false) {
-                console.log(id, reset_state);
+            async _reset_doc() {
                 this.$nextTick(() => {
                     dpd_editor.setup('blocklyDiv');
                 })
