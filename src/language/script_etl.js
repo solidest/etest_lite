@@ -23,7 +23,7 @@ const conf = {
     ],
     indentationRules: {
         increaseIndentPattern: new RegExp(
-            "^((?!(\\-\\-)).)*((\\b(device|protocol|topology|oneof|linking|mapping|binding)\\b((?!\\b(\\})\\b).)*)|(\\{\\s*))$"
+            "^((?!(\\-\\-)).)*((\\b(device|protocol|topology|oneof|as|linking|mapping|binding)\\b((?!\\b(\\})\\b).)*)|(\\{\\s*))$"
         ),
         decreaseIndentPattern: new RegExp(
             "^\\s*((\\})|(\\)))"
@@ -43,6 +43,7 @@ const language = {
         "device",
         "topology",
         "oneof",
+        "as",
         "this",
     ],
     brackets: [

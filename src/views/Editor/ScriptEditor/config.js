@@ -1,5 +1,5 @@
 let left_tools = [ {
-  text: '拷贝',
+  text: '复制并粘贴',
   value: 'duplicate',
   icon: 'mdi-content-duplicate'
 }, {

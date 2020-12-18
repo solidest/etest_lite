@@ -19,9 +19,10 @@
     import dpd_editor from './dpd_editor';
     import EVerticalBar from '../../Components/EVerticalBar';
     import EPorpertyPanel from '../../Components/EPropertyPanel';
+    import db from '../../../doc/workerdb';
     
     export default {
-        props: ['top_height'],
+        props: ['top_height', 'doc'],
         components: {
             'e-vertical-bar': EVerticalBar,
             'e-property-panel': EPorpertyPanel,
@@ -159,6 +160,11 @@
             },
             on_prop_changed: function() {
                 this._update_change('modify');
+            },
+            action_etl_code: async function() {
+                this.doc.coding = true;
+                await db.update('src', this.doc);
+                this.$emit('change_editor');
             },
         }
     }

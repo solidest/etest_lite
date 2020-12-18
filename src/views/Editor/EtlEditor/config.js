@@ -32,11 +32,27 @@ let left_tools = [{
     icon: 'mdi-console-line'
 }, ];
 
-let right_tools = [{
-    text: '可视化编辑',
-    value: 'visual_edit',
-    icon: 'mdi-table-edit'
-}];
+let right_tools = {
+    device: [{
+        text: '可视化编辑',
+        value: 'visual_edit',
+        icon: 'mdi-table-edit'
+    }],
+    topology: [{
+        text: '可视化编辑',
+        value: 'visual_edit',
+        icon: 'mdi-table-edit'
+    }],
+    protocol: [{
+        text: '打包/解包 测试',
+        value: 'prot_test',
+        icon: 'mdi-package-variant-closed'
+    }, {
+        text: '可视化编辑',
+        value: 'visual_edit',
+        icon: 'mdi-puzzle'
+    }, ],
+};
 
 
 let cfg = {

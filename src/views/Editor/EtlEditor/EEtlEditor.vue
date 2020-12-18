@@ -52,6 +52,7 @@
                 if (!d) {
                     return;
                 }
+
                 this.$doc = this.doc;
                 let v = d.code;
                 if (this.code !== v) {
@@ -59,6 +60,7 @@
                     this.model.setValue(v);
                 }
                 this.reset_version();
+                this.$emit('active', this._get_ieditor());
                 this._update_state();
             }
         },
@@ -66,8 +68,8 @@
             _get_ieditor() {
                 let self = this;
                 return {
-                    right_tools: cfg.right_tools,
                     left_tools: cfg.left_tools,
+                    right_tools: cfg.right_tools[this.doc.kind],
                     get_state: () => {
                         return self._get_state();
                     },
@@ -167,6 +169,9 @@
                 } catch (error) {
                     this.$store.commit('setMsgError', `ETL代码错误, ${error.message}`);
                 }
+            },
+            action_prot_test() {
+                console.log('TODO prot test');
             },
             set_err(line, msg) {
                 monaco.editor.setModelMarkers(this.model, 'eslint', line > 0 ? [{

@@ -109,10 +109,12 @@
                 let doc = await db.get('src', id);
                 let kcfg = cfg[kind];
                 if (!doc) {
-                    console.log('new doc')
                     doc = JSON.parse(JSON.stringify(kcfg.default));
                     doc.id = id;
                     doc.kind = kind;
+                    if(doc.coding) {
+                        doc.code = doc.code.replace(new RegExp('%name%','g'), active_doc.name);
+                    }
                     await db.insert('src', doc);
                     doc = await db.get('src', id);
                 }

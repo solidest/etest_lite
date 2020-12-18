@@ -1,5 +1,5 @@
 let left_tools = [ {
-  text: '拷贝',
+  text: '复制并粘贴',
   value: 'duplicate',
   icon: 'mdi-content-duplicate'
 }, {
@@ -25,6 +25,10 @@ let left_tools = [ {
 }, ];
 
 let right_tools = [{
+  text: '协议打包/解包测试',
+  value: 'prot_test',
+  icon: 'mdi-package-variant-closed'
+},{
   text: 'ETL代码编辑',
   value: 'etl_code',
   icon: 'mdi-code-json'
