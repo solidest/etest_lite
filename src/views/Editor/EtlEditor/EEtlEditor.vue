@@ -12,9 +12,6 @@
     export default {
         props: ['top_height', 'doc'],
         mounted() {
-            this.$doc = this.doc;
-            this.code = this.doc.code;
-            this.$emit('active', this._get_ieditor());
             this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
                 value: this.code || '',
                 language: 'etl',
@@ -29,16 +26,16 @@
                     side: 'right'
                 },
             });
-            this.model = this.editor.getModel();
-            let self = this;
-            this.model.onDidChangeContent(function () {
-                self.update_version();
-                self.on_change(self.model.getValue());
-            });
-            this.reset_version();
+            this._load_docstate(this.doc);
+            this.$emit('active', this._get_ieditor());
+            this._update_state();
+        },
+        beforeDestroy: function() {
+            this._save_docstate();
         },
         data() {
             return {
+                $doc: null,
                 code: '',
                 editor: null,
                 model: null,
@@ -48,23 +45,62 @@
             }
         },
         watch: {
-            doc: function (d) {
-                if (!d) {
+            doc: function (new_d) {
+                if (!new_d) {
                     return;
                 }
-
-                this.$doc = this.doc;
-                let v = d.code;
-                if (this.code !== v) {
-                    this.is_update = true;
-                    this.model.setValue(v);
-                }
-                this.reset_version();
+                this._save_docstate();
+                this._load_docstate(new_d);
                 this.$emit('active', this._get_ieditor());
                 this._update_state();
             }
         },
         methods: {
+            _save_docstate() {
+                if(!this.editor || !this.$doc) {
+                    return;
+                }
+                let model = this.model;
+                let viewState = this.editor.saveViewState();
+                let s = {
+                    model,
+                    viewState, 
+                    is_etl: true,
+                    code: this.code,
+                    initialVersion: this.initialVersion, 
+                    currentVersion: this.currentVersion, 
+                    lastVersion: this.lastVersion
+                };
+                this.$store.commit('Editor/put_doc_state', {id: this.$doc.id, doc_state: s });
+            },
+            _load_docstate(doc) {
+                if(!doc || !this.editor) {
+                    return;
+                }
+                this.$doc = doc;
+                this.code = doc.code;
+                let s = this.$store.getters['Editor/get_doc_state'](doc.id);
+
+                if(s && s.is_etl && s.code === doc.code) {
+                    this.model = s.model;
+                    this.editor.setModel(this.model);
+                    this.editor.restoreViewState(s.viewState);
+                    this.currentVersion = s.currentVersion;
+                    this.lastVersion = s.lastVersion;
+                    this.initialVersion = s.initialVersion;
+                } else {
+                    this.model = monaco.editor.createModel(doc.code, 'etl');
+                    this.editor.setModel(this.model);
+                    this.reset_version();
+                }
+                this.editor.focus();
+
+                let self = this;
+                self.model.onDidChangeContent(function () {
+                    self.update_version();
+                    self.on_change(self.model.getValue());
+                });
+            },
             _get_ieditor() {
                 let self = this;
                 return {
@@ -85,8 +121,7 @@
                 }
             },
             _update_state() {
-                let s = this._get_state();
-                this.$store.commit('Editor/set_state_disbar', s);
+                this.$store.commit('Editor/set_state_disbar', this._get_state());
             },
             reset_version: function () {
                 this.initialVersion = this.model.getAlternativeVersionId();
@@ -102,10 +137,6 @@
             },
             on_change: function (value) {
                 this.code = value;
-                if (this.is_update) {
-                    this.is_update = false;
-                    return;
-                }
                 this.$doc.code = value;
                 this._update_state();
                 db.update('src', this.$doc);
@@ -143,9 +174,7 @@
                 this.editor.focus();
             },
             action_goto_line: function () {
-                console.log('TODO goto line')
-                // this.editor.revealLine(line);
-                // this.editor.focus();
+                this.editor.trigger('a', 'editor.action.gotoLine');
             },
             action_visual_edit: async function () {
                 try {

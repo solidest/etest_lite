@@ -123,7 +123,7 @@
                     return;
                 }
                 let s = this.$store.getters['Editor/get_doc_state'](this.doc_id);
-                if(s) {
+                if(s && !s.is_etl) {
                     let sels = s.selected||[];
                     this.selected = [];
                     for (let index = 0; index < sels.length; index++) {

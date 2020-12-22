@@ -118,7 +118,8 @@
                 if(!this.doc_id) {
                     return;
                 }
-                this.map_state = this.$store.getters['Editor/get_doc_state'](this.doc_id) || {scale: 1, top: 0, left: 0};
+                let s = this.$store.getters['Editor/get_doc_state'](this.doc_id);
+                this.map_state =  (s && !s.is_etl) ? s : {scale: 1, top: 0, left: 0};
             },
             async _save_doc(ignore_undo=false) {
                 let content = topo_map.create_content(this.map);

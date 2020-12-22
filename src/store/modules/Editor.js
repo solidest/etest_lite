@@ -57,9 +57,8 @@ const mutations = {
     },
     put_doc_state(state, info) {
         if(state.items.find(it=>it.id===info.id)) {
-            state.doc_states[info.id] = info.doc_state;          
+            state.doc_states[info.id] = info.doc_state;
         }
-
     }
 };
 
