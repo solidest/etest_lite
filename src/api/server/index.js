@@ -10,6 +10,7 @@ const {
 const clipboard = require('./clipboard');
 const wins = require('./wins');
 const main_db = require('./maindb');
+const ticker = require('./ticker');
 
 function project_open(proj_id) {
     let win = new BrowserWindow({
@@ -139,9 +140,10 @@ function tpl_list(_, kind) {
 
 
 module.exports = {
-    async setup() {
+    async setup(is_dev) {
         await main_db.open();
         clipboard.setup();
+        ticker.start_tick(is_dev);
         ipcMain.on('project_bind', project_bind);
         ipcMain.handle('project_tryopen', project_tryopen);
         ipcMain.on('project_open', (_, proj_id) => {

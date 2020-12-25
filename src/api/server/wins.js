@@ -70,6 +70,10 @@ function broadcast(channel, msg) {
     }
 }
 
+function allwins() {
+    return _wins;
+}
+
 module.exports = {
     add,
     del,
@@ -78,5 +82,6 @@ module.exports = {
     update,
     size,
     lookup,
-    broadcast
+    broadcast,
+    allwins,
 }

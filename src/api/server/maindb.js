@@ -6,7 +6,7 @@ const { app } = require('electron');
 const colls = ['project', 'public', 'config'];
 const VERSION = 1;
 let db_name = app.getPath('appData') + '/etest_dev/basedb.db';
-console.log(db_name)
+console.log('db path :', db_name);
 let _base_db;
 let _coll_proj;
 

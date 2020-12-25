@@ -25,7 +25,11 @@ const _store = new Vuex.Store({
     },
     proj: null,
     copyed: null,
-    win_mode: 'normal'
+    win_mode: 'normal',
+    tick_state: {
+      is_dev: false,
+      runner_list: [],
+    }
   },
   mutations: {
     setMsgInfo: function (state, msg) {
@@ -61,12 +65,20 @@ const _store = new Vuex.Store({
     setWinMode: function (state, mode) {
       state.win_mode = mode;
     },
+    setTickState: function(state, tick_state) {
+      state.tick_state.is_dev = tick_state.is_dev;
+      state.tick_state.runner_list = tick_state.runner_list || [];
+    }
   },
   actions: {},
 })
 
 ipcRenderer.on('copyed', (_, format) => {
   _store.commit('setCopyed', format);
+});
+
+ipcRenderer.on('tick_state', (_, tick_state) => {
+  _store.commit('setTickState', tick_state);
 });
 
 api.clipboard_read().then(res => _store.commit('setCopyed', res ? res.format : null));

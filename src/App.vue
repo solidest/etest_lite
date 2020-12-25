@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <e-sys-bar v-if="win_mode!=='fullscreen'" header="ETestDev" />
+    <e-sys-bar header="ETestDev" />
     <v-snackbar top :timeout="touts" :color="tip_color" v-model="tip">
       {{ tip_msg }}
       <template v-slot:action="{ attrs }">

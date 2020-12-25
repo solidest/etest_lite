@@ -15,7 +15,7 @@ async function quit() {
 app.on('window-all-closed', quit)
 
 app.on('ready', async () => {
-  srv.setup().then(() => {
+  srv.setup(isDevelopment).then(() => {
     srv.project_open(null);
   });
 })

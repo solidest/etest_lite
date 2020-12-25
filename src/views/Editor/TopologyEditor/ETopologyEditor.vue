@@ -85,7 +85,7 @@
                 this._update_state();
             },
             dialog: function(d) {
-                let mode = d ? (d==='etl'?'fullscreen':'dialog') : 'normal';
+                let mode = d ? 'dialog' : 'normal';
                 this.$store.commit('setWinMode', mode);
             },
         },
