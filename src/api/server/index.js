@@ -86,6 +86,25 @@ function win_close(ev) {
     win.close();
 }
 
+function win_ismax(ev) {
+    let win = wins.lookup(ev.sender);
+    return win.isMaximized();
+}
+
+function win_max(ev) {
+    let win = wins.lookup(ev.sender);
+    if (win.isMaximized()) {
+        win.unmaximize();
+    } else {
+        win.maximize();
+    }
+}
+
+function win_min(ev) {
+    let win = wins.lookup(ev.sender);
+    win.minimize();
+}
+
 function projdb_create(_, name, memo) {
     return main_db.create(name, memo);
 }
@@ -118,6 +137,7 @@ function tpl_list(_, kind) {
     return main_db.tpl_list(kind);
 }
 
+
 module.exports = {
     async setup() {
         await main_db.open();
@@ -128,6 +148,9 @@ module.exports = {
             project_open(proj_id)
         });
         ipcMain.on('win_close', win_close);
+        ipcMain.on('win_min', win_min);
+        ipcMain.on('win_max', win_max);
+        ipcMain.handle('win_ismax', win_ismax);
         ipcMain.handle('projdb_create', projdb_create);
         ipcMain.handle('projdb_list', projdb_list);
         ipcMain.handle('projdb_remove', projdb_remove);

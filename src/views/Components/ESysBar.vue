@@ -6,6 +6,7 @@
       <v-spacer></v-spacer>
       <span class="noselect">{{title}}</span>
       <v-spacer></v-spacer>
+      <v-icon class="nodrag" @click.stop="onHelp">mdi-help</v-icon>
       <v-icon class="nodrag" @click.stop="onMin">mdi-minus</v-icon>
       <v-icon class="nodrag" @click.stop="onMax">
         {{is_max ? 'mdi-checkbox-multiple-blank-outline':'mdi-checkbox-blank-outline'}}</v-icon>
@@ -31,9 +32,8 @@
   }
 </style>
 <script>
-  const {
-    remote
-  } = window.require('electron');
+  const { ipcRenderer } = window.require('electron')
+
   import api from '../../api/client/';
   import proj_db from '../../doc/workerdb';
 
@@ -59,25 +59,22 @@
     methods: {
       onResize: function () {
         let self = this;
-        this.$nextTick(() => {
-          self.is_max = remote.getCurrentWindow().isMaximized();
+        this.$nextTick(async () => {
+          self.is_max = await ipcRenderer.invoke('win_ismax');
         });
       },
       onMax: function () {
-        let window = remote.getCurrentWindow()
-        if (window.isMaximized()) {
-          window.unmaximize();
-        } else {
-          window.maximize();
-        }
+        ipcRenderer.send('win_max');
       },
       onMin: function () {
-        let window = remote.getCurrentWindow();
-        window.minimize();
+        ipcRenderer.send('win_min');
       },
       onClose: async function () {
         await proj_db.close();
         api.win_close();
+      },
+      onHelp: function() {
+
       }
     }
 
