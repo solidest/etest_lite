@@ -237,7 +237,7 @@
                 let at = this.active[0];
                 let obj = await reused.get_reused(at.id, at.kind, at.name, at.memo);
                 if(!obj) {
-                    this.$store.commit('setMsgError', '复用内容内部存在错误，请更正');
+                    this.$store.commit('setMsgError', '复用内容存在错误，请更正');
                     return;
                 }
                 this.dlg_type = 'reused';

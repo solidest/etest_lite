@@ -9,14 +9,27 @@ async function _get_etlcode(id, name, memo) {
         return null;
     } else {
         if(doc.coding) {
-            return doc.code;
+            let asts = sdk.parser.parse_etl(doc.code);
+            let content;
+            switch (doc.kind) {
+                case 'device':
+                    content = sdk.converter.device_etl2dev(asts[0]).content;
+                    break;
+                case 'topology':
+                    content = sdk.converter.topology_etl2dev(asts[0]).content;
+                    break;
+                case 'protocol':
+                    content = sdk.converter.protocol_etl2dev(asts[0]).content;
+                    break;
+            }
+            return (asts[0].kind === doc.kind && content) ? doc.code : null;
         } else {
             switch (doc.kind) {
                 case 'device':
                     return sdk.converter.device_dev2etl(doc.content, name, memo);
                 case 'topology':
                     return sdk.converter.topology_dev2etl(doc.content, name, memo);
-            }            
+            }
         }
 
     }
@@ -30,6 +43,8 @@ function get_devobj(kind, code) {
             return sdk.converter.device_etl2dev(ast);
         case 'topology':
             return sdk.converter.topology_etl2dev(ast);
+        case 'protocol':
+            return sdk.converter.protocol_etl2dev(ast);
     }
     return null;
 }
@@ -37,6 +52,9 @@ function get_devobj(kind, code) {
 async function get_reused(id, kind, name, memo) {
     try {
         let code = await _get_etlcode(id, name, memo);
+        if(!code) {
+            throw new Error('复用失败');
+        }
         let obj = get_devobj(kind, code);
         return obj ? {
             kind,
