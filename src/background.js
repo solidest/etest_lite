@@ -1,10 +1,11 @@
 'use strict'
 import {
   app,
-  protocol,
 } from 'electron';
 import srv from './api/server/';
-import path from 'path';
+import {
+  createProtocol,
+} from 'vue-cli-plugin-electron-builder/lib';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -16,9 +17,7 @@ async function quit() {
 app.on('window-all-closed', quit)
 
 app.on('ready', async () => {
-  protocol.registerHttpProtocol('app', (request, callback) => {
-    callback({ url: request.url });
-  });
+  createProtocol('app');
   srv.setup(isDevelopment).then(() => {
     srv.project_open(null);
   });
