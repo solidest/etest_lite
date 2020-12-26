@@ -6,7 +6,6 @@ const {
     globalShortcut,
     Menu,
     ipcMain,
-    protocol,
 } = require('electron');
 const clipboard = require('./clipboard');
 const wins = require('./wins');
@@ -16,17 +15,7 @@ const ticker = require('./ticker');
 let _help_win;
 
 function _init() {
-    protocol.registerBufferProtocol('app',
-        (request, callback) => {
-          const uri = request.url;
-          if (uri) {
-            callback({ mimeType: 'text/plain', data: Buffer.from(uri) });
-          }
-          else {
-            callback({ error: -324 }); // EMPTY_RESPONSE
-          }
-        });
-    
+   
     globalShortcut.register('CommandOrControl+Alt+I', () => {
         let win = wins.getactive();
         if(!win) {
