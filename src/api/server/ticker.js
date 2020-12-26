@@ -3,12 +3,11 @@ const wins = require('./wins');
 
 
 let _is_dev
-let _ticker
 
 function start_tick(is_dev)
 {
     _is_dev = is_dev;
-    _ticker = setInterval(() => {
+    setInterval(() => {
         let ws = wins.allwins();
         if(ws) {
             let keys = ws.keys();

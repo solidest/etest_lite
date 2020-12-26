@@ -10,7 +10,7 @@ function write(_, copyed) {
     wins.broadcast('copyed', copyed.format);
 }
 
-function read(_) {
+function read() {
     return __copyed;
 }
 

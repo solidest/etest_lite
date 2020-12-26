@@ -12,14 +12,16 @@ const wins = require('./wins');
 const main_db = require('./maindb');
 const ticker = require('./ticker');
 
+let _help_win;
+
 function project_open(proj_id) {
     let win = new BrowserWindow({
         width: 1024,
         height: 768,
         webPreferences: {
+            // webSecurity: false,
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
-            enableRemoteModule: true,
         },
         simpleFullscreen: false,
         fullscreen: false,
@@ -31,9 +33,6 @@ function project_open(proj_id) {
     wins.add(win, proj_id);
 
     if (!proj_id) {
-        globalShortcut.register('CommandOrControl+Q', async () => {
-            await quit();
-        });
         globalShortcut.register('CommandOrControl+Alt+I', () => {
             win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
         });
@@ -52,6 +51,7 @@ function project_open(proj_id) {
             createProtocol('app');
         }
         win.loadURL('app://./index.html' + open_proj)
+        win.webContents.openDevTools()
     }
 
     win.once('ready-to-show', () => {
@@ -63,6 +63,40 @@ function project_open(proj_id) {
         wins.del(win);
     });
 }
+
+
+function win_help() {
+    if(_help_win) {
+        _help_win.show();
+        _help_win.maximize();
+        _help_win.focus();
+        return;
+    }
+    _help_win = new BrowserWindow({
+        width: 1024,
+        height: 768,
+        show: false,
+    });
+
+    if (process.env.WEBPACK_DEV_SERVER_URL) {
+        _help_win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + 'docs/index.html')
+        console.log(process.env.WEBPACK_DEV_SERVER_URL + 'docs/index.html')
+        if (!process.env.IS_TEST) _help_win.webContents.openDevTools()
+    } else {
+        _help_win.loadURL('app://./docs/index.html')
+    }
+
+    _help_win.once('ready-to-show', () => {
+        _help_win.show();
+        _help_win.maximize();
+        _help_win.focus();
+    });
+
+    _help_win.on('closed', () => {
+        _help_win = null;
+    });
+}
+
 
 function project_tryopen(_, proj_id) {
     let win = wins.find(proj_id);
@@ -89,11 +123,17 @@ function win_close(ev) {
 
 function win_ismax(ev) {
     let win = wins.lookup(ev.sender);
+    if(!win) {
+        return;
+    }
     return win.isMaximized();
 }
 
 function win_max(ev) {
     let win = wins.lookup(ev.sender);
+    if(!win) {
+        return;
+    }
     if (win.isMaximized()) {
         win.unmaximize();
     } else {
@@ -110,7 +150,7 @@ function projdb_create(_, name, memo) {
     return main_db.create(name, memo);
 }
 
-function projdb_list(_) {
+function projdb_list() {
     return main_db.list();
 }
 
@@ -138,7 +178,6 @@ function tpl_list(_, kind) {
     return main_db.tpl_list(kind);
 }
 
-
 module.exports = {
     async setup(is_dev) {
         await main_db.open();
@@ -152,6 +191,7 @@ module.exports = {
         ipcMain.on('win_close', win_close);
         ipcMain.on('win_min', win_min);
         ipcMain.on('win_max', win_max);
+        ipcMain.on('win_help', win_help);
         ipcMain.handle('win_ismax', win_ismax);
         ipcMain.handle('projdb_create', projdb_create);
         ipcMain.handle('projdb_list', projdb_list);

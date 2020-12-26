@@ -74,7 +74,7 @@
         api.win_close();
       },
       onHelp: function() {
-
+        ipcRenderer.send('win_help');
       }
     }
 

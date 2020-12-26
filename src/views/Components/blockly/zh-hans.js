@@ -1,6 +1,7 @@
 // This file was automatically generated.  Do not modify.
 
 'use strict';
+import Blockly from './blockly_compressed';
 
 Blockly.Msg["ADD_COMMENT"] = "添加注释";
 Blockly.Msg["CANNOT_DELETE_VARIABLE_PROCEDURE"] = "不能删除变量“%1”，因为它是函数“%2”定义的一部分";
