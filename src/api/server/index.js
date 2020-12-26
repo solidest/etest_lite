@@ -1,6 +1,6 @@
-const {
-    createProtocol,
-} = require('vue-cli-plugin-electron-builder/lib');
+// const {
+//     createProtocol,
+// } = require('vue-cli-plugin-electron-builder/lib');
 const {
     BrowserWindow,
     globalShortcut,
@@ -14,12 +14,32 @@ const ticker = require('./ticker');
 
 let _help_win;
 
+function _init() {
+    // createProtocol('app');
+
+    globalShortcut.register('CommandOrControl+Alt+I', () => {
+        let win = wins.getactive();
+        if(!win) {
+            return;
+        }
+        win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
+    });
+    globalShortcut.register('CommandOrControl+R', () => {
+        let win = wins.getactive();
+        if(!win) {
+            return;
+        }
+        win.reload();
+    });
+    Menu.setApplicationMenu(null);
+}
+
 function project_open(proj_id) {
     let win = new BrowserWindow({
         width: 1024,
         height: 768,
         webPreferences: {
-            // webSecurity: false,
+            webSecurity: false,
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
         },
@@ -32,24 +52,11 @@ function project_open(proj_id) {
 
     wins.add(win, proj_id);
 
-    if (!proj_id) {
-        globalShortcut.register('CommandOrControl+Alt+I', () => {
-            win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
-        });
-        globalShortcut.register('CommandOrControl+R', () => {
-            win.reload();
-        });
-        Menu.setApplicationMenu(null);
-    }
-
     let open_proj = proj_id ? ('#/?proj_id=' + proj_id) : ('#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false'));
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
         if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
-        if (!proj_id) {
-            createProtocol('app');
-        }
         win.loadURL('app://./index.html' + open_proj)
         win.webContents.openDevTools()
     }
@@ -180,6 +187,7 @@ function tpl_list(_, kind) {
 
 module.exports = {
     async setup(is_dev) {
+        _init();
         await main_db.open();
         clipboard.setup();
         ticker.start_tick(is_dev);

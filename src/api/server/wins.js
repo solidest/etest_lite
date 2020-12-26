@@ -70,6 +70,16 @@ function broadcast(channel, msg) {
     }
 }
 
+function getactive() {
+    let keys = _wins.keys();
+    for (let k of keys) {
+        if (k.win.isFocused()) {
+            return k.win;
+        }
+    }
+    return null;
+}
+
 function allwins() {
     return _wins;
 }
@@ -84,4 +94,5 @@ module.exports = {
     lookup,
     broadcast,
     allwins,
+    getactive,
 }
