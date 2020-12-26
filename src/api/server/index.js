@@ -1,6 +1,4 @@
-// const {
-//     createProtocol,
-// } = require('vue-cli-plugin-electron-builder/lib');
+
 const {
     BrowserWindow,
     globalShortcut,
@@ -13,19 +11,20 @@ const main_db = require('./maindb');
 const ticker = require('./ticker');
 
 let _help_win;
+let _is_dev;
 
 function _init() {
-   
+
     globalShortcut.register('CommandOrControl+Alt+I', () => {
         let win = wins.getactive();
-        if(!win) {
+        if (!win) {
             return;
         }
         win.webContents.isDevToolsOpened() ? win.webContents.closeDevTools() : win.webContents.openDevTools()
     });
     globalShortcut.register('CommandOrControl+R', () => {
         let win = wins.getactive();
-        if(!win) {
+        if (!win) {
             return;
         }
         win.reload();
@@ -50,13 +49,13 @@ function project_open(proj_id) {
     });
 
     wins.add(win, proj_id);
-
+    // _is_dev = false;
     let open_proj = proj_id ? ('#/?proj_id=' + proj_id) : ('#/?autoopen=' + (wins.size() === 1 ? 'true' : 'false'));
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
+    if (_is_dev) {
         win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + open_proj)
         if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
-        win.loadURL('app://./index.html' + open_proj)
+        win.loadURL('app://./index.html')
         win.webContents.openDevTools()
     }
 
@@ -72,7 +71,7 @@ function project_open(proj_id) {
 
 
 function win_help() {
-    if(_help_win) {
+    if (_help_win) {
         _help_win.show();
         _help_win.maximize();
         _help_win.focus();
@@ -129,7 +128,7 @@ function win_close(ev) {
 
 function win_ismax(ev) {
     let win = wins.lookup(ev.sender);
-    if(!win) {
+    if (!win) {
         return;
     }
     return win.isMaximized();
@@ -137,7 +136,7 @@ function win_ismax(ev) {
 
 function win_max(ev) {
     let win = wins.lookup(ev.sender);
-    if(!win) {
+    if (!win) {
         return;
     }
     if (win.isMaximized()) {
@@ -186,6 +185,7 @@ function tpl_list(_, kind) {
 
 module.exports = {
     async setup(is_dev) {
+        _is_dev = is_dev;
         _init();
         await main_db.open();
         clipboard.setup();

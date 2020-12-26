@@ -3,9 +3,7 @@ import {
   app,
 } from 'electron';
 import srv from './api/server/';
-import {
-  createProtocol,
-} from 'vue-cli-plugin-electron-builder/lib';
+import  createProtocol from './api/server/protocol';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -19,7 +17,7 @@ app.on('window-all-closed', quit)
 app.on('ready', async () => {
   createProtocol('app');
   srv.setup(isDevelopment).then(() => {
-    srv.project_open(null);
+    srv.project_open(0);
   });
 })
 
@@ -42,11 +40,3 @@ if (!gotTheLock) {
   console.log('should quit');
   app.quit();
 }
-
-// protocol.registerSchemesAsPrivileged([{
-//   scheme: 'app',
-//   privileges: {
-//     secure: true,
-//     standard: true
-//   }
-// }]);
