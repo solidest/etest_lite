@@ -1,10 +1,17 @@
-
 const {
     BrowserWindow,
     globalShortcut,
     Menu,
     ipcMain,
+    protocol,
 } = require('electron');
+const {
+    readFile
+} = require('fs')
+const {
+    URL
+} = require('url')
+const path = require('path')
 const clipboard = require('./clipboard');
 const wins = require('./wins');
 const main_db = require('./maindb');
@@ -13,8 +20,40 @@ const ticker = require('./ticker');
 let _help_win;
 let _is_dev;
 
-function _init() {
+function _createProtocol(scheme) {
+    protocol.registerBufferProtocol(
+        scheme,
+        (request, respond) => {
+            let pathName = new URL(request.url).pathname
+            pathName = decodeURI(pathName) // Needed in case URL contains spaces
 
+            readFile(path.join(__dirname, pathName), (error, data) => {
+                if (error) {
+                    console.error(`Failed to read ${pathName} on ${scheme} protocol`, error)
+                }
+                const extension = path.extname(pathName).toLowerCase()
+                let mimeType = ''
+
+                if (extension === '.js') {
+                    mimeType = 'text/javascript'
+                } else if (extension === '.html') {
+                    mimeType = 'text/html'
+                } else if (extension === '.css') {
+                    mimeType = 'text/css'
+                } else if (extension === '.svg' || extension === '.svgz') {
+                    mimeType = 'image/svg+xml'
+                } else if (extension === '.json') {
+                    mimeType = 'application/json'
+                }
+                respond({
+                    mimeType,
+                    data
+                })
+            })
+        })
+}
+
+function _register_shortcut() {
     globalShortcut.register('CommandOrControl+Alt+I', () => {
         let win = wins.getactive();
         if (!win) {
@@ -69,7 +108,6 @@ function project_open(proj_id) {
     });
 }
 
-
 function win_help() {
     if (_help_win) {
         _help_win.show();
@@ -101,7 +139,6 @@ function win_help() {
         _help_win = null;
     });
 }
-
 
 function project_tryopen(_, proj_id) {
     let win = wins.find(proj_id);
@@ -186,10 +223,12 @@ function tpl_list(_, kind) {
 module.exports = {
     async setup(is_dev) {
         _is_dev = is_dev;
-        _init();
+        _createProtocol('app');
+        _register_shortcut();
         await main_db.open();
         clipboard.setup();
         ticker.start_tick(is_dev);
+
         ipcMain.on('project_bind', project_bind);
         ipcMain.handle('project_tryopen', project_tryopen);
         ipcMain.on('project_open', (_, proj_id) => {

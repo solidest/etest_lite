@@ -1,9 +1,8 @@
 'use strict'
 import {
-  app,
+  app
 } from 'electron';
 import srv from './api/server/';
-import  createProtocol from './api/server/protocol';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -15,7 +14,6 @@ async function quit() {
 app.on('window-all-closed', quit)
 
 app.on('ready', async () => {
-  createProtocol('app');
   srv.setup(isDevelopment).then(() => {
     srv.project_open(0);
   });
