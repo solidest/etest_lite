@@ -1,6 +1,6 @@
-// const {
-//     createProtocol,
-// } = require('vue-cli-plugin-electron-builder/lib');
+const {
+    createProtocol,
+} = require('vue-cli-plugin-electron-builder/lib');
 const {
     BrowserWindow,
     globalShortcut,
@@ -15,8 +15,8 @@ const ticker = require('./ticker');
 let _help_win;
 
 function _init() {
-    // createProtocol('app');
-
+    createProtocol('app');
+    
     globalShortcut.register('CommandOrControl+Alt+I', () => {
         let win = wins.getactive();
         if(!win) {
