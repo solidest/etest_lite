@@ -41,6 +41,7 @@ function project_open(proj_id) {
             webSecurity: false,
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
+            nodeIntegrationInWorker: true,
         },
         simpleFullscreen: false,
         fullscreen: false,

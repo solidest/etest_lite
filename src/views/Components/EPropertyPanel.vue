@@ -1,5 +1,5 @@
 <template>
-    <v-sheet class="d-flex flex-column" color="grey darken-3">
+    <v-sheet class="d-flex flex-column" color="grey">
         <v-card-text class="ml-2 body-2 py-3">{{title}}</v-card-text>
         <v-divider />
         <div style="min-height: 100px; width: 100%">

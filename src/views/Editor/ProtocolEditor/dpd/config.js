@@ -188,14 +188,9 @@ const workspace = `<xml xmlns="https://developers.google.com/blockly/xml" id="wo
 </block>
 </xml>`
 
-let theme = {
-    'componentStyles': {
-      'workspaceBackgroundColour': '#424242',
-      'toolboxBackgroundColour': '#212121'
-    }
-  };
+
 export default {
     toolbox,
-    theme,
+    // theme,
     workspace,
 }

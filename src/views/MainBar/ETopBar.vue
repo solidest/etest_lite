@@ -7,7 +7,7 @@
                         <v-list-item-action>
                             <v-tooltip right open-delay="300">
                                 <template v-slot:activator="{ on }">
-                                    <v-icon large v-on="on" :color="active===item ? 'white':'grey'">
+                                    <v-icon large v-on="on">
                                         {{ item.icon }}
                                     </v-icon>
                                 </template>
@@ -25,7 +25,7 @@
                         <v-list-item-action>
                             <v-tooltip right open-delay="300">
                                 <template v-slot:activator="{ on }">
-                                    <v-icon large v-on="on" :color="active===item ? 'white':'grey'">
+                                    <v-icon large v-on="on">
                                         {{ item.icon }}
                                     </v-icon>
                                 </template>

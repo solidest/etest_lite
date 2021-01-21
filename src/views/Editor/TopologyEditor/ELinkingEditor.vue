@@ -1,5 +1,5 @@
 <template>
-    <v-sheet color="grey darken-2" id="__CONTAINER" width="100%" height="100%" class="pa-0 ma-0"
+    <v-sheet color="grey" id="__CONTAINER" width="100%" height="100%" class="pa-0 ma-0"
         @mouseup="on_dragedcanvas" :style="{position: 'absolute', left: `${canv_pos.left}px`, top: `${canv_pos.top}px`}">
         <v-sheet class="jtk-drag-select" :width="cfg_default.DEFAULT_ITEM_WIDTH" v-for="dev in devs" :key="dev.id"
             :id="dev.id" :style="{position: 'absolute', left: `${dev.pos.left}px`, top: `${dev.pos.top}px`}"
@@ -26,14 +26,14 @@
                 <v-list-item :id="`${dev.id}.${item.id}`" v-for="item in dev.conns" :key="item.id"
                     style="border-bottom: 1px solid grey">
                     <v-list-item-avatar size="38">
-                        <v-avatar color="grey darken-2" class="white--text">
+                        <v-avatar color="grey darken-1" class="white--text">
                             <span class="body-2">{{ cfg_intf_alias[item.kind] }}</span>
                         </v-avatar>
                     </v-list-item-avatar>
                     <v-list-item-content>
                         <v-list-item-title>
-                            <span class="body1 grey--text text--lighten-3">{{ item.name }}</span>
-                            <span class="body1 grey--text ml-2" v-if="item.memo">{{ ` ${item.memo}` }}</span>
+                            <span>{{ item.name }}</span>
+                            <span class="body1  ml-2" v-if="item.memo">{{ ` ${item.memo}` }}</span>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>

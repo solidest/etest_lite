@@ -17,7 +17,7 @@
                 language: 'etl',
                 automaticLayout: true,
                 fontSize: "18px",
-                theme: 'vs-dark',
+                // theme: 'vs-dark',
                 contextmenu: false,
                 minimap: {
                     enabled: true,

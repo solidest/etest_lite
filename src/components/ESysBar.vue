@@ -1,6 +1,6 @@
 <template>
   <div v-resize="onResize">
-    <v-system-bar window dark id="app_bar" app>
+    <v-system-bar window id="app_bar" app>
       <v-icon>mdi-ember</v-icon>
       <span class="nodrag">{{header}}</span>
       <v-spacer></v-spacer>

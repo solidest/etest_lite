@@ -1,6 +1,6 @@
 <template>
     <div style="cursor:col-resize; width: 6px" @mousedown="on_mousedown">
-        <v-divider dark vertical> </v-divider>
+        <v-divider vertical> </v-divider>
     </div>
 </template>
 

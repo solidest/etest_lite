@@ -1,7 +1,7 @@
 <template>
     <div style="height: 100%" v-resize="update_size">
         <div v-if="editor_type">
-            <v-card outlined color="black">
+            <v-card outlined>
                 <e-title-man :items="titles" ref="__title_man" />
                 <e-editor-bar :items_left="left_tools" :items_right="right_tools" @action="on_action" class="pa-0 ma-0" />
             </v-card>

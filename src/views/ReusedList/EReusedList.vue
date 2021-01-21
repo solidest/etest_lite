@@ -6,17 +6,17 @@
             <v-spacer />
             <span class="grey--text">{{`共: ${items.length}项`}}</span>
             <v-spacer />
-            <v-btn color='grey darken-3' @click="onExport">
+            <v-btn @click="onExport">
                 <v-icon left>mdi-export</v-icon>导出
             </v-btn>
-            <v-btn  class="ml-2" color='grey darken-3' @click="onImport">
+            <v-btn  class="ml-2" color='primary' @click="onImport">
                 <v-icon left>mdi-import</v-icon>导入
             </v-btn>
         </v-toolbar>
         <div style="height: calc(100vh - 126px);  overflow-y:auto">
             <v-tooltip bottom right v-for="item in items" :key="item.id">
                 <template v-slot:activator="{ on }">
-                    <v-chip class="ma-2" v-on="on" color="grey lighten-1" outlined close
+                    <v-chip class="ma-2" v-on="on" color="primary" outlined close
                         close-icon="mdi-trash-can-outline" @click="onEdit(item)" @click:close="onRemove(item)">
                         <v-icon left small>mdi-pencil</v-icon>
                         {{item.name}}

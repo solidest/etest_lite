@@ -8,11 +8,7 @@
         </e-property-panel>
     </div>
 </template>
-<style>
-.blocklyMainBackground {
-    stroke: #000 !important;
-}
-</style>
+
 
 <script>
     import cfg from './config';

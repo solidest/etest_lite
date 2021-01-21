@@ -16,10 +16,10 @@
       <v-spacer></v-spacer>
       <span class="grey--text">{{`版本: ${version}`}}</span>
       <v-spacer></v-spacer>
-      <v-btn color="grey darken-3" @click="on_import">
+      <v-btn color="primary" @click="on_import">
         <v-icon left>mdi-import</v-icon>导入
       </v-btn>
-      <v-btn color="grey darken-3" class="ml-2" @click="dlg='create'">
+      <v-btn color="primary" class="ml-2" @click="dlg='create'">
         <v-icon left>mdi-plus-thick</v-icon>新建
       </v-btn>
     </v-toolbar>
@@ -123,7 +123,7 @@
 
     data: () => ({
       search: '',
-      version: mcfg.version_map[pkg.version],
+      version: mcfg.version_map[pkg.version] || '2.0',
       projs: [],
       dlg: null,
       doing_id: null,

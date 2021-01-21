@@ -5,14 +5,14 @@
                 disable-pagination show-select v-model="selected" :single-select="single_select"
                 @item-selected="on_selected" @toggle-select-all="on_selected">
                 <template v-slot:item.kind="{item}">
-                    <v-chip small color="light-blue darken-3">{{alias[item.kind]}}</v-chip>
+                    <v-chip>{{alias[item.kind]}}</v-chip>
                 </template>
                 <template v-slot:item.name="{item}">
-                    <span class="font-weight-bold">{{item.name}}</span>
-                    <span class="pl-2 grey--text text--lighten-1">{{item.memo}}</span>
+                    <span>{{item.name}}</span>
+                    <span>{{item.memo}}</span>
                 </template>
                 <template v-slot:item.config="{item}">
-                    <span class="grey--text text--lighten-2">{{format_cfg(item)}}</span>
+                    <span>{{format_cfg(item)}}</span>
                 </template>
             </v-data-table>
         </div>

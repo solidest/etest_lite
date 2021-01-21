@@ -1,6 +1,6 @@
 <template>
-    <v-sheet class="mx-auto" color="grey darken-3" flat v-if="proj">
-        <v-toolbar dense >
+    <v-sheet class="mx-auto" flat v-if="proj">
+        <v-toolbar dense>
             <span class="text--secondary">{{title}}</span>
             <v-spacer></v-spacer>
             <v-tooltip bottom open-delay="300">
