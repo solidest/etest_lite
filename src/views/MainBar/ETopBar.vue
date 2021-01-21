@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer permanent :width="width" app clipped>
         <v-row class="fill-height" no-gutters>
-            <v-navigation-drawer mini-variant mini-variant-width="80" permanent>
+            <v-navigation-drawer mini-variant mini-variant-width="80" permanent  color="grey lighten-2">
                 <v-list dense nav>
                     <v-list-item v-for="item in proj_modules" :key="item.catalog" @click="on_module(item)">
                         <v-list-item-action>

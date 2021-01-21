@@ -14,7 +14,7 @@
         mounted() {
             this.editor = monaco.editor.create(document.getElementById('main_monaco_id'), {
                 value: this.code || '',
-                language: 'etl',
+                language: 'python',
                 automaticLayout: true,
                 fontSize: "18px",
                 // theme: 'vs-dark',

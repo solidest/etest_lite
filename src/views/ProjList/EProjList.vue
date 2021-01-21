@@ -31,7 +31,7 @@
         <template v-slot:default="props">
           <v-row>
             <v-col v-for="item in props.items" :key="item.name" cols="12" sm="6" md="4" lg="3">
-              <v-card :loading="item.$proj.id===doing_id">
+              <v-card :loading="item.$proj.id===doing_id" flat outlined>
                 <v-card-title class="subheading font-weight-bold blue--text" style="cursor: pointer"
                   @click.stop="open_proj(item.$proj)">
                   {{item.name}}
